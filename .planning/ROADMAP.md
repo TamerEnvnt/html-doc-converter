@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation** - Project setup, TypeScript config, folder structure
+- [x] **Phase 1: Foundation** - Project setup, TypeScript config, folder structure
 - [ ] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
 - [ ] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
 - [ ] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
@@ -34,8 +34,7 @@ None
 **Plans**: TBD
 
 Plans:
-- [ ] 01-01: Initialize package.json, tsconfig, dependencies
-- [ ] 01-02: Create folder structure (src/, dist/, tests/)
+- [x] 01-01: Initialize package.json, tsconfig, dependencies, folder structure (merged 01-02)
 
 ### Phase 2: HTML Parser
 **Goal**: Parse HTML documents and extract structural information
@@ -139,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/2 | Not started | - |
+| 1. Foundation | 1/1 | Complete | 2026-02-03 |
 | 2. HTML Parser | 0/2 | Not started | - |
 | 3. PDF Converter | 0/3 | Not started | - |
 | 4. DOCX Converter | 0/2 | Not started | - |
