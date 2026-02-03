@@ -62,3 +62,67 @@ export async function closeBrowser(): Promise<void> {
     browserInstance = null;
   }
 }
+
+// ============================================================================
+// PDF Generation
+// ============================================================================
+
+/**
+ * Convert HTML file to PDF with full CSS support
+ * @param htmlPath - Path to HTML file
+ * @param outputPath - Path for output PDF
+ * @param options - PDF generation options
+ */
+export async function convertToPDF(
+  htmlPath: string,
+  outputPath: string,
+  options: PDFOptions = {}
+): Promise<PDFResult> {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
+  try {
+    // Load HTML file with file:// protocol
+    const absolutePath = path.resolve(htmlPath);
+    await page.goto(`file://${absolutePath}`, {
+      waitUntil: 'networkidle0', // Wait for all resources
+    });
+
+    // Inject CSS to force exact color rendering
+    await page.addStyleTag({
+      content: `
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      `,
+    });
+
+    // Generate PDF with merged options
+    const pdfOptions = {
+      path: outputPath,
+      format: options.format || 'A4',
+      printBackground: options.printBackground ?? true, // Default TRUE for gradients
+      preferCSSPageSize: options.preferCSSPageSize ?? true, // Respect @page CSS
+      landscape: options.landscape ?? false,
+      margin: options.margin || {
+        top: '0',
+        right: '0',
+        bottom: '0',
+        left: '0',
+      },
+      displayHeaderFooter: options.displayHeaderFooter ?? false,
+      headerTemplate: options.headerTemplate || '',
+      footerTemplate: options.footerTemplate || '',
+      scale: options.scale || 1,
+    };
+
+    const pdfBuffer = await page.pdf(pdfOptions);
+
+    return {
+      buffer: Buffer.from(pdfBuffer),
+    };
+  } finally {
+    await page.close(); // Always close page, keep browser
+  }
+}
