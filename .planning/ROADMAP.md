@@ -15,7 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Foundation** - Project setup, TypeScript config, folder structure
-- [ ] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
+- [x] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
 - [ ] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
 - [ ] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
 - [ ] **Phase 5: CLI Interface** - Command-line interface with options
@@ -43,8 +43,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 02-01: HTML loading and DOM parsing
-- [ ] 02-02: Chapter/section extraction logic
+- [x] 02-01: HTML loading, DOM parsing, chapter extraction, metadata
+- [ ] 02-02: (Merged into 02-01)
 
 ### Phase 3: PDF Converter
 **Goal**: Convert HTML to PDF using Puppeteer with full CSS support
@@ -139,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete | 2026-02-03 |
-| 2. HTML Parser | 0/2 | Not started | - |
+| 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
 | 3. PDF Converter | 0/3 | Not started | - |
 | 4. DOCX Converter | 0/2 | Not started | - |
 | 5. CLI Interface | 0/2 | Not started | - |
