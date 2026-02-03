@@ -132,8 +132,49 @@ export function extractChapters(doc: CheerioAPI): Chapter[] {
  * @param doc - Cheerio document instance
  */
 export function extractMetadata(doc: CheerioAPI): DocumentMetadata {
-  // TODO: Implement in Phase 2
-  return { customFields: {} };
+  const customFields: Record<string, string> = {};
+
+  // Extract from <head> meta tags
+  const author = doc('meta[name="author"]').attr('content');
+  const version = doc('meta[name="version"]').attr('content');
+  const date = doc('meta[name="date"]').attr('content');
+
+  // Extract all other meta tags as custom fields
+  doc('meta[name]').each((_, el) => {
+    const name = doc(el).attr('name');
+    const content = doc(el).attr('content');
+    if (name && content && !['author', 'version', 'date', 'viewport', 'charset'].includes(name)) {
+      customFields[name] = content;
+    }
+  });
+
+  // Try to extract from document body patterns
+  const bodyText = doc('body').text();
+
+  // Look for "Version: X.X" pattern
+  if (!version) {
+    const versionMatch = bodyText.match(/Version:\s*([0-9.]+)/i);
+    if (versionMatch) customFields['version'] = versionMatch[1];
+  }
+
+  // Look for "Author: Name" pattern
+  if (!author) {
+    const authorMatch = bodyText.match(/Author:\s*([^\n]+)/i);
+    if (authorMatch) customFields['author'] = authorMatch[1].trim();
+  }
+
+  // Look for date patterns
+  if (!date) {
+    const dateMatch = bodyText.match(/Date:\s*([^\n]+)/i);
+    if (dateMatch) customFields['date'] = dateMatch[1].trim();
+  }
+
+  return {
+    author: author || customFields['author'],
+    version: version || customFields['version'],
+    date: date || customFields['date'],
+    customFields,
+  };
 }
 
 /**
@@ -141,6 +182,18 @@ export function extractMetadata(doc: CheerioAPI): DocumentMetadata {
  * @param filePath - Path to HTML file
  */
 export async function parseDocument(filePath: string): Promise<ParsedDocument> {
-  // TODO: Implement in Phase 2
-  throw new Error('Document parsing not yet implemented. See Phase 2.');
+  const doc = await loadHTML(filePath);
+
+  // Get title from <title> tag or first h1
+  const title = doc('title').text().trim() || doc('h1').first().text().trim() || 'Untitled';
+
+  // Get raw HTML
+  const rawHTML = doc.html() || '';
+
+  return {
+    title,
+    chapters: extractChapters(doc),
+    metadata: extractMetadata(doc),
+    rawHTML,
+  };
 }
