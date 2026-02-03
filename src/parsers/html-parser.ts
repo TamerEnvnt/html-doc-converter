@@ -2,10 +2,11 @@
  * HTML Parser Module
  *
  * Parses HTML documents and extracts structural information.
- * Implemented in Phase 2.
  */
 
+import * as cheerio from 'cheerio';
 import type { CheerioAPI } from 'cheerio';
+import { readFile } from 'fs/promises';
 
 export interface Chapter {
   id: string;
@@ -34,8 +35,15 @@ export interface ParsedDocument {
  * @param filePath - Path to HTML file
  */
 export async function loadHTML(filePath: string): Promise<CheerioAPI> {
-  // TODO: Implement in Phase 2
-  throw new Error('HTML loading not yet implemented. See Phase 2.');
+  try {
+    const html = await readFile(filePath, 'utf-8');
+    return cheerio.load(html);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new Error(`HTML file not found: ${filePath}`);
+    }
+    throw new Error(`Failed to load HTML file: ${(error as Error).message}`);
+  }
 }
 
 /**
@@ -43,8 +51,7 @@ export async function loadHTML(filePath: string): Promise<CheerioAPI> {
  * @param html - HTML string content
  */
 export function loadHTMLFromString(html: string): CheerioAPI {
-  // TODO: Implement in Phase 2
-  throw new Error('HTML loading not yet implemented. See Phase 2.');
+  return cheerio.load(html);
 }
 
 /**
