@@ -126,3 +126,79 @@ export async function convertToPDF(
     await page.close(); // Always close page, keep browser
   }
 }
+
+/**
+ * Convert HTML file to PDF with document parsing
+ * @param htmlPath - Path to HTML file
+ * @param outputPath - Path for output PDF
+ * @param options - PDF generation options
+ */
+export async function convertHTMLFileToPDF(
+  htmlPath: string,
+  outputPath: string,
+  options?: PDFOptions
+): Promise<{ document: ParsedDocument; pdf: PDFResult }> {
+  // Parse document for metadata (optional enrichment)
+  const document = await parseDocument(htmlPath);
+
+  // Generate PDF
+  const pdf = await convertToPDF(htmlPath, outputPath, options);
+
+  return { document, pdf };
+}
+
+/**
+ * Convert HTML string to PDF
+ * @param html - HTML content string
+ * @param outputPath - Path for output PDF
+ * @param options - PDF generation options
+ */
+export async function convertHTMLStringToPDF(
+  html: string,
+  outputPath: string,
+  options: PDFOptions = {}
+): Promise<PDFResult> {
+  const browser = await getBrowser();
+  const page = await browser.newPage();
+
+  try {
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    // Inject CSS to force exact color rendering
+    await page.addStyleTag({
+      content: `
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      `,
+    });
+
+    // Generate PDF with merged options
+    const pdfOptions = {
+      path: outputPath,
+      format: options.format || 'A4',
+      printBackground: options.printBackground ?? true,
+      preferCSSPageSize: options.preferCSSPageSize ?? true,
+      landscape: options.landscape ?? false,
+      margin: options.margin || {
+        top: '0',
+        right: '0',
+        bottom: '0',
+        left: '0',
+      },
+      displayHeaderFooter: options.displayHeaderFooter ?? false,
+      headerTemplate: options.headerTemplate || '',
+      footerTemplate: options.footerTemplate || '',
+      scale: options.scale || 1,
+    };
+
+    const pdfBuffer = await page.pdf(pdfOptions);
+
+    return {
+      buffer: Buffer.from(pdfBuffer),
+    };
+  } finally {
+    await page.close();
+  }
+}
