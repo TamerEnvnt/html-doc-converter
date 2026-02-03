@@ -1,9 +1,16 @@
 /**
  * PDF Converter Module
  *
- * Converts HTML to PDF using Puppeteer (Chrome's print engine).
- * Implemented in Phase 3.
+ * Converts HTML documents to PDF using Puppeteer with full CSS support.
  */
+
+import puppeteer, { Browser } from 'puppeteer';
+import path from 'path';
+import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export interface PDFOptions {
   format?: 'A4' | 'Letter' | 'Legal';
@@ -27,24 +34,31 @@ export interface PDFResult {
   pageCount?: number;
 }
 
+// ============================================================================
+// Browser Management (Singleton)
+// ============================================================================
+
+let browserInstance: Browser | null = null;
+
 /**
- * Convert HTML file to PDF
- * @param htmlPath - Path to input HTML file
- * @param outputPath - Path for output PDF file
- * @param options - PDF generation options
+ * Get or create browser instance (singleton pattern)
  */
-export async function convertToPDF(
-  htmlPath: string,
-  outputPath: string,
-  options: PDFOptions = {}
-): Promise<PDFResult> {
-  // TODO: Implement in Phase 3
-  throw new Error('PDF conversion not yet implemented. See Phase 3.');
+async function getBrowser(): Promise<Browser> {
+  if (!browserInstance) {
+    browserInstance = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+  }
+  return browserInstance;
 }
 
 /**
- * Close the browser instance
+ * Close browser instance and cleanup
  */
 export async function closeBrowser(): Promise<void> {
-  // TODO: Implement in Phase 3
+  if (browserInstance) {
+    await browserInstance.close();
+    browserInstance = null;
+  }
 }
