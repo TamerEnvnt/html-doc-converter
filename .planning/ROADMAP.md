@@ -73,8 +73,8 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 05-01: CLI argument parsing (input file, output format, options)
-- [ ] 05-02: Help text and usage examples
+- [x] 05-01: CLI argument parsing (input file, output format, options)
+- [ ] 05-02: Help text and usage examples (may skip - included in 05-01)
 
 ### Phase 6: Output Handling
 **Goal**: Manage output files, directories, and error conditions
@@ -139,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
 | 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
 | 4. DOCX Converter | 1/1 | Complete | 2026-02-04 |
-| 5. CLI Interface | 0/2 | Not started | - |
+| 5. CLI Interface | 1/2 | In progress | - |
 | 6. Output Handling | 0/2 | Not started | - |
 | 7. Cross-Platform | 0/2 | Not started | - |
 | 8. Testing | 0/3 | Not started | - |
