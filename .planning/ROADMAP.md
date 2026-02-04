@@ -18,7 +18,7 @@ None
 - [x] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
 - [x] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
 - [x] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
-- [ ] **Phase 5: CLI Interface** - Command-line interface with options
+- [x] **Phase 5: CLI Interface** - Command-line interface with options
 - [ ] **Phase 6: Output Handling** - File naming, output directories, error handling
 - [ ] **Phase 7: Cross-Platform** - Platform detection, dependency checks
 - [ ] **Phase 8: Testing** - Unit tests, E2E tests with sample HTML
@@ -73,8 +73,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [x] 05-01: CLI argument parsing (input file, output format, options)
-- [ ] 05-02: Help text and usage examples (may skip - included in 05-01)
+- [x] 05-01: CLI argument parsing, conversion action, validation, help text (consolidated)
 
 ### Phase 6: Output Handling
 **Goal**: Manage output files, directories, and error conditions
@@ -139,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
 | 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
 | 4. DOCX Converter | 1/1 | Complete | 2026-02-04 |
-| 5. CLI Interface | 1/2 | In progress | - |
+| 5. CLI Interface | 1/1 | Complete | 2026-02-04 |
 | 6. Output Handling | 0/2 | Not started | - |
 | 7. Cross-Platform | 0/2 | Not started | - |
 | 8. Testing | 0/3 | Not started | - |
