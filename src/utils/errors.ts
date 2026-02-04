@@ -4,16 +4,37 @@
  * Provides structured errors with codes and suggestions for actionable feedback.
  */
 
+// ============================================================================
+// ANSI Colors for Terminal Output
+// ============================================================================
+
+const supportsColor = process.stdout.isTTY && process.env.NO_COLOR === undefined;
+
+export const colors = {
+  red: (s: string): string => supportsColor ? `\x1b[31m${s}\x1b[0m` : s,
+  green: (s: string): string => supportsColor ? `\x1b[32m${s}\x1b[0m` : s,
+  yellow: (s: string): string => supportsColor ? `\x1b[33m${s}\x1b[0m` : s,
+  blue: (s: string): string => supportsColor ? `\x1b[34m${s}\x1b[0m` : s,
+  dim: (s: string): string => supportsColor ? `\x1b[2m${s}\x1b[0m` : s,
+  bold: (s: string): string => supportsColor ? `\x1b[1m${s}\x1b[0m` : s,
+};
+
+// ============================================================================
+// Error Codes
+// ============================================================================
+
 /**
  * Error codes for different conversion failure scenarios.
  */
 export const ErrorCodes = {
   INPUT_NOT_FOUND: 'INPUT_NOT_FOUND',
   INVALID_FORMAT: 'INVALID_FORMAT',
+  EMPTY_INPUT: 'EMPTY_INPUT',
   LIBREOFFICE_MISSING: 'LIBREOFFICE_MISSING',
   OUTPUT_DIR_FAILED: 'OUTPUT_DIR_FAILED',
   PDF_FAILED: 'PDF_FAILED',
   DOCX_FAILED: 'DOCX_FAILED',
+  TIMEOUT: 'TIMEOUT',
   UNKNOWN: 'UNKNOWN',
 } as const;
 
@@ -39,18 +60,21 @@ export class ConversionError extends Error {
 }
 
 /**
- * Format an error for display with optional suggestion.
+ * Format an error for display with optional suggestion (with colors).
  */
 export function formatError(error: ConversionError | Error): string {
   if (error instanceof ConversionError) {
-    let msg = `Error [${error.code}]: ${error.message}`;
+    const errorPrefix = colors.red('Error');
+    const codeText = colors.dim(`[${error.code}]`);
+    let msg = `${errorPrefix} ${codeText}: ${error.message}`;
     if (error.suggestion) {
-      msg += `\n  Suggestion: ${error.suggestion}`;
+      const suggestionLabel = colors.yellow('Suggestion:');
+      msg += `\n  ${suggestionLabel} ${error.suggestion}`;
     }
     return msg;
   }
 
-  return `Error: ${error.message}`;
+  return `${colors.red('Error')}: ${error.message}`;
 }
 
 /**
@@ -101,6 +125,20 @@ export function createError(
         `DOCX conversion failed: ${detail || 'unknown error'}`,
         code,
         'Ensure LibreOffice is properly installed and the HTML is valid.'
+      );
+
+    case ErrorCodes.EMPTY_INPUT:
+      return new ConversionError(
+        'Input HTML file is empty or contains only whitespace.',
+        code,
+        'Provide an HTML file with actual content to convert.'
+      );
+
+    case ErrorCodes.TIMEOUT:
+      return new ConversionError(
+        `Operation timed out: ${detail || 'conversion took too long'}`,
+        code,
+        'Try with a smaller file or increase the timeout with --timeout option.'
       );
 
     default:

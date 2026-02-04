@@ -10,6 +10,7 @@ import { promisify } from 'util';
 import puppeteer from 'puppeteer';
 import { findSoffice } from '../converters/docx-converter.js';
 import { getPlatform, getPlatformName, Platform } from './platform.js';
+import { colors } from './errors.js';
 
 const execAsync = promisify(exec);
 
@@ -171,29 +172,33 @@ export async function checkDependencies(): Promise<DependencyCheckResult> {
 }
 
 /**
- * Format dependency check results for console output
+ * Format dependency check results for console output (with colors)
  */
 export function formatDependencyReport(result: DependencyCheckResult): string {
   const lines: string[] = [];
   const platform = getPlatformName();
 
-  lines.push(`System: ${platform}`);
+  lines.push(`${colors.bold('System:')} ${platform}`);
   lines.push('');
-  lines.push('Dependencies:');
+  lines.push(colors.bold('Dependencies:'));
   lines.push('');
 
   for (const dep of result.dependencies) {
-    const statusIcon = dep.found ? '[OK]' : '[MISSING]';
-    const requiredLabel = dep.required ? '(required)' : '(optional)';
+    const statusIcon = dep.found
+      ? colors.green('[OK]')
+      : colors.red('[MISSING]');
+    const requiredLabel = dep.required
+      ? colors.dim('(required)')
+      : colors.dim('(optional)');
 
     lines.push(`  ${statusIcon} ${dep.name} ${requiredLabel}`);
 
     if (dep.found) {
       if (dep.version) {
-        lines.push(`       Version: ${dep.version}`);
+        lines.push(`       ${colors.dim('Version:')} ${dep.version}`);
       }
       if (dep.path) {
-        lines.push(`       Path: ${dep.path}`);
+        lines.push(`       ${colors.dim('Path:')} ${dep.path}`);
       }
     } else {
       lines.push('');
@@ -203,16 +208,16 @@ export function formatDependencyReport(result: DependencyCheckResult): string {
         .split('\n')
         .map((line) => `       ${line}`)
         .join('\n');
-      lines.push(indentedHint);
+      lines.push(colors.yellow(indentedHint));
     }
 
     lines.push('');
   }
 
   if (result.allFound) {
-    lines.push('All required dependencies are installed.');
+    lines.push(colors.green('All required dependencies are installed.'));
   } else {
-    lines.push('Some dependencies are missing. Install them to enable all features.');
+    lines.push(colors.yellow('Some dependencies are missing. Install them to enable all features.'));
   }
 
   return lines.join('\n');

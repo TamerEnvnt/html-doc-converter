@@ -19,6 +19,7 @@ import {
   ErrorCodes,
   formatError,
   createError,
+  colors,
 } from './utils/errors.js';
 import {
   checkDependencies,
@@ -112,15 +113,15 @@ Examples:
 
       // Convert PDF
       if (generatePDF) {
-        process.stdout.write('  [PDF]  Generating...');
+        process.stdout.write(`  ${colors.blue('[PDF]')}  Generating...`);
         try {
           await convertToPDF(inputPath, outputPaths.pdf);
-          console.log(' Done');
-          console.log(`         -> ${outputPaths.pdf}`);
+          console.log(` ${colors.green('Done')}`);
+          console.log(`         ${colors.dim('->')} ${outputPaths.pdf}`);
           successCount++;
           createdFiles.push(outputPaths.pdf);
         } catch (err) {
-          console.log(' FAILED');
+          console.log(` ${colors.red('FAILED')}`);
           errorCount++;
           const pdfError = createError(
             ErrorCodes.PDF_FAILED,
@@ -132,22 +133,22 @@ Examples:
 
       // Convert DOCX
       if (generateDOCX) {
-        process.stdout.write('  [DOCX] Generating...');
+        process.stdout.write(`  ${colors.blue('[DOCX]')} Generating...`);
         try {
           const result = await convertToDOCX(inputPath, outputPaths.docx);
           if (result.success) {
-            console.log(' Done');
-            console.log(`         -> ${outputPaths.docx}`);
+            console.log(` ${colors.green('Done')}`);
+            console.log(`         ${colors.dim('->')} ${outputPaths.docx}`);
             successCount++;
             createdFiles.push(outputPaths.docx);
           } else {
-            console.log(' FAILED');
+            console.log(` ${colors.red('FAILED')}`);
             errorCount++;
             const docxError = createError(ErrorCodes.DOCX_FAILED, result.error);
             console.error(`         ${formatError(docxError)}`);
           }
         } catch (err) {
-          console.log(' FAILED');
+          console.log(` ${colors.red('FAILED')}`);
           errorCount++;
           const docxError = createError(
             ErrorCodes.DOCX_FAILED,
@@ -159,13 +160,13 @@ Examples:
 
       // Summary
       console.log('');
-      console.log('Summary:');
+      console.log(colors.bold('Summary:'));
       if (successCount > 0) {
-        console.log(`  ${successCount} file(s) created successfully`);
-        createdFiles.forEach(f => console.log(`    - ${f}`));
+        console.log(`  ${colors.green(successCount.toString())} file(s) created successfully`);
+        createdFiles.forEach(f => console.log(`    ${colors.dim('-')} ${f}`));
       }
       if (errorCount > 0) {
-        console.log(`  ${errorCount} error(s) encountered`);
+        console.log(`  ${colors.red(errorCount.toString())} error(s) encountered`);
       }
       console.log('');
 
