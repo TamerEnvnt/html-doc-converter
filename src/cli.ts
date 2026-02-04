@@ -20,6 +20,10 @@ import {
   formatError,
   createError,
 } from './utils/errors.js';
+import {
+  checkDependencies,
+  formatDependencyReport,
+} from './utils/dependencies.js';
 
 const program = new Command();
 
@@ -182,6 +186,22 @@ Examples:
     } finally {
       await closeBrowser();
     }
+  });
+
+// Check dependencies command
+program
+  .command('check')
+  .description('Check system dependencies (LibreOffice, Chromium)')
+  .action(async () => {
+    console.log('');
+    console.log('Checking dependencies...');
+    console.log('');
+
+    const result = await checkDependencies();
+    console.log(formatDependencyReport(result));
+    console.log('');
+
+    process.exit(result.allFound ? 0 : 1);
   });
 
 program.parse();
