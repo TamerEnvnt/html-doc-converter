@@ -10,6 +10,16 @@ import { convertToPDF, closeBrowser } from './converters/pdf-converter.js';
 import { convertToDOCX, verifyLibreOffice } from './converters/docx-converter.js';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+import {
+  resolveOutputPaths,
+  ensureOutputDirectory,
+} from './utils/output-handler.js';
+import {
+  ConversionError,
+  ErrorCodes,
+  formatError,
+  createError,
+} from './utils/errors.js';
 
 const program = new Command();
 
@@ -35,6 +45,10 @@ Examples:
     pdfOnly?: boolean;
     docxOnly?: boolean;
   }) => {
+    let successCount = 0;
+    let errorCount = 0;
+    const createdFiles: string[] = [];
+
     try {
       // Resolve and validate input path
       const inputPath = path.resolve(input);
@@ -43,29 +57,26 @@ Examples:
       try {
         await fs.access(inputPath);
       } catch {
-        console.error(`Error: Input file not found: ${inputPath}`);
-        process.exit(1);
+        throw createError(ErrorCodes.INPUT_NOT_FOUND, inputPath);
       }
 
       // 2. Check it's an HTML file
       const ext = path.extname(inputPath).toLowerCase();
       if (ext !== '.html' && ext !== '.htm') {
-        console.error(`Error: Input must be an HTML file (got ${ext})`);
-        process.exit(1);
+        throw createError(ErrorCodes.INVALID_FORMAT, `expected .html or .htm, got ${ext}`);
       }
 
-      // Determine output base path
-      const outputBase = options.output
-        ? path.resolve(options.output)
-        : inputPath.replace(/\.[^.]+$/, '');
+      // Resolve output paths using output handler
+      const outputPaths = resolveOutputPaths(inputPath, options.output);
 
-      // 3. Check output directory is writable
-      const outputDir = path.dirname(outputBase);
+      // 3. Ensure output directory exists
       try {
-        await fs.access(outputDir, fs.constants.W_OK);
-      } catch {
-        // Try to create it
-        await fs.mkdir(outputDir, { recursive: true });
+        await ensureOutputDirectory(outputPaths.outputDir);
+      } catch (err) {
+        throw createError(
+          ErrorCodes.OUTPUT_DIR_FAILED,
+          `${outputPaths.outputDir}: ${err instanceof Error ? err.message : 'unknown error'}`
+        );
       }
 
       // Determine formats
@@ -85,37 +96,88 @@ Examples:
       if (generateDOCX) {
         const hasLO = await verifyLibreOffice();
         if (!hasLO) {
-          console.error('Error: LibreOffice not found. Install it for DOCX conversion.');
-          console.error('       Or use --pdf-only to generate PDF only.');
-          process.exit(1);
+          throw createError(ErrorCodes.LIBREOFFICE_MISSING);
         }
       }
 
-      // Convert
-      console.log(`Converting: ${inputPath}`);
+      // Progress: Start
+      console.log('');
+      console.log('Converting HTML to documents...');
+      console.log(`  Input: ${inputPath}`);
+      console.log('');
 
+      // Convert PDF
       if (generatePDF) {
-        const pdfPath = `${outputBase}.pdf`;
-        console.log(`  -> PDF: ${pdfPath}`);
-        await convertToPDF(inputPath, pdfPath);
-        console.log('    Done: PDF created');
-      }
-
-      if (generateDOCX) {
-        const docxPath = `${outputBase}.docx`;
-        console.log(`  -> DOCX: ${docxPath}`);
-        const result = await convertToDOCX(inputPath, docxPath);
-        if (result.success) {
-          console.log('    Done: DOCX created');
-        } else {
-          console.error(`    Failed: DOCX error - ${result.error}`);
+        process.stdout.write('  [PDF]  Generating...');
+        try {
+          await convertToPDF(inputPath, outputPaths.pdf);
+          console.log(' Done');
+          console.log(`         -> ${outputPaths.pdf}`);
+          successCount++;
+          createdFiles.push(outputPaths.pdf);
+        } catch (err) {
+          console.log(' FAILED');
+          errorCount++;
+          const pdfError = createError(
+            ErrorCodes.PDF_FAILED,
+            err instanceof Error ? err.message : 'unknown error'
+          );
+          console.error(`         ${formatError(pdfError)}`);
         }
       }
 
-      console.log('Conversion complete!');
+      // Convert DOCX
+      if (generateDOCX) {
+        process.stdout.write('  [DOCX] Generating...');
+        try {
+          const result = await convertToDOCX(inputPath, outputPaths.docx);
+          if (result.success) {
+            console.log(' Done');
+            console.log(`         -> ${outputPaths.docx}`);
+            successCount++;
+            createdFiles.push(outputPaths.docx);
+          } else {
+            console.log(' FAILED');
+            errorCount++;
+            const docxError = createError(ErrorCodes.DOCX_FAILED, result.error);
+            console.error(`         ${formatError(docxError)}`);
+          }
+        } catch (err) {
+          console.log(' FAILED');
+          errorCount++;
+          const docxError = createError(
+            ErrorCodes.DOCX_FAILED,
+            err instanceof Error ? err.message : 'unknown error'
+          );
+          console.error(`         ${formatError(docxError)}`);
+        }
+      }
+
+      // Summary
+      console.log('');
+      console.log('Summary:');
+      if (successCount > 0) {
+        console.log(`  ${successCount} file(s) created successfully`);
+        createdFiles.forEach(f => console.log(`    - ${f}`));
+      }
+      if (errorCount > 0) {
+        console.log(`  ${errorCount} error(s) encountered`);
+      }
+      console.log('');
+
+      // Exit with error code if any failures
+      if (errorCount > 0 && successCount === 0) {
+        process.exit(1);
+      }
 
     } catch (error) {
-      console.error('Error:', error instanceof Error ? error.message : error);
+      console.error('');
+      if (error instanceof ConversionError) {
+        console.error(formatError(error));
+      } else {
+        console.error('Error:', error instanceof Error ? error.message : error);
+      }
+      console.error('');
       process.exit(1);
     } finally {
       await closeBrowser();
