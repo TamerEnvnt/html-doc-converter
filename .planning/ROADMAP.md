@@ -20,7 +20,7 @@ None
 - [x] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
 - [x] **Phase 5: CLI Interface** - Command-line interface with options
 - [x] **Phase 6: Output Handling** - File naming, output directories, error handling
-- [ ] **Phase 7: Cross-Platform** - Platform detection, dependency checks
+- [x] **Phase 7: Cross-Platform** - Platform detection, dependency checks
 - [ ] **Phase 8: Testing** - Unit tests, E2E tests with sample HTML
 - [ ] **Phase 9: Documentation** - README, usage examples, installation guide
 - [ ] **Phase 10: Polish** - Error messages, edge cases, logging
@@ -92,8 +92,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 07-01: Platform detection and path resolution
-- [ ] 07-02: Dependency verification (LibreOffice, Chromium)
+- [x] 07-01: Platform detection, path resolution, dependency verification (consolidated with 07-02)
 
 ### Phase 8: Testing
 **Goal**: Comprehensive test coverage with real HTML samples
@@ -139,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. DOCX Converter | 1/1 | Complete | 2026-02-04 |
 | 5. CLI Interface | 1/1 | Complete | 2026-02-04 |
 | 6. Output Handling | 1/1 | Complete | 2026-02-04 |
-| 7. Cross-Platform | 0/2 | Not started | - |
+| 7. Cross-Platform | 1/1 | Complete | 2026-02-04 |
 | 8. Testing | 0/3 | Not started | - |
 | 9. Documentation | 0/2 | Not started | - |
 | 10. Polish | 0/2 | Not started | - |
