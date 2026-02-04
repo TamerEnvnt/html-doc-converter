@@ -16,7 +16,7 @@ None
 
 - [x] **Phase 1: Foundation** - Project setup, TypeScript config, folder structure
 - [x] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
-- [ ] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
+- [x] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
 - [ ] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
 - [ ] **Phase 5: CLI Interface** - Command-line interface with options
 - [ ] **Phase 6: Output Handling** - File naming, output directories, error handling
@@ -54,9 +54,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [x] 03-01: Puppeteer setup and browser management
-- [ ] 03-02: PDF generation with print options
-- [ ] 03-03: CSS print stylesheet handling
+- [x] 03-01: Puppeteer setup, browser management, PDF generation, CSS print handling (consolidated)
 
 ### Phase 4: DOCX Converter
 **Goal**: Convert HTML to DOCX using LibreOffice CLI
@@ -140,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Foundation | 1/1 | Complete | 2026-02-03 |
 | 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
-| 3. PDF Converter | 1/3 | In progress | - |
+| 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
 | 4. DOCX Converter | 0/2 | Not started | - |
 | 5. CLI Interface | 0/2 | Not started | - |
 | 6. Output Handling | 0/2 | Not started | - |
