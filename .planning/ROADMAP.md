@@ -22,7 +22,7 @@ None
 - [x] **Phase 6: Output Handling** - File naming, output directories, error handling
 - [x] **Phase 7: Cross-Platform** - Platform detection, dependency checks
 - [x] **Phase 8: Testing** - Unit tests, E2E tests with sample HTML
-- [ ] **Phase 9: Documentation** - README, usage examples, installation guide
+- [x] **Phase 9: Documentation** - README, usage examples, installation guide
 - [ ] **Phase 10: Polish** - Error messages, edge cases, logging
 
 ## Phase Details
@@ -107,11 +107,10 @@ Plans:
 **Goal**: Complete documentation for installation and usage
 **Depends on**: Phase 8
 **Research**: Unlikely (markdown documentation)
-**Plans**: TBD
+**Plans**: 1
 
 Plans:
-- [ ] 09-01: README with installation and usage
-- [ ] 09-02: Troubleshooting and platform-specific notes
+- [x] 09-01: README with installation, usage, platform notes, troubleshooting (consolidated 09-02)
 
 ### Phase 10: Polish
 **Goal**: Refinement, edge cases, improved error messages
@@ -138,5 +137,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Output Handling | 1/1 | Complete | 2026-02-04 |
 | 7. Cross-Platform | 1/1 | Complete | 2026-02-04 |
 | 8. Testing | 1/1 | Complete | 2026-02-04 |
-| 9. Documentation | 0/2 | Not started | - |
+| 9. Documentation | 1/1 | Complete | 2026-02-04 |
 | 10. Polish | 0/2 | Not started | - |
