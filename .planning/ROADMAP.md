@@ -64,7 +64,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: LibreOffice CLI integration
+- [x] 04-01: LibreOffice CLI integration
 - [ ] 04-02: DOCX conversion with structure preservation
 
 ### Phase 5: CLI Interface
@@ -139,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 1. Foundation | 1/1 | Complete | 2026-02-03 |
 | 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
 | 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
-| 4. DOCX Converter | 0/2 | Not started | - |
+| 4. DOCX Converter | 1/2 | In progress | - |
 | 5. CLI Interface | 0/2 | Not started | - |
 | 6. Output Handling | 0/2 | Not started | - |
 | 7. Cross-Platform | 0/2 | Not started | - |
