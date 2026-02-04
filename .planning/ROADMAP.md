@@ -17,7 +17,7 @@ None
 - [x] **Phase 1: Foundation** - Project setup, TypeScript config, folder structure
 - [x] **Phase 2: HTML Parser** - Parse HTML structure, extract chapters/sections
 - [x] **Phase 3: PDF Converter** - Puppeteer integration for HTML→PDF
-- [ ] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
+- [x] **Phase 4: DOCX Converter** - LibreOffice CLI integration for HTML→DOCX
 - [ ] **Phase 5: CLI Interface** - Command-line interface with options
 - [ ] **Phase 6: Output Handling** - File naming, output directories, error handling
 - [ ] **Phase 7: Cross-Platform** - Platform detection, dependency checks
@@ -64,8 +64,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [x] 04-01: LibreOffice CLI integration
-- [ ] 04-02: DOCX conversion with structure preservation
+- [x] 04-01: LibreOffice CLI integration, DOCX conversion, structure preservation (consolidated)
 
 ### Phase 5: CLI Interface
 **Goal**: Create user-friendly command-line interface
@@ -139,7 +138,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 1. Foundation | 1/1 | Complete | 2026-02-03 |
 | 2. HTML Parser | 1/1 | Complete | 2026-02-03 |
 | 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
-| 4. DOCX Converter | 1/2 | In progress | - |
+| 4. DOCX Converter | 1/1 | Complete | 2026-02-04 |
 | 5. CLI Interface | 0/2 | Not started | - |
 | 6. Output Handling | 0/2 | Not started | - |
 | 7. Cross-Platform | 0/2 | Not started | - |
