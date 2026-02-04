@@ -20,6 +20,7 @@ const execAsync = promisify(exec);
 export interface DOCXOptions {
   outputDir?: string;
   preserveStyles?: boolean;
+  timeout?: number;
 }
 
 export interface DOCXResult {
@@ -129,7 +130,9 @@ export async function convertToDOCX(
   ];
 
   try {
-    await execAsync(`"${sofficePath}" ${args.join(' ')}`);
+    // Apply timeout (default 60 seconds)
+    const execTimeout = options.timeout || 60000;
+    await execAsync(`"${sofficePath}" ${args.join(' ')}`, { timeout: execTimeout });
 
     // LibreOffice outputs to: outputDir/originalName.docx
     const generatedPath = path.join(outputDir, expectedOutputName);

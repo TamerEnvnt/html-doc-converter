@@ -37,18 +37,21 @@ program
   .option('-f, --format <format>', 'Output format: pdf, docx, or both', 'both')
   .option('--pdf-only', 'Generate PDF only')
   .option('--docx-only', 'Generate DOCX only')
+  .option('-t, --timeout <ms>', 'Conversion timeout in milliseconds', '60000')
   .addHelpText('after', `
 Examples:
   $ html-doc-converter document.html
   $ html-doc-converter document.html -o output/report
   $ html-doc-converter document.html --pdf-only
   $ html-doc-converter document.html -f docx
+  $ html-doc-converter document.html --timeout 120000
 `)
   .action(async (input: string, options: {
     output?: string;
     format?: string;
     pdfOnly?: boolean;
     docxOnly?: boolean;
+    timeout?: string;
   }) => {
     let successCount = 0;
     let errorCount = 0;
@@ -70,6 +73,24 @@ Examples:
       if (ext !== '.html' && ext !== '.htm') {
         throw createError(ErrorCodes.INVALID_FORMAT, `expected .html or .htm, got ${ext}`);
       }
+
+      // 3. Check file size and content
+      const stats = await fs.stat(inputPath);
+      const fileSize = stats.size;
+      const LARGE_FILE_THRESHOLD = 1_000_000; // 1MB
+
+      if (fileSize === 0) {
+        throw createError(ErrorCodes.EMPTY_INPUT);
+      }
+
+      // Read and verify content is not just whitespace
+      const content = await fs.readFile(inputPath, 'utf-8');
+      if (!content.trim()) {
+        throw createError(ErrorCodes.EMPTY_INPUT);
+      }
+
+      // Large file warning
+      const isLargeFile = fileSize > LARGE_FILE_THRESHOLD;
 
       // Resolve output paths using output handler
       const outputPaths = resolveOutputPaths(inputPath, options.output);
@@ -105,17 +126,24 @@ Examples:
         }
       }
 
+      // Parse timeout option
+      const timeout = parseInt(options.timeout || '60000', 10);
+
       // Progress: Start
       console.log('');
       console.log('Converting HTML to documents...');
       console.log(`  Input: ${inputPath}`);
+      if (isLargeFile) {
+        const sizeMB = (fileSize / 1_000_000).toFixed(1);
+        console.log(`  ${colors.yellow(`Large file detected (${sizeMB}MB). This may take a moment...`)}`);
+      }
       console.log('');
 
       // Convert PDF
       if (generatePDF) {
         process.stdout.write(`  ${colors.blue('[PDF]')}  Generating...`);
         try {
-          await convertToPDF(inputPath, outputPaths.pdf);
+          await convertToPDF(inputPath, outputPaths.pdf, { timeout });
           console.log(` ${colors.green('Done')}`);
           console.log(`         ${colors.dim('->')} ${outputPaths.pdf}`);
           successCount++;
@@ -135,7 +163,7 @@ Examples:
       if (generateDOCX) {
         process.stdout.write(`  ${colors.blue('[DOCX]')} Generating...`);
         try {
-          const result = await convertToDOCX(inputPath, outputPaths.docx);
+          const result = await convertToDOCX(inputPath, outputPaths.docx, { timeout });
           if (result.success) {
             console.log(` ${colors.green('Done')}`);
             console.log(`         ${colors.dim('->')} ${outputPaths.docx}`);

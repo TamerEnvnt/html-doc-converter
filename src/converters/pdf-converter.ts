@@ -27,6 +27,7 @@ export interface PDFOptions {
   headerTemplate?: string;
   footerTemplate?: string;
   scale?: number;
+  timeout?: number;
 }
 
 export interface PDFResult {
@@ -84,8 +85,10 @@ export async function convertToPDF(
   try {
     // Load HTML file with file:// protocol
     const absolutePath = path.resolve(htmlPath);
+    const navigationTimeout = options.timeout || 60000;
     await page.goto(`file://${absolutePath}`, {
       waitUntil: 'networkidle0', // Wait for all resources
+      timeout: navigationTimeout,
     });
 
     // Inject CSS to force exact color rendering
@@ -99,6 +102,7 @@ export async function convertToPDF(
     });
 
     // Generate PDF with merged options
+    const pdfTimeout = options.timeout || 60000;
     const pdfOptions = {
       path: outputPath,
       format: options.format || 'A4',
@@ -115,6 +119,7 @@ export async function convertToPDF(
       headerTemplate: options.headerTemplate || '',
       footerTemplate: options.footerTemplate || '',
       scale: options.scale || 1,
+      timeout: pdfTimeout,
     };
 
     const pdfBuffer = await page.pdf(pdfOptions);
