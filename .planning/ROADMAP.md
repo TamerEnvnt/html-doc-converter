@@ -82,7 +82,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 06-01: Output file naming and directory handling
+- [x] 06-01: Output file naming and directory handling
 - [ ] 06-02: Error handling and user feedback
 
 ### Phase 7: Cross-Platform
@@ -139,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 3. PDF Converter | 1/1 | Complete | 2026-02-03 |
 | 4. DOCX Converter | 1/1 | Complete | 2026-02-04 |
 | 5. CLI Interface | 1/1 | Complete | 2026-02-04 |
-| 6. Output Handling | 0/2 | Not started | - |
+| 6. Output Handling | 1/2 | In progress | - |
 | 7. Cross-Platform | 0/2 | Not started | - |
 | 8. Testing | 0/3 | Not started | - |
 | 9. Documentation | 0/2 | Not started | - |
