@@ -122,9 +122,10 @@ export async function convertToDOCX(
 
   // Build command
   // Quote paths for spaces
+  // Use explicit filter 'MS Word 2007 XML' for reliable HTML to DOCX conversion
   const args = [
     '--headless',
-    '--convert-to', 'docx',
+    '--convert-to', `'docx:MS Word 2007 XML'`,
     '--outdir', `"${outputDir}"`,
     `"${absoluteHtmlPath}"`
   ];
