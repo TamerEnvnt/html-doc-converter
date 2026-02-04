@@ -4,26 +4,49 @@
   "description": "Convert HTML documents to PDF and DOCX with high fidelity",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "html-doc-converter": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "start": "node dist/cli.js",
     "dev": "tsx src/cli.ts",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build && npm run test:run"
   },
   "keywords": [
     "html",
     "pdf",
     "docx",
     "converter",
-    "document"
+    "document",
+    "html-to-pdf",
+    "html-to-docx",
+    "puppeteer",
+    "libreoffice",
+    "cli"
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/html-doc-converter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/html-doc-converter/issues"
+  },
+  "homepage": "https://github.com/your-username/html-doc-converter#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "cheerio": "^1.0.0",
     "commander": "^12.0.0",

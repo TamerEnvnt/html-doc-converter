@@ -25,6 +25,7 @@ import {
   checkDependencies,
   formatDependencyReport,
 } from './utils/dependencies.js';
+import { setVerbose, verbose } from './utils/logger.js';
 
 const program = new Command();
 
@@ -38,6 +39,7 @@ program
   .option('--pdf-only', 'Generate PDF only')
   .option('--docx-only', 'Generate DOCX only')
   .option('-t, --timeout <ms>', 'Conversion timeout in milliseconds', '60000')
+  .option('-v, --verbose', 'Show detailed output for debugging')
   .addHelpText('after', `
 Examples:
   $ html-doc-converter document.html
@@ -45,6 +47,7 @@ Examples:
   $ html-doc-converter document.html --pdf-only
   $ html-doc-converter document.html -f docx
   $ html-doc-converter document.html --timeout 120000
+  $ html-doc-converter document.html --verbose
 `)
   .action(async (input: string, options: {
     output?: string;
@@ -52,7 +55,13 @@ Examples:
     pdfOnly?: boolean;
     docxOnly?: boolean;
     timeout?: string;
+    verbose?: boolean;
   }) => {
+    // Enable verbose logging if requested
+    if (options.verbose) {
+      setVerbose(true);
+    }
+
     let successCount = 0;
     let errorCount = 0;
     const createdFiles: string[] = [];
@@ -60,6 +69,7 @@ Examples:
     try {
       // Resolve and validate input path
       const inputPath = path.resolve(input);
+      verbose('Resolved input path:', inputPath);
 
       // 1. Check input file exists
       try {
@@ -91,9 +101,11 @@ Examples:
 
       // Large file warning
       const isLargeFile = fileSize > LARGE_FILE_THRESHOLD;
+      verbose('File size:', fileSize, 'bytes', isLargeFile ? '(large)' : '');
 
       // Resolve output paths using output handler
       const outputPaths = resolveOutputPaths(inputPath, options.output);
+      verbose('Output paths:', outputPaths);
 
       // 3. Ensure output directory exists
       try {
@@ -120,14 +132,17 @@ Examples:
 
       // Check LibreOffice if DOCX needed
       if (generateDOCX) {
+        verbose('Checking LibreOffice availability...');
         const hasLO = await verifyLibreOffice();
         if (!hasLO) {
           throw createError(ErrorCodes.LIBREOFFICE_MISSING);
         }
+        verbose('LibreOffice found');
       }
 
       // Parse timeout option
       const timeout = parseInt(options.timeout || '60000', 10);
+      verbose('Timeout set to:', timeout, 'ms');
 
       // Progress: Start
       console.log('');
@@ -141,9 +156,11 @@ Examples:
 
       // Convert PDF
       if (generatePDF) {
+        verbose('Starting PDF conversion...');
         process.stdout.write(`  ${colors.blue('[PDF]')}  Generating...`);
         try {
           await convertToPDF(inputPath, outputPaths.pdf, { timeout });
+          verbose('PDF conversion completed');
           console.log(` ${colors.green('Done')}`);
           console.log(`         ${colors.dim('->')} ${outputPaths.pdf}`);
           successCount++;
@@ -161,10 +178,12 @@ Examples:
 
       // Convert DOCX
       if (generateDOCX) {
+        verbose('Starting DOCX conversion...');
         process.stdout.write(`  ${colors.blue('[DOCX]')} Generating...`);
         try {
           const result = await convertToDOCX(inputPath, outputPaths.docx, { timeout });
           if (result.success) {
+            verbose('DOCX conversion completed');
             console.log(` ${colors.green('Done')}`);
             console.log(`         ${colors.dim('->')} ${outputPaths.docx}`);
             successCount++;
