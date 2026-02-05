@@ -91,12 +91,44 @@ export async function convertToPDF(
       timeout: navigationTimeout,
     });
 
-    // Inject CSS to force exact color rendering
+    // Inject CSS for print optimization
     await page.addStyleTag({
       content: `
         * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+
+        /* Force tables to fit within page width */
+        table {
+          max-width: 100% !important;
+          width: 100% !important;
+          table-layout: fixed !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+
+        /* Prevent cell overflow - wrap text */
+        td, th {
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+          max-width: 100% !important;
+        }
+
+        /* Hide scrollbars - content should fit */
+        ::-webkit-scrollbar {
+          display: none !important;
+        }
+
+        /* Ensure no horizontal overflow */
+        body, html, div {
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+        }
+
+        /* Handle overflow containers */
+        [style*="overflow"], .overflow-auto, .overflow-x-auto {
+          overflow: visible !important;
         }
       `,
     });
@@ -169,12 +201,30 @@ export async function convertHTMLStringToPDF(
   try {
     await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    // Inject CSS to force exact color rendering
+    // Inject CSS for print optimization
     await page.addStyleTag({
       content: `
         * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
+        }
+
+        /* Force tables to fit within page width */
+        table {
+          max-width: 100% !important;
+          width: 100% !important;
+          table-layout: fixed !important;
+          word-wrap: break-word !important;
+        }
+
+        td, th {
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+
+        body, html, div {
+          max-width: 100% !important;
+          overflow-x: hidden !important;
         }
       `,
     });
