@@ -257,7 +257,7 @@ Findings addressed:
 - P2: loadHTML loses original error context (no {cause})
 
 Plans:
-- [ ] 20-01: TOCTOU fixes, EACCES handling, error cause chains (2 tasks)
+- [x] 20-01: TOCTOU fixes, EACCES handling, error cause chains (2 tasks, completed 2026-02-10)
 
 #### Phase 21: Test Defect Fixes
 **Goal:** Fix existing test bugs: un-awaited fs.writeFile, silent pass-through tests, replace source-scanning tests with behavioral tests
@@ -315,7 +315,7 @@ Plans:
 | 17. Error Handling Unification | v1.2 | 2/2 | Complete | 2026-02-10 |
 | 18. Type Design Cleanup | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 19. Architecture & Packaging | v1.2 | 1/1 | Complete | 2026-02-10 |
-| 20. Silent Failure Fixes | v1.2 | 0/1 | Not started | - |
+| 20. Silent Failure Fixes | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 21. Test Defect Fixes | v1.2 | 0/? | Not started | - |
 | 22. Test Coverage Expansion | v1.2 | 0/? | Not started | - |
 | 23. Resilience & Final Polish | v1.2 | 0/? | Not started | - |

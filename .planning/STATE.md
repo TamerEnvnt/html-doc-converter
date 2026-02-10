@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 19 of 23 (Architecture & Packaging) - COMPLETE
+Phase: 20 of 23 (Silent Failure Fixes) - COMPLETE
 Plan: 1/1 complete
-Status: Phase 19 complete, ready for Phase 20
-Last activity: 2026-02-10 -- Phase 19 complete (circular dep broken, public API curated, exports field, dynamic version)
+Status: Phase 20 complete, ready for Phase 21
+Last activity: 2026-02-10 -- Phase 20 complete (TOCTOU fixes, EACCES surfacing, error cause chains)
 
-Progress (Milestone 3): ████░░░░░░ 50%
+Progress (Milestone 3): █████░░░░░ 62.5%
 
 ## Milestone 3 Overview
 
@@ -24,7 +24,7 @@ Progress (Milestone 3): ████░░░░░░ 50%
 | 17 | `phases/17-error-handling-unification` | P0/P1 | Complete |
 | 18 | `phases/18-type-design-cleanup` | P2 | Complete |
 | 19 | `phases/19-architecture-packaging` | P2 | Complete |
-| 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
+| 20 | `phases/20-silent-failure-fixes` | P1/P2 | Complete |
 | 21 | `phases/21-test-defect-fixes` | P1 | Not started |
 | 22 | `phases/22-test-coverage-expansion` | P1 | Not started |
 | 23 | `phases/23-resilience-final-polish` | P2 | Not started |
@@ -104,6 +104,9 @@ tests/
 - Named exports in index.ts over export * - explicit API surface control [Phase 19]
 - createRequire pattern for JSON imports in ESM projects [Phase 19]
 - findSoffice/verifyLibreOffice in utils/soffice.ts (not converters) [Phase 19]
+- Atomic mkdir: fs.mkdir({ recursive: true }) instead of access+mkdir [Phase 20]
+- Error cause chains: always pass { cause: error } when re-throwing [Phase 20]
+- EACCES detection: distinguish permission errors from not-found in fs checks [Phase 20]
 
 ### Roadmap Evolution
 
@@ -114,4 +117,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 19 complete (1/1 plan). Ready for Phase 20: Silent Failure Fixes.
+Status: Phase 20 complete (1/1 plan). Ready for Phase 21: Test Defect Fixes.
