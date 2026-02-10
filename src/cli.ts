@@ -13,6 +13,8 @@ import * as fs from 'fs/promises';
 import {
   resolveOutputPaths,
   ensureOutputDirectory,
+  validatePath,
+  fileExists,
 } from './utils/output-handler.js';
 import {
   ConversionError,
@@ -39,6 +41,8 @@ program
   .option('--pdf-only', 'Generate PDF only')
   .option('--docx-only', 'Generate DOCX only')
   .option('-t, --timeout <ms>', 'Conversion timeout in milliseconds', '60000')
+  .option('-l, --landscape', 'Use landscape orientation for PDF (recommended for wide tables/diagrams)')
+  .option('--force', 'Overwrite existing output files without prompting')
   .option('-v, --verbose', 'Show detailed output for debugging')
   .addHelpText('after', `
 Examples:
@@ -46,6 +50,7 @@ Examples:
   $ html-doc-converter document.html -o output/report
   $ html-doc-converter document.html --pdf-only
   $ html-doc-converter document.html -f docx
+  $ html-doc-converter document.html --landscape  # For wide tables/diagrams
   $ html-doc-converter document.html --timeout 120000
   $ html-doc-converter document.html --verbose
 `)
@@ -55,6 +60,8 @@ Examples:
     pdfOnly?: boolean;
     docxOnly?: boolean;
     timeout?: string;
+    landscape?: boolean;
+    force?: boolean;
     verbose?: boolean;
   }) => {
     // Enable verbose logging if requested
@@ -69,6 +76,7 @@ Examples:
     try {
       // Resolve and validate input path
       const inputPath = path.resolve(input);
+      validatePath(inputPath);
       verbose('Resolved input path:', inputPath);
 
       // 1. Check input file exists
@@ -105,19 +113,21 @@ Examples:
 
       // Resolve output paths using output handler
       const outputPaths = resolveOutputPaths(inputPath, options.output);
+
+      // Validate output paths stay within allowed directories
+      if (options.output) {
+        // User specified output: allow the output's parent directory
+        const outputRoot = path.resolve(path.dirname(options.output));
+        validatePath(outputPaths.pdf, outputRoot);
+        validatePath(outputPaths.docx, outputRoot);
+      } else {
+        // Default output: must stay within cwd
+        validatePath(outputPaths.pdf);
+        validatePath(outputPaths.docx);
+      }
       verbose('Output paths:', outputPaths);
 
-      // 3. Ensure output directory exists
-      try {
-        await ensureOutputDirectory(outputPaths.outputDir);
-      } catch (err) {
-        throw createError(
-          ErrorCodes.OUTPUT_DIR_FAILED,
-          `${outputPaths.outputDir}: ${err instanceof Error ? err.message : 'unknown error'}`
-        );
-      }
-
-      // Determine formats
+      // Determine formats (before overwrite check so we know which files to check)
       let generatePDF = true;
       let generateDOCX = true;
 
@@ -130,6 +140,27 @@ Examples:
         generateDOCX = options.format === 'docx' || options.format === 'both';
       }
 
+      // Check for existing output files (unless --force)
+      if (!options.force) {
+        const existing: string[] = [];
+        if (generatePDF && fileExists(outputPaths.pdf)) existing.push(outputPaths.pdf);
+        if (generateDOCX && fileExists(outputPaths.docx)) existing.push(outputPaths.docx);
+
+        if (existing.length > 0) {
+          throw createError(ErrorCodes.FILE_EXISTS, existing.join(', '));
+        }
+      }
+
+      // Ensure output directory exists
+      try {
+        await ensureOutputDirectory(outputPaths.outputDir);
+      } catch (err) {
+        throw createError(
+          ErrorCodes.OUTPUT_DIR_FAILED,
+          `${outputPaths.outputDir}: ${err instanceof Error ? err.message : 'unknown error'}`
+        );
+      }
+
       // Check LibreOffice if DOCX needed
       if (generateDOCX) {
         verbose('Checking LibreOffice availability...');
@@ -140,8 +171,12 @@ Examples:
         verbose('LibreOffice found');
       }
 
-      // Parse timeout option
-      const timeout = parseInt(options.timeout || '60000', 10);
+      // Parse and validate timeout option
+      const timeoutRaw = parseInt(options.timeout || '60000', 10);
+      if (isNaN(timeoutRaw) || timeoutRaw <= 0) {
+        throw createError(ErrorCodes.INVALID_TIMEOUT, options.timeout || 'undefined');
+      }
+      const timeout = timeoutRaw;
       verbose('Timeout set to:', timeout, 'ms');
 
       // Progress: Start
@@ -159,7 +194,10 @@ Examples:
         verbose('Starting PDF conversion...');
         process.stdout.write(`  ${colors.blue('[PDF]')}  Generating...`);
         try {
-          await convertToPDF(inputPath, outputPaths.pdf, { timeout });
+          await convertToPDF(inputPath, outputPaths.pdf, {
+            timeout,
+            landscape: options.landscape ?? false,
+          });
           verbose('PDF conversion completed');
           console.log(` ${colors.green('Done')}`);
           console.log(`         ${colors.dim('->')} ${outputPaths.pdf}`);
@@ -181,27 +219,24 @@ Examples:
         verbose('Starting DOCX conversion...');
         process.stdout.write(`  ${colors.blue('[DOCX]')} Generating...`);
         try {
-          const result = await convertToDOCX(inputPath, outputPaths.docx, { timeout });
-          if (result.success) {
-            verbose('DOCX conversion completed');
-            console.log(` ${colors.green('Done')}`);
-            console.log(`         ${colors.dim('->')} ${outputPaths.docx}`);
-            successCount++;
-            createdFiles.push(outputPaths.docx);
-          } else {
-            console.log(` ${colors.red('FAILED')}`);
-            errorCount++;
-            const docxError = createError(ErrorCodes.DOCX_FAILED, result.error);
-            console.error(`         ${formatError(docxError)}`);
-          }
+          await convertToDOCX(inputPath, outputPaths.docx, { timeout });
+          verbose('DOCX conversion completed');
+          console.log(` ${colors.green('Done')}`);
+          console.log(`         ${colors.dim('->')} ${outputPaths.docx}`);
+          successCount++;
+          createdFiles.push(outputPaths.docx);
         } catch (err) {
           console.log(` ${colors.red('FAILED')}`);
           errorCount++;
-          const docxError = createError(
-            ErrorCodes.DOCX_FAILED,
-            err instanceof Error ? err.message : 'unknown error'
-          );
-          console.error(`         ${formatError(docxError)}`);
+          if (err instanceof ConversionError) {
+            console.error(`         ${formatError(err)}`);
+          } else {
+            const docxError = createError(
+              ErrorCodes.DOCX_FAILED,
+              err instanceof Error ? err.message : 'unknown error'
+            );
+            console.error(`         ${formatError(docxError)}`);
+          }
         }
       }
 
@@ -217,9 +252,11 @@ Examples:
       }
       console.log('');
 
-      // Exit with error code if any failures
+      // Exit with appropriate code
       if (errorCount > 0 && successCount === 0) {
-        process.exit(1);
+        process.exit(1);  // Complete failure
+      } else if (errorCount > 0) {
+        process.exit(2);  // Partial failure (some succeeded, some failed)
       }
 
     } catch (error) {

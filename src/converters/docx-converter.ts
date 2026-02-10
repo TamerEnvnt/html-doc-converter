@@ -5,13 +5,14 @@
  * Produces real document structure (headings, tables, paragraphs) that can be edited in Word.
  */
 
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
+import { ConversionError, createError, ErrorCodes } from '../utils/errors.js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // Types
@@ -25,8 +26,6 @@ export interface DOCXOptions {
 
 export interface DOCXResult {
   outputPath: string;
-  success: boolean;
-  error?: string;
 }
 
 // ============================================================================
@@ -68,8 +67,8 @@ export async function findSoffice(): Promise<string | null> {
 
   // Try which/where as fallback
   try {
-    const cmd = platform === 'win32' ? 'where soffice' : 'which soffice';
-    const { stdout } = await execAsync(cmd);
+    const binary = platform === 'win32' ? 'where' : 'which';
+    const { stdout } = await execFileAsync(binary, ['soffice']);
     return stdout.trim().split('\n')[0];
   } catch {
     return null;
@@ -94,7 +93,8 @@ export async function verifyLibreOffice(): Promise<boolean> {
  * @param htmlPath - Path to the input HTML file
  * @param outputPath - Path for the output DOCX file
  * @param options - Conversion options
- * @returns Result object with success status and output path
+ * @returns Object with output path
+ * @throws {ConversionError} When LibreOffice is missing or conversion fails
  */
 export async function convertToDOCX(
   htmlPath: string,
@@ -104,11 +104,7 @@ export async function convertToDOCX(
   // Find LibreOffice
   const sofficePath = await findSoffice();
   if (!sofficePath) {
-    return {
-      outputPath: '',
-      success: false,
-      error: 'LibreOffice not found. Please install LibreOffice to convert to DOCX.',
-    };
+    throw createError(ErrorCodes.LIBREOFFICE_MISSING);
   }
 
   // Resolve paths
@@ -120,39 +116,44 @@ export async function convertToDOCX(
   // Ensure output directory exists
   await fs.mkdir(outputDir, { recursive: true });
 
-  // Build command
-  // Quote paths for spaces
-  // Use explicit filter 'MS Word 2007 XML' for reliable HTML to DOCX conversion
+  // Build command arguments as array (execFile - no shell interpretation)
   const args = [
     '--headless',
-    '--convert-to', `'docx:MS Word 2007 XML'`,
-    '--outdir', `"${outputDir}"`,
-    `"${absoluteHtmlPath}"`
+    '--convert-to', 'docx:MS Word 2007 XML',
+    '--outdir', outputDir,
+    absoluteHtmlPath
   ];
 
   try {
     // Apply timeout (default 60 seconds)
     const execTimeout = options.timeout || 60000;
-    await execAsync(`"${sofficePath}" ${args.join(' ')}`, { timeout: execTimeout });
+    await execFileAsync(sofficePath, args, { timeout: execTimeout });
 
     // LibreOffice outputs to: outputDir/originalName.docx
     const generatedPath = path.join(outputDir, expectedOutputName);
 
-    // Rename if different output path requested
-    if (generatedPath !== absoluteOutputPath) {
-      await fs.rename(generatedPath, absoluteOutputPath);
+    // Verify output file was created
+    try {
+      await fs.access(generatedPath);
+    } catch {
+      throw createError(ErrorCodes.DOCX_FAILED, 'LibreOffice completed but output file not found: ' + generatedPath);
     }
 
-    return {
-      outputPath: absoluteOutputPath,
-      success: true,
-    };
+    // Rename if different output path requested
+    if (generatedPath !== absoluteOutputPath) {
+      try {
+        await fs.rename(generatedPath, absoluteOutputPath);
+      } catch (renameError) {
+        throw createError(ErrorCodes.DOCX_FAILED, 'Failed to rename output file: ' + (renameError instanceof Error ? renameError.message : String(renameError)));
+      }
+    }
+
+    return { outputPath: absoluteOutputPath };
   } catch (error) {
-    return {
-      outputPath: '',
-      success: false,
-      error: `LibreOffice conversion failed: ${error instanceof Error ? error.message : String(error)}`,
-    };
+    if (error instanceof ConversionError) {
+      throw error;
+    }
+    throw createError(ErrorCodes.DOCX_FAILED, error instanceof Error ? error.message : String(error));
   }
 }
 
