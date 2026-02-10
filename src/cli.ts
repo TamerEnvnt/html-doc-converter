@@ -206,11 +206,15 @@ Examples:
         } catch (err) {
           console.log(` ${colors.red('FAILED')}`);
           errorCount++;
-          const pdfError = createError(
-            ErrorCodes.PDF_FAILED,
-            err instanceof Error ? err.message : 'unknown error'
-          );
-          console.error(`         ${formatError(pdfError)}`);
+          if (err instanceof ConversionError) {
+            console.error(`         ${formatError(err)}`);
+          } else {
+            const pdfError = createError(
+              ErrorCodes.PDF_FAILED,
+              err instanceof Error ? err.message : 'unknown error'
+            );
+            console.error(`         ${formatError(pdfError)}`);
+          }
         }
       }
 
