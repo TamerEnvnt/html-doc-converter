@@ -40,27 +40,68 @@ export interface PDFResult {
 // ============================================================================
 
 let browserInstance: Browser | null = null;
+let browserLaunchPromise: Promise<Browser> | null = null;
 
 /**
- * Get or create browser instance (singleton pattern)
+ * Get or create browser instance (singleton pattern).
+ * Uses a promise-based lock to prevent concurrent launches.
  */
-async function getBrowser(): Promise<Browser> {
-  if (!browserInstance) {
-    browserInstance = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+export async function getBrowser(): Promise<Browser> {
+  // If a launch is already in progress, wait for it
+  if (browserLaunchPromise) {
+    return browserLaunchPromise;
   }
-  return browserInstance;
+
+  // If we have a connected browser, reuse it
+  if (browserInstance && browserInstance.isConnected()) {
+    return browserInstance;
+  }
+
+  // Clear stale reference if disconnected
+  browserInstance = null;
+
+  // Launch new browser with promise lock
+  browserLaunchPromise = puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
+  try {
+    const browser = await browserLaunchPromise;
+    browserInstance = browser;
+
+    // Auto-clear stale references on crash/disconnect
+    browser.on('disconnected', () => {
+      browserInstance = null;
+      browserLaunchPromise = null;
+    });
+
+    return browser;
+  } catch (error) {
+    // Clear promise so next call retries instead of caching a rejected promise
+    throw error;
+  } finally {
+    browserLaunchPromise = null;
+  }
 }
 
 /**
- * Close browser instance and cleanup
+ * Close browser instance and cleanup.
+ * Safe to call in finally blocks - never throws.
  */
 export async function closeBrowser(): Promise<void> {
-  if (browserInstance) {
-    await browserInstance.close();
-    browserInstance = null;
+  const instance = browserInstance;
+  // Always clear references first, even before close() attempt
+  browserInstance = null;
+  browserLaunchPromise = null;
+
+  if (instance) {
+    try {
+      await instance.close();
+    } catch {
+      // Silently discard close errors - this is cleanup code
+      // and must be safe for use in finally blocks
+    }
   }
 }
 
@@ -83,6 +124,9 @@ export async function convertToPDF(
   const page = await browser.newPage();
 
   try {
+    // Set wide viewport to capture all content before printing
+    await page.setViewport({ width: 1200, height: 800 });
+
     // Load HTML file with file:// protocol
     const absolutePath = path.resolve(htmlPath);
     const navigationTimeout = options.timeout || 60000;
@@ -99,35 +143,40 @@ export async function convertToPDF(
           print-color-adjust: exact !important;
         }
 
-        /* Force tables to fit within page width */
+        /* Tables: force fit within page width */
         table {
-          max-width: 100% !important;
-          width: 100% !important;
           table-layout: fixed !important;
-          word-wrap: break-word !important;
-          overflow-wrap: break-word !important;
+          width: 100% !important;
+          max-width: 100% !important;
         }
 
-        /* Prevent cell overflow - wrap text */
         td, th {
           word-wrap: break-word !important;
           overflow-wrap: break-word !important;
-          max-width: 100% !important;
+          word-break: break-word !important;
+          hyphens: auto !important;
         }
 
-        /* Hide scrollbars - content should fit */
+        /* ASCII diagrams: preserve monospace alignment, use smaller font to fit */
+        .diagram, pre {
+          overflow: visible !important;
+          white-space: pre !important;
+          font-size: 7pt !important;
+          line-height: 1.15 !important;
+        }
+
+        /* Hide scrollbars */
         ::-webkit-scrollbar {
           display: none !important;
         }
 
-        /* Ensure no horizontal overflow */
-        body, html, div {
-          max-width: 100% !important;
-          overflow-x: hidden !important;
+        /* Prevent hidden/auto overflow from clipping */
+        [style*="overflow-x"], .overflow-x-auto {
+          overflow-x: visible !important;
         }
 
-        /* Handle overflow containers */
-        [style*="overflow"], .overflow-auto, .overflow-x-auto {
+        /* Ensure containers don't clip */
+        div, section, article {
           overflow: visible !important;
         }
       `,
