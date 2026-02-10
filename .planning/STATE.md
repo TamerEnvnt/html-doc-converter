@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 17 of 23 (Error Handling Unification)
-Plan: 17-02-PLAN.md (2 tasks remaining)
-Status: 17-01 complete, ready for 17-02
-Last activity: 2026-02-10 -- Plan 17-01 executed (DOCX throw-based errors + output verification)
+Phase: 17 of 23 (Error Handling Unification) - COMPLETE
+Plan: 2/2 complete
+Status: Phase 17 complete, ready for Phase 18
+Last activity: 2026-02-10 -- Phase 17 complete (both plans: DOCX errors + PDF timeout + CLI unification)
 
-Progress (Milestone 3): █░░░░░░░░░ 12.5%
+Progress (Milestone 3): ██░░░░░░░░ 25%
 
 ## Milestone 3 Overview
 
 | Phase | Directory | Priority | Status |
 |-------|-----------|----------|--------|
 | 16 | `phases/16-browser-singleton-hardening` | P0 | Complete |
-| 17 | `phases/17-error-handling-unification` | P0/P1 | 1/2 plans done |
+| 17 | `phases/17-error-handling-unification` | P0/P1 | Complete |
 | 18 | `phases/18-type-design-cleanup` | P2 | Not started |
 | 19 | `phases/19-architecture-packaging` | P2 | Not started |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
@@ -95,6 +95,8 @@ tests/
 - getBrowser() exported as public API [Phase 16]
 - Throw-on-failure pattern: converters throw ConversionError, callers use try/catch [Phase 17]
 - DOCXResult simplified to { outputPath: string } - "if you got a result, it worked" [Phase 17]
+- Timeout detection: wrap Puppeteer calls, detect TimeoutError, re-throw as ConversionError(TIMEOUT) [Phase 17]
+- CLI symmetric error handling: ConversionError passthrough before wrapping in generic codes [Phase 17]
 
 ### Roadmap Evolution
 
@@ -105,4 +107,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Plan 17-01 complete. Ready to execute 17-02-PLAN.md (PDF timeout + CLI cleanup).
+Status: Phase 17 complete (2/2 plans). Ready for Phase 18: Type Design Cleanup.
