@@ -192,7 +192,7 @@ Plans:
 **Research:** Unlikely (internal refactoring)
 **Priority:** P0/P1 - CRITICAL
 **Files:** `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/cli.ts`
-**Plans:** 0/2
+**Plans:** 1/2
 
 Findings addressed:
 - P0: DOCX converter returns {success: false} instead of throwing (asymmetric with PDF)
@@ -201,7 +201,7 @@ Findings addressed:
 - P1: Timeout errors not distinguished (ErrorCodes.TIMEOUT never used in PDF path)
 
 Plans:
-- [ ] 17-01: DOCX converter throw-based errors + output verification + rename handling
+- [x] 17-01: DOCX converter throw-based errors + output verification + rename handling (completed 2026-02-10)
 - [ ] 17-02: PDF timeout errors + CLI unification
 
 #### Phase 18: Type Design Cleanup
@@ -312,7 +312,7 @@ Plans:
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
 | 16. Browser Singleton Hardening | v1.2 | 1/1 | Complete | 2026-02-10 |
-| 17. Error Handling Unification | v1.2 | 0/? | Not started | - |
+| 17. Error Handling Unification | v1.2 | 1/2 | In progress | - |
 | 18. Type Design Cleanup | v1.2 | 0/? | Not started | - |
 | 19. Architecture & Packaging | v1.2 | 0/? | Not started | - |
 | 20. Silent Failure Fixes | v1.2 | 0/? | Not started | - |

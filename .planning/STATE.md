@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 Milestone: 3 (v1.2 Robustness & API Quality)
 Phase: 17 of 23 (Error Handling Unification)
-Plan: 17-01-PLAN.md and 17-02-PLAN.md (4 tasks total across 2 plans)
-Status: Ready to execute
-Last activity: 2026-02-10 -- Phase 17 planned (2 plans: DOCX converter + PDF/CLI)
+Plan: 17-02-PLAN.md (2 tasks remaining)
+Status: 17-01 complete, ready for 17-02
+Last activity: 2026-02-10 -- Plan 17-01 executed (DOCX throw-based errors + output verification)
 
 Progress (Milestone 3): █░░░░░░░░░ 12.5%
 
@@ -21,7 +21,7 @@ Progress (Milestone 3): █░░░░░░░░░ 12.5%
 | Phase | Directory | Priority | Status |
 |-------|-----------|----------|--------|
 | 16 | `phases/16-browser-singleton-hardening` | P0 | Complete |
-| 17 | `phases/17-error-handling-unification` | P0/P1 | Not started |
+| 17 | `phases/17-error-handling-unification` | P0/P1 | 1/2 plans done |
 | 18 | `phases/18-type-design-cleanup` | P2 | Not started |
 | 19 | `phases/19-architecture-packaging` | P2 | Not started |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
@@ -93,6 +93,8 @@ tests/
 - Coverage thresholds: 70% lines/functions/statements, 60% branches [Phase 14]
 - Promise-lock pattern for singleton resources, null-before-close for cleanup safety [Phase 16]
 - getBrowser() exported as public API [Phase 16]
+- Throw-on-failure pattern: converters throw ConversionError, callers use try/catch [Phase 17]
+- DOCXResult simplified to { outputPath: string } - "if you got a result, it worked" [Phase 17]
 
 ### Roadmap Evolution
 
@@ -103,4 +105,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 17 planned (2 plans). Ready to execute 17-01-PLAN.md.
+Status: Plan 17-01 complete. Ready to execute 17-02-PLAN.md (PDF timeout + CLI cleanup).
