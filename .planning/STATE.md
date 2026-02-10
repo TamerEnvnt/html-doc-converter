@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 18 of 23 (Type Design Cleanup) - COMPLETE
+Phase: 19 of 23 (Architecture & Packaging) - COMPLETE
 Plan: 1/1 complete
-Status: Phase 18 complete, ready for Phase 19
-Last activity: 2026-02-10 -- Phase 18 complete (dead fields removed, HeadingLevel added, Platform cast fixed)
+Status: Phase 19 complete, ready for Phase 20
+Last activity: 2026-02-10 -- Phase 19 complete (circular dep broken, public API curated, exports field, dynamic version)
 
-Progress (Milestone 3): ███░░░░░░░ 37.5%
+Progress (Milestone 3): ████░░░░░░ 50%
 
 ## Milestone 3 Overview
 
@@ -23,7 +23,7 @@ Progress (Milestone 3): ███░░░░░░░ 37.5%
 | 16 | `phases/16-browser-singleton-hardening` | P0 | Complete |
 | 17 | `phases/17-error-handling-unification` | P0/P1 | Complete |
 | 18 | `phases/18-type-design-cleanup` | P2 | Complete |
-| 19 | `phases/19-architecture-packaging` | P2 | Not started |
+| 19 | `phases/19-architecture-packaging` | P2 | Complete |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
 | 21 | `phases/21-test-defect-fixes` | P1 | Not started |
 | 22 | `phases/22-test-coverage-expansion` | P1 | Not started |
@@ -45,11 +45,11 @@ Full codebase review (2026-02-10) by 5 specialized agents:
 - Coverage: 74.5% statements, 75.3% branches, 90.6% functions
 - Utils coverage: 97.9%
 
-### Source files (10 files, ~1,400 lines)
+### Source files (11 files, ~1,500 lines)
 ```
 src/
   cli.ts                   - CLI entry point (Commander, path validation, overwrite protection)
-  index.ts                 - Library re-exports (pdf, docx, html-parser)
+  index.ts                 - Curated named exports (public API surface)
   converters/
     pdf-converter.ts       - Puppeteer PDF generation (browser singleton)
     docx-converter.ts      - LibreOffice DOCX conversion (execFile, no shell)
@@ -61,6 +61,7 @@ src/
     logger.ts              - Verbose logging
     output-handler.ts      - Path resolution + validatePath()
     platform.ts            - Platform detection
+    soffice.ts             - LibreOffice path detection (findSoffice, verifyLibreOffice)
 ```
 
 ### Test files (10 files)
@@ -100,6 +101,9 @@ tests/
 - Type narrowing over unsafe casts for platform detection [Phase 18]
 - HeadingLevel union literal type for constrained heading domains [Phase 18]
 - DependencyStatus refactor deferred - idiomatic for internal status objects [Phase 18]
+- Named exports in index.ts over export * - explicit API surface control [Phase 19]
+- createRequire pattern for JSON imports in ESM projects [Phase 19]
+- findSoffice/verifyLibreOffice in utils/soffice.ts (not converters) [Phase 19]
 
 ### Roadmap Evolution
 
@@ -110,4 +114,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 18 complete (1/1 plan). Ready for Phase 19: Architecture & Packaging.
+Status: Phase 19 complete (1/1 plan). Ready for Phase 20: Silent Failure Fixes.

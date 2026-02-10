@@ -229,7 +229,7 @@ Plans:
 **Research:** Unlikely (Node.js packaging conventions)
 **Priority:** P2
 **Files:** `src/index.ts`, `src/utils/dependencies.ts`, `src/converters/docx-converter.ts`, `package.json`, `src/cli.ts`
-**Plans:** TBD
+**Plans:** 1/1 complete
 
 Findings addressed:
 - Circular dependency: dependencies.ts imports from docx-converter.ts
@@ -239,7 +239,7 @@ Findings addressed:
 - findSoffice/verifyLibreOffice unnecessarily exposed in public API
 
 Plans:
-- [ ] 19-01: TBD
+- [x] 19-01: Break circular dep, curate public API, exports field, dynamic version (2 tasks, completed 2026-02-10)
 
 #### Phase 20: Silent Failure Fixes
 **Goal:** Fix TOCTOU in overwrite protection and ensureOutputDirectory, fix findSoffice swallowing EACCES, add error cause chains, fix convertHTMLStringToPDF timeout
@@ -314,7 +314,7 @@ Plans:
 | 16. Browser Singleton Hardening | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 17. Error Handling Unification | v1.2 | 2/2 | Complete | 2026-02-10 |
 | 18. Type Design Cleanup | v1.2 | 1/1 | Complete | 2026-02-10 |
-| 19. Architecture & Packaging | v1.2 | 0/? | Not started | - |
+| 19. Architecture & Packaging | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 20. Silent Failure Fixes | v1.2 | 0/? | Not started | - |
 | 21. Test Defect Fixes | v1.2 | 0/? | Not started | - |
 | 22. Test Coverage Expansion | v1.2 | 0/? | Not started | - |
