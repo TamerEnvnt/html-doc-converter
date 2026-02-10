@@ -7,6 +7,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
+import { createError, ErrorCodes } from '../utils/errors.js';
 
 // ============================================================================
 // Types
@@ -130,10 +131,17 @@ export async function convertToPDF(
     // Load HTML file with file:// protocol
     const absolutePath = path.resolve(htmlPath);
     const navigationTimeout = options.timeout || 60000;
-    await page.goto(`file://${absolutePath}`, {
-      waitUntil: 'networkidle0', // Wait for all resources
-      timeout: navigationTimeout,
-    });
+    try {
+      await page.goto(`file://${absolutePath}`, {
+        waitUntil: 'networkidle0', // Wait for all resources
+        timeout: navigationTimeout,
+      });
+    } catch (error) {
+      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+        throw createError(ErrorCodes.TIMEOUT, `PDF navigation timed out after ${navigationTimeout}ms`);
+      }
+      throw error;
+    }
 
     // Inject CSS for print optimization
     await page.addStyleTag({
@@ -203,7 +211,15 @@ export async function convertToPDF(
       timeout: pdfTimeout,
     };
 
-    const pdfBuffer = await page.pdf(pdfOptions);
+    let pdfBuffer;
+    try {
+      pdfBuffer = await page.pdf(pdfOptions);
+    } catch (error) {
+      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+        throw createError(ErrorCodes.TIMEOUT, `PDF generation timed out after ${pdfTimeout}ms`);
+      }
+      throw error;
+    }
 
     return {
       buffer: Buffer.from(pdfBuffer),
@@ -248,7 +264,15 @@ export async function convertHTMLStringToPDF(
   const page = await browser.newPage();
 
   try {
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const contentTimeout = options.timeout || 60000;
+    try {
+      await page.setContent(html, { waitUntil: 'networkidle0', timeout: contentTimeout });
+    } catch (error) {
+      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+        throw createError(ErrorCodes.TIMEOUT, `PDF content loading timed out after ${contentTimeout}ms`);
+      }
+      throw error;
+    }
 
     // Inject CSS for print optimization
     await page.addStyleTag({
@@ -279,6 +303,7 @@ export async function convertHTMLStringToPDF(
     });
 
     // Generate PDF with merged options
+    const pdfTimeout = options.timeout || 60000;
     const pdfOptions = {
       path: outputPath,
       format: options.format || 'A4',
@@ -295,9 +320,18 @@ export async function convertHTMLStringToPDF(
       headerTemplate: options.headerTemplate || '',
       footerTemplate: options.footerTemplate || '',
       scale: options.scale || 1,
+      timeout: pdfTimeout,
     };
 
-    const pdfBuffer = await page.pdf(pdfOptions);
+    let pdfBuffer;
+    try {
+      pdfBuffer = await page.pdf(pdfOptions);
+    } catch (error) {
+      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+        throw createError(ErrorCodes.TIMEOUT, `PDF generation timed out after ${pdfTimeout}ms`);
+      }
+      throw error;
+    }
 
     return {
       buffer: Buffer.from(pdfBuffer),
