@@ -10,8 +10,8 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 Milestone: 3 (v1.2 Robustness & API Quality)
 Phase: 16 of 23 (Browser Singleton Hardening)
-Plan: Not started
-Status: Ready to plan
+Plan: 16-01-PLAN.md (2 tasks: harden browser management + add tests)
+Status: Ready to execute
 Last activity: 2026-02-10 -- Milestone v1.2 created (8 phases, addressing 29 review findings)
 
 Progress (Milestone 3): ░░░░░░░░░░ 0%
@@ -100,4 +100,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Milestone v1.2 created. Ready to plan Phase 16.
+Status: Phase 16 planned. Ready to execute 16-01-PLAN.md.
