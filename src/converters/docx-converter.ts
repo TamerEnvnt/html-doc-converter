@@ -20,7 +20,6 @@ const execFileAsync = promisify(execFile);
 
 export interface DOCXOptions {
   outputDir?: string;
-  preserveStyles?: boolean;
   timeout?: number;
 }
 

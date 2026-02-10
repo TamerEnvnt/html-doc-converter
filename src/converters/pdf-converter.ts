@@ -33,7 +33,6 @@ export interface PDFOptions {
 
 export interface PDFResult {
   buffer: Buffer;
-  pageCount?: number;
 }
 
 // ============================================================================

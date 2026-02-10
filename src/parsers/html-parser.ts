@@ -9,10 +9,12 @@ import type { CheerioAPI } from 'cheerio';
 import type { Element } from 'domhandler';
 import { readFile } from 'fs/promises';
 
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
 export interface Chapter {
   id: string;
   title: string;
-  level: number;
+  level: HeadingLevel;
   content: string;
   children: Chapter[];
 }
@@ -71,13 +73,13 @@ function generateId(text: string): string {
  * @param doc - Cheerio document instance
  */
 export function extractChapters(doc: CheerioAPI): Chapter[] {
-  const headings: { level: number; id: string; title: string; element: Element }[] = [];
+  const headings: { level: HeadingLevel; id: string; title: string; element: Element }[] = [];
 
   // Find all headings h1-h6
   doc('h1, h2, h3, h4, h5, h6').each((_, el) => {
     const $el = doc(el);
     const tagName = el.tagName.toLowerCase();
-    const level = parseInt(tagName.charAt(1), 10);
+    const level = parseInt(tagName.charAt(1), 10) as HeadingLevel;
     const title = $el.text().trim();
     const id = $el.attr('id') || generateId(title);
 
