@@ -43,9 +43,9 @@ export async function loadHTML(filePath: string): Promise<CheerioAPI> {
     return cheerio.load(html);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      throw new Error(`HTML file not found: ${filePath}`);
+      throw new Error(`HTML file not found: ${filePath}`, { cause: error });
     }
-    throw new Error(`Failed to load HTML file: ${(error as Error).message}`);
+    throw new Error(`Failed to load HTML file: ${(error as Error).message}`, { cause: error });
   }
 }
 

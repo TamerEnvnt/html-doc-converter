@@ -45,7 +45,11 @@ export async function findSoffice(): Promise<string | null> {
     try {
       await fs.access(p, fs.constants.X_OK);
       return p;
-    } catch {
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'EACCES') {
+        throw new Error(`LibreOffice found at ${p} but lacks execute permission`);
+      }
+      // ENOENT or other: try next path
       continue;
     }
   }
