@@ -9,18 +9,18 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 16 of 23 (Browser Singleton Hardening)
-Plan: 16-01-PLAN.md (2 tasks: harden browser management + add tests)
-Status: Ready to execute
-Last activity: 2026-02-10 -- Milestone v1.2 created (8 phases, addressing 29 review findings)
+Phase: 16 of 23 (Browser Singleton Hardening) -- COMPLETE
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-02-10 -- Completed 16-01-PLAN.md (2 tasks, 7 new tests)
 
-Progress (Milestone 3): ░░░░░░░░░░ 0%
+Progress (Milestone 3): █░░░░░░░░░ 12.5%
 
 ## Milestone 3 Overview
 
 | Phase | Directory | Priority | Status |
 |-------|-----------|----------|--------|
-| 16 | `phases/16-browser-singleton-hardening` | P0 | Not started |
+| 16 | `phases/16-browser-singleton-hardening` | P0 | Complete |
 | 17 | `phases/17-error-handling-unification` | P0/P1 | Not started |
 | 18 | `phases/18-type-design-cleanup` | P2 | Not started |
 | 19 | `phases/19-architecture-packaging` | P2 | Not started |
@@ -41,7 +41,7 @@ Full codebase review (2026-02-10) by 5 specialized agents:
 ## Baseline State (Post-Milestone 2)
 
 ### Test suite
-- 9 test files, 134 passed, 2 skipped (136 total)
+- 10 test files, 141 passed, 2 skipped (143 total)
 - Coverage: 74.5% statements, 75.3% branches, 90.6% functions
 - Utils coverage: 97.9%
 
@@ -63,10 +63,11 @@ src/
     platform.ts            - Platform detection
 ```
 
-### Test files (9 files)
+### Test files (10 files)
 ```
 tests/
   html-parser.test.ts      - 22 tests
+  pdf-converter.test.ts    - 7 tests (browser management: singleton, concurrency, crash recovery)
   cli.test.ts              - 19 tests (path validation, overwrite, timeout)
   docx-converter.test.ts   - 5 tests (execFile security)
   e2e/conversion.test.ts   - 9 tests (2 skipped: no LibreOffice/SRS)
@@ -90,6 +91,8 @@ tests/
 - Validate paths against cwd to prevent traversal [Phase 12]
 - Overwrite protection with --force escape hatch [Phase 13]
 - Coverage thresholds: 70% lines/functions/statements, 60% branches [Phase 14]
+- Promise-lock pattern for singleton resources, null-before-close for cleanup safety [Phase 16]
+- getBrowser() exported as public API [Phase 16]
 
 ### Roadmap Evolution
 
@@ -100,4 +103,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 16 planned. Ready to execute 16-01-PLAN.md.
+Status: Phase 16 complete. Ready to plan Phase 17.

@@ -176,7 +176,7 @@ Final state: 134 tests, 74.5% statements, 97.9% utils coverage.
 **Research:** Unlikely (Puppeteer API well-known)
 **Priority:** P0 - CRITICAL
 **Files:** `src/converters/pdf-converter.ts`
-**Plans:** TBD
+**Plans:** 1/1 complete
 
 Findings addressed:
 - P0: Browser singleton race condition (concurrent launches)
@@ -184,7 +184,7 @@ Findings addressed:
 - P0: closeBrowser() throws in finally block, masking original error
 
 Plans:
-- [ ] 16-01: TBD (run /gsd:plan-phase 16 to break down)
+- [x] 16-01: Browser singleton hardening (2 tasks, completed 2026-02-10)
 
 #### Phase 17: Error Handling Unification
 **Goal:** Make both converters use consistent error handling (throw ConversionError). Fix DOCX converter to throw instead of returning success objects. Add specific error types for timeout, missing output, rename failures.
@@ -310,7 +310,7 @@ Plans:
 
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
-| 16. Browser Singleton Hardening | v1.2 | 0/? | Not started | - |
+| 16. Browser Singleton Hardening | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 17. Error Handling Unification | v1.2 | 0/? | Not started | - |
 | 18. Type Design Cleanup | v1.2 | 0/? | Not started | - |
 | 19. Architecture & Packaging | v1.2 | 0/? | Not started | - |
