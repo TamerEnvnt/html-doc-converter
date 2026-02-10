@@ -210,18 +210,18 @@ Plans:
 **Research:** Unlikely (internal refactoring)
 **Priority:** P2
 **Files:** `src/converters/pdf-converter.ts`, `src/converters/docx-converter.ts`, `src/utils/dependencies.ts`, `src/utils/platform.ts`, `src/parsers/html-parser.ts`
-**Plans:** TBD
+**Plans:** 1/1 complete
 
 Findings addressed:
 - PDFResult.pageCount never populated (dead field)
 - DOCXOptions.preserveStyles never read (dead field)
 - DOCXResult allows invalid states (discriminated union needed)
-- DependencyStatus same boolean+optional anti-pattern
+- DependencyStatus same boolean+optional anti-pattern (deferred - low value)
 - Platform unsafe cast (process.platform as Platform)
 - Chapter.level typed as number instead of 1|2|3|4|5|6
 
 Plans:
-- [ ] 18-01: TBD
+- [x] 18-01: Remove dead fields, add HeadingLevel, fix Platform cast (2 tasks, completed 2026-02-10)
 
 #### Phase 19: Architecture & Packaging
 **Goal:** Break circular dependency, fix public API exports, add package.json exports field, dynamic CLI version
@@ -313,7 +313,7 @@ Plans:
 |-------|-----------|-------|--------|-----------|
 | 16. Browser Singleton Hardening | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 17. Error Handling Unification | v1.2 | 2/2 | Complete | 2026-02-10 |
-| 18. Type Design Cleanup | v1.2 | 0/? | Not started | - |
+| 18. Type Design Cleanup | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 19. Architecture & Packaging | v1.2 | 0/? | Not started | - |
 | 20. Silent Failure Fixes | v1.2 | 0/? | Not started | - |
 | 21. Test Defect Fixes | v1.2 | 0/? | Not started | - |

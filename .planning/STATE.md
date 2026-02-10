@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 17 of 23 (Error Handling Unification) - COMPLETE
-Plan: 2/2 complete
-Status: Phase 17 complete, ready for Phase 18
-Last activity: 2026-02-10 -- Phase 17 complete (both plans: DOCX errors + PDF timeout + CLI unification)
+Phase: 18 of 23 (Type Design Cleanup) - COMPLETE
+Plan: 1/1 complete
+Status: Phase 18 complete, ready for Phase 19
+Last activity: 2026-02-10 -- Phase 18 complete (dead fields removed, HeadingLevel added, Platform cast fixed)
 
-Progress (Milestone 3): ██░░░░░░░░ 25%
+Progress (Milestone 3): ███░░░░░░░ 37.5%
 
 ## Milestone 3 Overview
 
@@ -22,7 +22,7 @@ Progress (Milestone 3): ██░░░░░░░░ 25%
 |-------|-----------|----------|--------|
 | 16 | `phases/16-browser-singleton-hardening` | P0 | Complete |
 | 17 | `phases/17-error-handling-unification` | P0/P1 | Complete |
-| 18 | `phases/18-type-design-cleanup` | P2 | Not started |
+| 18 | `phases/18-type-design-cleanup` | P2 | Complete |
 | 19 | `phases/19-architecture-packaging` | P2 | Not started |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
 | 21 | `phases/21-test-defect-fixes` | P1 | Not started |
@@ -97,6 +97,9 @@ tests/
 - DOCXResult simplified to { outputPath: string } - "if you got a result, it worked" [Phase 17]
 - Timeout detection: wrap Puppeteer calls, detect TimeoutError, re-throw as ConversionError(TIMEOUT) [Phase 17]
 - CLI symmetric error handling: ConversionError passthrough before wrapping in generic codes [Phase 17]
+- Type narrowing over unsafe casts for platform detection [Phase 18]
+- HeadingLevel union literal type for constrained heading domains [Phase 18]
+- DependencyStatus refactor deferred - idiomatic for internal status objects [Phase 18]
 
 ### Roadmap Evolution
 
@@ -107,4 +110,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 17 complete (2/2 plans). Ready for Phase 18: Type Design Cleanup.
+Status: Phase 18 complete (1/1 plan). Ready for Phase 19: Architecture & Packaging.
