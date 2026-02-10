@@ -139,7 +139,182 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 9. Documentation | 1/1 | Complete | 2026-02-04 |
 | 10. Polish | 1/1 | Complete | 2026-02-04 |
 
-## PROJECT COMPLETE
+## Milestones
+
+- ✅ **v1.0 MVP** - Phases 1-10 (shipped 2026-02-04)
+- ✅ **v1.1 Security & Quality** - Phases 11-15 (shipped 2026-02-08)
+- 🚧 **v1.2 Robustness & API Quality** - Phases 16-23 (in progress)
+
+---
+
+<details>
+<summary>✅ v1.0 MVP (Phases 1-10) - SHIPPED 2026-02-04</summary>
 
 All 10 phases finished. Total: 10 plans executed, 43 tests passing.
-Ready for npm publish.
+
+</details>
+
+<details>
+<summary>✅ v1.1 Security & Quality (Phases 11-15) - SHIPPED 2026-02-08</summary>
+
+5 phases: command injection fix, path validation, CLI hardening, unit test coverage, code cleanup.
+Final state: 134 tests, 74.5% statements, 97.9% utils coverage.
+
+</details>
+
+---
+
+### 🚧 v1.2 Robustness & API Quality (In Progress)
+
+**Milestone Goal:** Address all findings from comprehensive 5-agent code review. Fix critical concurrency bugs, unify error handling, clean up type design, improve test coverage for public APIs, and prepare package for production consumers.
+
+**Source:** Full codebase review (2026-02-10) using code-reviewer, silent-failure-hunter, test-analyzer, type-design-analyzer, and architecture-explorer agents. 29 findings across P0/P1/P2 priorities.
+
+#### Phase 16: Browser Singleton Hardening
+**Goal:** Fix race condition in getBrowser(), add crash recovery with disconnected handler, make closeBrowser() safe in finally blocks
+**Depends on:** Milestone 2 complete
+**Research:** Unlikely (Puppeteer API well-known)
+**Priority:** P0 - CRITICAL
+**Files:** `src/converters/pdf-converter.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P0: Browser singleton race condition (concurrent launches)
+- P0: No crash recovery (stale browserInstance after Chromium crash)
+- P0: closeBrowser() throws in finally block, masking original error
+
+Plans:
+- [ ] 16-01: TBD (run /gsd:plan-phase 16 to break down)
+
+#### Phase 17: Error Handling Unification
+**Goal:** Make both converters use consistent error handling (throw ConversionError). Fix DOCX converter to throw instead of returning success objects. Add specific error types for timeout, missing output, rename failures.
+**Depends on:** Phase 16
+**Research:** Unlikely (internal refactoring)
+**Priority:** P0/P1 - CRITICAL
+**Files:** `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/cli.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P0: DOCX converter returns {success: false} instead of throwing (asymmetric with PDF)
+- P1: No output file verification after LibreOffice execution
+- P1: Missing rename error handling (orphaned files)
+- P1: Timeout errors not distinguished (ErrorCodes.TIMEOUT never used in PDF path)
+
+Plans:
+- [ ] 17-01: TBD
+
+#### Phase 18: Type Design Cleanup
+**Goal:** Remove dead type fields, replace boolean+optional anti-patterns with discriminated unions, fix unsafe Platform cast, add HeadingLevel type
+**Depends on:** Phase 17 (DOCXResult changes)
+**Research:** Unlikely (internal refactoring)
+**Priority:** P2
+**Files:** `src/converters/pdf-converter.ts`, `src/converters/docx-converter.ts`, `src/utils/dependencies.ts`, `src/utils/platform.ts`, `src/parsers/html-parser.ts`
+**Plans:** TBD
+
+Findings addressed:
+- PDFResult.pageCount never populated (dead field)
+- DOCXOptions.preserveStyles never read (dead field)
+- DOCXResult allows invalid states (discriminated union needed)
+- DependencyStatus same boolean+optional anti-pattern
+- Platform unsafe cast (process.platform as Platform)
+- Chapter.level typed as number instead of 1|2|3|4|5|6
+
+Plans:
+- [ ] 18-01: TBD
+
+#### Phase 19: Architecture & Packaging
+**Goal:** Break circular dependency, fix public API exports, add package.json exports field, dynamic CLI version
+**Depends on:** Phase 18 (type changes affect exports)
+**Research:** Unlikely (Node.js packaging conventions)
+**Priority:** P2
+**Files:** `src/index.ts`, `src/utils/dependencies.ts`, `src/converters/docx-converter.ts`, `package.json`, `src/cli.ts`
+**Plans:** TBD
+
+Findings addressed:
+- Circular dependency: dependencies.ts imports from docx-converter.ts
+- ConversionError/ErrorCodes not exported from index.ts
+- Missing exports field in package.json
+- CLI version hardcoded as '1.0.0'
+- findSoffice/verifyLibreOffice unnecessarily exposed in public API
+
+Plans:
+- [ ] 19-01: TBD
+
+#### Phase 20: Silent Failure Fixes
+**Goal:** Fix TOCTOU in overwrite protection and ensureOutputDirectory, fix findSoffice swallowing EACCES, add error cause chains, fix convertHTMLStringToPDF timeout
+**Depends on:** Phase 17 (error handling patterns established)
+**Research:** Unlikely (Node.js fs patterns)
+**Priority:** P1/P2
+**Files:** `src/cli.ts`, `src/utils/output-handler.ts`, `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/parsers/html-parser.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: TOCTTOU in overwrite protection (cli.ts:144-152)
+- P1: ensureOutputDirectory TOCTOU + EACCES misinterpretation
+- P1: findSoffice swallows EACCES (reports "not found" for permission errors)
+- P2: convertHTMLStringToPDF ignores options.timeout
+- P2: loadHTML loses original error context (no {cause})
+
+Plans:
+- [ ] 20-01: TBD
+
+#### Phase 21: Test Defect Fixes
+**Goal:** Fix existing test bugs: un-awaited fs.writeFile, silent pass-through tests, replace source-scanning tests with behavioral tests
+**Depends on:** Phase 17 (error handling changes affect test expectations)
+**Research:** Unlikely (vitest patterns)
+**Priority:** P1
+**Files:** `tests/cli.test.ts`, `tests/docx-converter.test.ts`, `tests/e2e/conversion.test.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: CLI test silent pass-through (missing expect.assertions)
+- P1: Un-awaited fs.writeFile race condition in cli.test.ts
+- P2: DOCX tests scan source code instead of behavioral testing
+- P2: E2E tests don't validate PDF magic bytes (%PDF-)
+
+Plans:
+- [ ] 21-01: TBD
+
+#### Phase 22: Test Coverage Expansion
+**Goal:** Add tests for untested public API functions (convertHTMLFileToPDF, convertHTMLStringToPDF, convertHTMLFileToDOCX), improve CLI instrumented coverage
+**Depends on:** Phase 21 (test defects fixed first)
+**Research:** Unlikely (vitest patterns)
+**Priority:** P1
+**Files:** `tests/pdf-converter.test.ts` (new), `tests/docx-converter.test.ts` (expand), `tests/cli.test.ts` (expand)
+**Plans:** TBD
+
+Findings addressed:
+- cli.ts at 0% instrumented coverage
+- convertHTMLFileToPDF and convertHTMLStringToPDF completely untested
+- convertHTMLFileToDOCX completely untested
+
+Plans:
+- [ ] 22-01: TBD
+
+#### Phase 23: Resilience & Final Polish
+**Goal:** Add SIGINT/SIGTERM handler for graceful cleanup, add exhaustiveness check in createError switch, final verification
+**Depends on:** Phase 22
+**Research:** Unlikely (Node.js signal handling)
+**Priority:** P2
+**Files:** `src/cli.ts`, `src/utils/errors.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P2: No SIGINT handler (orphaned files, zombie Chromium)
+- P2: createError switch has no compile-time exhaustiveness check
+
+Plans:
+- [ ] 23-01: TBD
+
+### Milestone 3 Progress
+
+| Phase | Milestone | Plans | Status | Completed |
+|-------|-----------|-------|--------|-----------|
+| 16. Browser Singleton Hardening | v1.2 | 0/? | Not started | - |
+| 17. Error Handling Unification | v1.2 | 0/? | Not started | - |
+| 18. Type Design Cleanup | v1.2 | 0/? | Not started | - |
+| 19. Architecture & Packaging | v1.2 | 0/? | Not started | - |
+| 20. Silent Failure Fixes | v1.2 | 0/? | Not started | - |
+| 21. Test Defect Fixes | v1.2 | 0/? | Not started | - |
+| 22. Test Coverage Expansion | v1.2 | 0/? | Not started | - |
+| 23. Resilience & Final Polish | v1.2 | 0/? | Not started | - |

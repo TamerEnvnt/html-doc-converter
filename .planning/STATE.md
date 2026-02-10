@@ -5,79 +5,99 @@
 See: .planning/PROJECT.md (updated 2026-02-02)
 
 **Core value:** Both outputs must be high quality: PDF with visual fidelity, DOCX with real document structure for genuine editing.
-**Current focus:** MILESTONE COMPLETE
 
 ## Current Position
 
-Phase: 10 of 10 (Polish) - COMPLETE
-Plan: 01 complete (final plan)
-Status: PROJECT COMPLETE - Ready for npm publish
-Last activity: 2026-02-04 — Plan 10-01 complete (polish, edge cases, logging)
+Milestone: 3 (v1.2 Robustness & API Quality)
+Phase: 16 of 23 (Browser Singleton Hardening)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-02-10 -- Milestone v1.2 created (8 phases, addressing 29 review findings)
 
-Progress: ██████████ 100%
+Progress (Milestone 3): ░░░░░░░░░░ 0%
 
-## Performance Metrics
+## Milestone 3 Overview
 
-**Velocity:**
-- Total plans completed: 10
-- Average duration: ~7.3 min
-- Total execution time: ~1 hour 13 min
+| Phase | Directory | Priority | Status |
+|-------|-----------|----------|--------|
+| 16 | `phases/16-browser-singleton-hardening` | P0 | Not started |
+| 17 | `phases/17-error-handling-unification` | P0/P1 | Not started |
+| 18 | `phases/18-type-design-cleanup` | P2 | Not started |
+| 19 | `phases/19-architecture-packaging` | P2 | Not started |
+| 20 | `phases/20-silent-failure-fixes` | P1/P2 | Not started |
+| 21 | `phases/21-test-defect-fixes` | P1 | Not started |
+| 22 | `phases/22-test-coverage-expansion` | P1 | Not started |
+| 23 | `phases/23-resilience-final-polish` | P2 | Not started |
 
-**By Phase:**
+## Review Findings Source
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 1-Foundation | 1 | 15 min | 15 min |
-| 2-HTML Parser | 1 | 2 min | 2 min |
-| 3-PDF Converter | 1 | 8 min | 8 min |
-| 4-DOCX Converter | 1 | 10 min | 10 min |
-| 5-CLI Interface | 1 | 2 min | 2 min |
-| 6-Output Handling | 1 | 5 min | 5 min |
-| 7-Cross-Platform | 1 | 8 min | 8 min |
-| 8-Testing | 1 | 10 min | 10 min |
-| 9-Documentation | 1 | 5 min | 5 min |
-| 10-Polish | 1 | 8 min | 8 min |
+Full codebase review (2026-02-10) by 5 specialized agents:
+- Code reviewer: 3 issues (P0 race condition, P1 TOCTTOU, P1 rename)
+- Silent failure hunter: 14 findings across 6 files
+- Test coverage analyzer: 11 gaps (cli.ts 0%, untested public APIs)
+- Type design analyzer: 12 types analyzed, score 4.9/10
+- Architecture explorer: circular dep, leaky API, missing exports
 
-**Final Status:**
-- All 10 phases complete
-- All 43 tests passing
-- Project ready for npm publish
+## Baseline State (Post-Milestone 2)
 
-## Accumulated Context
+### Test suite
+- 9 test files, 134 passed, 2 skipped (136 total)
+- Coverage: 74.5% statements, 75.3% branches, 90.6% functions
+- Utils coverage: 97.9%
 
-### Decisions
+### Source files (10 files, ~1,400 lines)
+```
+src/
+  cli.ts                   - CLI entry point (Commander, path validation, overwrite protection)
+  index.ts                 - Library re-exports (pdf, docx, html-parser)
+  converters/
+    pdf-converter.ts       - Puppeteer PDF generation (browser singleton)
+    docx-converter.ts      - LibreOffice DOCX conversion (execFile, no shell)
+  parsers/
+    html-parser.ts         - Cheerio HTML parsing (public library API)
+  utils/
+    dependencies.ts        - Dep checking (execFile, no shell)
+    errors.ts              - Error types (12 codes including security)
+    logger.ts              - Verbose logging
+    output-handler.ts      - Path resolution + validatePath()
+    platform.ts            - Platform detection
+```
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+### Test files (9 files)
+```
+tests/
+  html-parser.test.ts      - 22 tests
+  cli.test.ts              - 19 tests (path validation, overwrite, timeout)
+  docx-converter.test.ts   - 5 tests (execFile security)
+  e2e/conversion.test.ts   - 9 tests (2 skipped: no LibreOffice/SRS)
+  utils/
+    errors.test.ts         - 23 tests
+    output-handler.test.ts - 21 tests
+    platform.test.ts       - 13 tests
+    logger.test.ts         - 13 tests
+    dependencies.test.ts   - 11 tests
+```
+
+## Accumulated Decisions
 
 - HTML as single source (avoids lossy PDF->DOCX)
 - Puppeteer for PDF (full CSS support)
 - LibreOffice for DOCX (best editability)
 - Node.js + TypeScript (maintainability)
-- Commander for CLI argument parsing
-- Vitest for testing (fast, modern)
+- Commander for CLI
+- Vitest for testing
+- Use execFile (not shell-based) for all process execution [Phase 11]
+- Validate paths against cwd to prevent traversal [Phase 12]
+- Overwrite protection with --force escape hatch [Phase 13]
+- Coverage thresholds: 70% lines/functions/statements, 60% branches [Phase 14]
 
-### Deferred Issues
+### Roadmap Evolution
 
-None yet.
-
-### Blockers/Concerns
-
-None yet.
+- Milestone v1.0 MVP: Phases 1-10 (shipped 2026-02-04)
+- Milestone v1.1 Security & Quality: Phases 11-15 (shipped 2026-02-08)
+- Milestone v1.2 Robustness & API Quality: 8 phases (16-23), created 2026-02-10
 
 ## Session Continuity
 
-Last session: 2026-02-04
-Stopped at: PROJECT COMPLETE - All 10 phases finished
-Resume file: None
-
-## Final Deliverables
-
-- HTML to PDF conversion (Puppeteer)
-- HTML to DOCX conversion (LibreOffice)
-- CLI with options: --output, --format, --pdf-only, --docx-only, --timeout, --verbose
-- Colored terminal output
-- Edge case handling (empty files, large files, timeouts)
-- Cross-platform support (macOS, Windows, Linux)
-- Comprehensive test suite (43 tests)
-- Complete documentation (README, installation guide)
+Last session: 2026-02-10
+Status: Milestone v1.2 created. Ready to plan Phase 16.
