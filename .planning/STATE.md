@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 16 of 23 (Browser Singleton Hardening) -- COMPLETE
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-02-10 -- Completed 16-01-PLAN.md (2 tasks, 7 new tests)
+Phase: 17 of 23 (Error Handling Unification)
+Plan: 17-01-PLAN.md and 17-02-PLAN.md (4 tasks total across 2 plans)
+Status: Ready to execute
+Last activity: 2026-02-10 -- Phase 17 planned (2 plans: DOCX converter + PDF/CLI)
 
 Progress (Milestone 3): █░░░░░░░░░ 12.5%
 
@@ -103,4 +103,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-10
-Status: Phase 16 complete. Ready to plan Phase 17.
+Status: Phase 17 planned (2 plans). Ready to execute 17-01-PLAN.md.

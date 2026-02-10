@@ -192,7 +192,7 @@ Plans:
 **Research:** Unlikely (internal refactoring)
 **Priority:** P0/P1 - CRITICAL
 **Files:** `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/cli.ts`
-**Plans:** TBD
+**Plans:** 0/2
 
 Findings addressed:
 - P0: DOCX converter returns {success: false} instead of throwing (asymmetric with PDF)
@@ -201,7 +201,8 @@ Findings addressed:
 - P1: Timeout errors not distinguished (ErrorCodes.TIMEOUT never used in PDF path)
 
 Plans:
-- [ ] 17-01: TBD
+- [ ] 17-01: DOCX converter throw-based errors + output verification + rename handling
+- [ ] 17-02: PDF timeout errors + CLI unification
 
 #### Phase 18: Type Design Cleanup
 **Goal:** Remove dead type fields, replace boolean+optional anti-patterns with discriminated unions, fix unsafe Platform cast, add HeadingLevel type
