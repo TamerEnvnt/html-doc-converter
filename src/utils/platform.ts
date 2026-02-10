@@ -20,7 +20,11 @@ export type Platform = 'darwin' | 'linux' | 'win32';
  * Get the current platform identifier
  */
 export function getPlatform(): Platform {
-  return process.platform as Platform;
+  const p = process.platform;
+  if (p === 'darwin' || p === 'linux' || p === 'win32') {
+    return p;
+  }
+  return 'linux';
 }
 
 /**
