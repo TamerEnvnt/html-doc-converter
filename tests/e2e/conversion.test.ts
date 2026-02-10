@@ -7,10 +7,16 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { convertToPDF, closeBrowser } from '../../src/converters/pdf-converter.js';
 import { convertToDOCX, verifyLibreOffice } from '../../src/converters/docx-converter.js';
+import { ConversionError } from '../../src/utils/errors.js';
+import { existsSync } from 'fs';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-const SRS_PATH = '/Users/tamer/Work/AI/Claude/InfraSizingCalculator/docs/srs/SRS_InfraSizingCalculator.html';
+// Module-level checks for conditional test execution
+const hasLibreOffice = await verifyLibreOffice();
+const SRS_PATH = process.env.SRS_TEST_PATH || '';
+const hasSrsFile = SRS_PATH !== '' && existsSync(SRS_PATH);
+
 const FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
 const OUTPUT_DIR = path.join(__dirname, '..', 'output');
 
@@ -62,15 +68,7 @@ describe('E2E Conversion', () => {
       expect(stats.size).toBeGreaterThan(1000);
     }, 60000);
 
-    it('converts SRS document to PDF', async () => {
-      // Skip if SRS file doesn't exist
-      try {
-        await fs.access(SRS_PATH);
-      } catch {
-        console.log('Skipping SRS test: File not found at', SRS_PATH);
-        return;
-      }
-
+    it.skipIf(!hasSrsFile)('converts SRS document to PDF', async () => {
       const outputPath = path.join(OUTPUT_DIR, 'srs.pdf');
       const result = await convertToPDF(SRS_PATH, outputPath);
 
@@ -78,32 +76,17 @@ describe('E2E Conversion', () => {
       expect(result.buffer.length).toBeGreaterThan(0);
 
       const stats = await fs.stat(outputPath);
-      expect(stats.size).toBeGreaterThan(10000); // Real document should be larger
+      expect(stats.size).toBeGreaterThan(10000);
     }, 60000);
   });
 
-  describe('DOCX Conversion', () => {
-    let hasLibreOffice: boolean;
-
-    beforeAll(async () => {
-      hasLibreOffice = await verifyLibreOffice();
-      if (!hasLibreOffice) {
-        console.log('LibreOffice not installed - DOCX tests will be skipped');
-      }
-    });
-
+  describe.skipIf(!hasLibreOffice)('DOCX Conversion', () => {
     it('converts simple HTML to DOCX', async () => {
-      if (!hasLibreOffice) {
-        console.log('Skipping: LibreOffice not installed');
-        return;
-      }
-
       const inputPath = path.join(FIXTURES_DIR, 'simple.html');
       const outputPath = path.join(OUTPUT_DIR, 'simple.docx');
 
       const result = await convertToDOCX(inputPath, outputPath);
 
-      expect(result.success).toBe(true);
       expect(result.outputPath).toBe(outputPath);
 
       const stats = await fs.stat(outputPath);
@@ -111,76 +94,53 @@ describe('E2E Conversion', () => {
     }, 60000);
 
     it('converts document with chapters to DOCX', async () => {
-      if (!hasLibreOffice) {
-        console.log('Skipping: LibreOffice not installed');
-        return;
-      }
-
       const inputPath = path.join(FIXTURES_DIR, 'with-chapters.html');
       const outputPath = path.join(OUTPUT_DIR, 'with-chapters.docx');
 
-      const result = await convertToDOCX(inputPath, outputPath);
-
-      expect(result.success).toBe(true);
+      await convertToDOCX(inputPath, outputPath);
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
     }, 60000);
 
     it('converts document with tables to DOCX', async () => {
-      if (!hasLibreOffice) {
-        console.log('Skipping: LibreOffice not installed');
-        return;
-      }
-
       const inputPath = path.join(FIXTURES_DIR, 'with-tables.html');
       const outputPath = path.join(OUTPUT_DIR, 'with-tables.docx');
 
-      const result = await convertToDOCX(inputPath, outputPath);
-
-      expect(result.success).toBe(true);
+      await convertToDOCX(inputPath, outputPath);
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
     }, 60000);
 
-    it('converts SRS document to DOCX', async () => {
-      if (!hasLibreOffice) {
-        console.log('Skipping: LibreOffice not installed');
-        return;
-      }
-
-      // Skip if SRS file doesn't exist
-      try {
-        await fs.access(SRS_PATH);
-      } catch {
-        console.log('Skipping SRS test: File not found at', SRS_PATH);
-        return;
-      }
-
+    it.skipIf(!hasSrsFile)('converts SRS document to DOCX', async () => {
       const outputPath = path.join(OUTPUT_DIR, 'srs.docx');
-      const result = await convertToDOCX(SRS_PATH, outputPath);
-
-      expect(result.success).toBe(true);
+      await convertToDOCX(SRS_PATH, outputPath);
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
     }, 60000);
+  });
 
-    it('returns error when LibreOffice not found', async () => {
-      // This test verifies error handling when soffice isn't available
-      // We can't easily mock this, so we just verify the function signature works
-      const result = await convertToDOCX(
-        path.join(FIXTURES_DIR, 'simple.html'),
-        path.join(OUTPUT_DIR, 'test-lo-check.docx')
-      );
-
-      // Should either succeed (if LO is installed) or return proper error
+  describe('DOCX Error Handling', () => {
+    it('throws ConversionError when LibreOffice not found or succeeds', async () => {
       if (!hasLibreOffice) {
-        expect(result.success).toBe(false);
-        expect(result.error).toContain('LibreOffice');
+        // Should throw ConversionError when LO is not installed
+        await expect(
+          convertToDOCX(
+            path.join(FIXTURES_DIR, 'simple.html'),
+            path.join(OUTPUT_DIR, 'test-lo-check.docx')
+          )
+        ).rejects.toThrow(ConversionError);
       } else {
-        expect(result.success).toBe(true);
+        // Should succeed when LO is installed
+        const result = await convertToDOCX(
+          path.join(FIXTURES_DIR, 'simple.html'),
+          path.join(OUTPUT_DIR, 'test-lo-check.docx')
+        );
+        expect(result.outputPath).toBeDefined();
+        expect(result).not.toHaveProperty('success');
+        expect(result).not.toHaveProperty('error');
       }
     }, 60000);
   });
