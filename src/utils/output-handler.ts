@@ -7,6 +7,25 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { existsSync } from 'fs';
+import { createError, ErrorCodes } from './errors.js';
+
+/**
+ * Validate that a resolved path stays within an allowed root directory.
+ * Prevents path traversal attacks (e.g., ../../etc/passwd).
+ *
+ * @param resolvedPath - Absolute path to validate
+ * @param allowedRoot - Root directory to restrict to (defaults to cwd)
+ * @throws ConversionError with PATH_TRAVERSAL code if outside allowed root
+ */
+export function validatePath(resolvedPath: string, allowedRoot?: string): void {
+  const root = path.normalize(allowedRoot || process.cwd()) + path.sep;
+  const normalized = path.normalize(resolvedPath);
+
+  // Allow exact match (the root itself) or child paths
+  if (normalized !== root.slice(0, -1) && !normalized.startsWith(root)) {
+    throw createError(ErrorCodes.PATH_TRAVERSAL, resolvedPath);
+  }
+}
 
 export interface OutputPaths {
   pdf: string;
@@ -65,12 +84,9 @@ export function resolveOutputPaths(
  * Ensure output directory exists, creating it recursively if needed.
  */
 export async function ensureOutputDirectory(dirPath: string): Promise<void> {
-  try {
-    await fs.access(dirPath);
-  } catch {
-    // Directory doesn't exist, create it
-    await fs.mkdir(dirPath, { recursive: true });
-  }
+  // Single atomic call: recursive mkdir is idempotent (no error if dir exists)
+  // Avoids TOCTOU race between access() check and mkdir() call
+  await fs.mkdir(dirPath, { recursive: true });
 }
 
 /**

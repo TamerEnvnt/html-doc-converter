@@ -16,7 +16,6 @@ import {
   resolveOutputPaths,
   ensureOutputDirectory,
   validatePath,
-  fileExists,
 } from './utils/output-handler.js';
 import {
   ConversionError,
@@ -146,10 +145,17 @@ Examples:
       }
 
       // Check for existing output files (unless --force)
+      // Note: Still check-then-act (inherent TOCTOU), but async fs.access reduces
+      // the sync→async time gap. Real overwrite protection is in converters themselves
+      // (Puppeteer writes atomically, LibreOffice uses tempdir + rename).
       if (!options.force) {
         const existing: string[] = [];
-        if (generatePDF && fileExists(outputPaths.pdf)) existing.push(outputPaths.pdf);
-        if (generateDOCX && fileExists(outputPaths.docx)) existing.push(outputPaths.docx);
+        if (generatePDF) {
+          try { await fs.access(outputPaths.pdf); existing.push(outputPaths.pdf); } catch { /* doesn't exist - good */ }
+        }
+        if (generateDOCX) {
+          try { await fs.access(outputPaths.docx); existing.push(outputPaths.docx); } catch { /* doesn't exist - good */ }
+        }
 
         if (existing.length > 0) {
           throw createError(ErrorCodes.FILE_EXISTS, existing.join(', '));
