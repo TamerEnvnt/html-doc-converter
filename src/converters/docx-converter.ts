@@ -11,6 +11,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
 import { ConversionError, createError, ErrorCodes } from '../utils/errors.js';
+import { findSoffice } from '../utils/soffice.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -25,62 +26,6 @@ export interface DOCXOptions {
 
 export interface DOCXResult {
   outputPath: string;
-}
-
-// ============================================================================
-// LibreOffice Detection
-// ============================================================================
-
-const SOFFICE_PATHS = {
-  darwin: [
-    '/Applications/LibreOffice.app/Contents/MacOS/soffice',
-    '/opt/homebrew/bin/soffice',
-  ],
-  linux: [
-    '/usr/bin/soffice',
-    '/usr/lib/libreoffice/program/soffice',
-    '/snap/bin/libreoffice',
-  ],
-  win32: [
-    'C:\\Program Files\\LibreOffice\\program\\soffice.exe',
-    'C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe',
-  ],
-};
-
-/**
- * Find the soffice executable path on the current system
- * @returns Path to soffice executable, or null if not found
- */
-export async function findSoffice(): Promise<string | null> {
-  const platform = process.platform as keyof typeof SOFFICE_PATHS;
-  const paths = SOFFICE_PATHS[platform] || [];
-
-  for (const p of paths) {
-    try {
-      await fs.access(p, fs.constants.X_OK);
-      return p;
-    } catch {
-      continue;
-    }
-  }
-
-  // Try which/where as fallback
-  try {
-    const binary = platform === 'win32' ? 'where' : 'which';
-    const { stdout } = await execFileAsync(binary, ['soffice']);
-    return stdout.trim().split('\n')[0];
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Verify that LibreOffice is installed and accessible
- * @returns True if LibreOffice is available
- */
-export async function verifyLibreOffice(): Promise<boolean> {
-  const sofficePath = await findSoffice();
-  return sofficePath !== null;
 }
 
 // ============================================================================

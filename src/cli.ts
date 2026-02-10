@@ -7,7 +7,8 @@
 
 import { Command } from 'commander';
 import { convertToPDF, closeBrowser } from './converters/pdf-converter.js';
-import { convertToDOCX, verifyLibreOffice } from './converters/docx-converter.js';
+import { convertToDOCX } from './converters/docx-converter.js';
+import { verifyLibreOffice } from './utils/soffice.js';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import {

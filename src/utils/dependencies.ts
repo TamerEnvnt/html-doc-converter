@@ -5,14 +5,14 @@
  * and provides platform-specific installation guidance.
  */
 
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import puppeteer from 'puppeteer';
-import { findSoffice } from '../converters/docx-converter.js';
+import { findSoffice } from './soffice.js';
 import { getPlatform, getPlatformName, Platform } from './platform.js';
 import { colors } from './errors.js';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // Types
@@ -108,7 +108,7 @@ async function checkChromium(): Promise<DependencyStatus> {
 
       // Try to get version
       try {
-        const { stdout } = await execAsync(`"${browserPath}" --version`);
+        const { stdout } = await execFileAsync(browserPath, ['--version']);
         status.version = stdout.trim().replace(/^(Chromium|Google Chrome)\s+/i, '');
       } catch {
         // Version detection failed, but browser exists
@@ -140,7 +140,7 @@ async function checkLibreOffice(): Promise<DependencyStatus> {
 
     // Try to get version
     try {
-      const { stdout } = await execAsync(`"${sofficePath}" --version`);
+      const { stdout } = await execFileAsync(sofficePath, ['--version']);
       const match = stdout.match(/LibreOffice\s+(\d+\.\d+\.\d+)/);
       if (match) {
         status.version = match[1];
