@@ -36,7 +36,7 @@ describe('DOCX Converter - Safe Argument Handling', () => {
   });
 
   it('findSoffice returns string or null without shell interpretation', async () => {
-    const { findSoffice } = await import('../src/converters/docx-converter.js');
+    const { findSoffice } = await import('../src/utils/soffice.js');
 
     const result = await findSoffice();
 
@@ -51,7 +51,7 @@ describe('DOCX Converter - Safe Argument Handling', () => {
   });
 
   it('verifyLibreOffice returns boolean', async () => {
-    const { verifyLibreOffice } = await import('../src/converters/docx-converter.js');
+    const { verifyLibreOffice } = await import('../src/utils/soffice.js');
 
     const result = await verifyLibreOffice();
     expect(typeof result).toBe('boolean');

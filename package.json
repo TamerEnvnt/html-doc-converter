@@ -5,6 +5,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "bin": {
     "html-doc-converter": "dist/cli.js"
   },
@@ -20,6 +26,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "typecheck:tests": "tsc --noEmit -p tsconfig.test.json",
+    "clean": "rm -rf dist",
     "prepublishOnly": "npm run build && npm run test:run"
   },
   "keywords": [
@@ -34,16 +43,16 @@
     "libreoffice",
     "cli"
   ],
-  "author": "",
+  "author": "Tamer",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/html-doc-converter.git"
+    "url": "git+https://github.com/TamerEnvnt/html-doc-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/html-doc-converter/issues"
+    "url": "https://github.com/TamerEnvnt/html-doc-converter/issues"
   },
-  "homepage": "https://github.com/your-username/html-doc-converter#readme",
+  "homepage": "https://github.com/TamerEnvnt/html-doc-converter#readme",
   "engines": {
     "node": ">=18.0.0"
   },

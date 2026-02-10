@@ -6,7 +6,8 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { convertToPDF, closeBrowser } from '../../src/converters/pdf-converter.js';
-import { convertToDOCX, verifyLibreOffice } from '../../src/converters/docx-converter.js';
+import { convertToDOCX } from '../../src/converters/docx-converter.js';
+import { verifyLibreOffice } from '../../src/utils/soffice.js';
 import { ConversionError } from '../../src/utils/errors.js';
 import { existsSync } from 'fs';
 import * as fs from 'fs/promises';

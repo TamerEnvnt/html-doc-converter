@@ -6,6 +6,7 @@
  */
 
 import { Command } from 'commander';
+import { createRequire } from 'module';
 import { convertToPDF, closeBrowser } from './converters/pdf-converter.js';
 import { convertToDOCX } from './converters/docx-converter.js';
 import { verifyLibreOffice } from './utils/soffice.js';
@@ -30,12 +31,15 @@ import {
 } from './utils/dependencies.js';
 import { setVerbose, verbose } from './utils/logger.js';
 
+const require = createRequire(import.meta.url);
+const pkg = require('../package.json') as { version: string };
+
 const program = new Command();
 
 program
   .name('html-doc-converter')
   .description('Convert HTML documents to PDF and DOCX')
-  .version('1.0.0')
+  .version(pkg.version)
   .argument('<input>', 'Input HTML file path')
   .option('-o, --output <path>', 'Output file path (without extension)')
   .option('-f, --format <format>', 'Output format: pdf, docx, or both', 'both')
