@@ -274,7 +274,7 @@ Findings addressed:
 - P2: E2E tests don't validate PDF magic bytes (%PDF-)
 
 Plans:
-- [ ] 21-01: Fix CLI silent pass-through, un-awaited writeFile, source-scanning tests, PDF magic bytes (3 tasks)
+- [x] 21-01: Fix CLI silent pass-through, un-awaited writeFile, source-scanning tests, PDF magic bytes (3 tasks, completed 2026-02-14)
 
 #### Phase 22: Test Coverage Expansion
 **Goal:** Add tests for untested public API functions (convertHTMLFileToPDF, convertHTMLStringToPDF, convertHTMLFileToDOCX), improve CLI instrumented coverage
@@ -316,6 +316,6 @@ Plans:
 | 18. Type Design Cleanup | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 19. Architecture & Packaging | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 20. Silent Failure Fixes | v1.2 | 1/1 | Complete | 2026-02-10 |
-| 21. Test Defect Fixes | v1.2 | 0/1 | Not started | - |
+| 21. Test Defect Fixes | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 22. Test Coverage Expansion | v1.2 | 0/? | Not started | - |
 | 23. Resilience & Final Polish | v1.2 | 0/? | Not started | - |

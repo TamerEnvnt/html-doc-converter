@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 20 of 23 (Silent Failure Fixes) - COMPLETE
+Phase: 21 of 23 (Test Defect Fixes) - COMPLETE
 Plan: 1/1 complete
-Status: Phase 20 complete, ready for Phase 21
-Last activity: 2026-02-10 -- Phase 20 complete (TOCTOU fixes, EACCES surfacing, error cause chains)
+Status: Phase 21 complete, ready for Phase 22
+Last activity: 2026-02-14 -- Phase 21 complete (test guards, behavioral tests, PDF magic bytes)
 
-Progress (Milestone 3): █████░░░░░ 62.5%
+Progress (Milestone 3): ██████░░░░ 75%
 
 ## Milestone 3 Overview
 
@@ -25,7 +25,7 @@ Progress (Milestone 3): █████░░░░░ 62.5%
 | 18 | `phases/18-type-design-cleanup` | P2 | Complete |
 | 19 | `phases/19-architecture-packaging` | P2 | Complete |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Complete |
-| 21 | `phases/21-test-defect-fixes` | P1 | Not started |
+| 21 | `phases/21-test-defect-fixes` | P1 | Complete |
 | 22 | `phases/22-test-coverage-expansion` | P1 | Not started |
 | 23 | `phases/23-resilience-final-polish` | P2 | Not started |
 
@@ -107,6 +107,9 @@ tests/
 - Atomic mkdir: fs.mkdir({ recursive: true }) instead of access+mkdir [Phase 20]
 - Error cause chains: always pass { cause: error } when re-throwing [Phase 20]
 - EACCES detection: distinguish permission errors from not-found in fs checks [Phase 20]
+- expect.assertions guard on try/catch tests with silent pass-through risk [Phase 21]
+- Behavioral tests over source-scanning: test API contracts, not import strings [Phase 21]
+- Magic byte validation: verify file format headers in E2E tests, not just file size [Phase 21]
 
 ### Roadmap Evolution
 
@@ -116,5 +119,5 @@ tests/
 
 ## Session Continuity
 
-Last session: 2026-02-10
-Status: Phase 20 complete (1/1 plan). Ready for Phase 21: Test Defect Fixes.
+Last session: 2026-02-14
+Status: Phase 21 complete (1/1 plan). Ready for Phase 22: Test Coverage Expansion.
