@@ -80,10 +80,10 @@ describe('CLI', () => {
       }).toThrow();
     });
 
-    it('errors on non-HTML file', () => {
+    it('errors on non-HTML file', async () => {
       // Create a temp non-HTML file
       const tempFile = path.join(OUTPUT_DIR, 'test.txt');
-      fs.writeFile(tempFile, 'test content');
+      await fs.writeFile(tempFile, 'test content');
 
       expect(() => {
         execFileSync('node', [CLI_PATH, tempFile], {
@@ -94,8 +94,10 @@ describe('CLI', () => {
     });
 
     it('errors with helpful message for missing input', () => {
+      expect.assertions(1);
       try {
-        execFileSync('node', [CLI_PATH, '/path/to/missing.html'], {
+        // Use a path within cwd that doesn't exist (avoids path traversal check)
+        execFileSync('node', [CLI_PATH, 'does-not-exist.html'], {
           encoding: 'utf-8',
           stdio: 'pipe',
         });
@@ -104,6 +106,47 @@ describe('CLI', () => {
         const stderr = execError.stderr || execError.message || '';
         expect(stderr).toMatch(/not found|INPUT_NOT_FOUND/i);
       }
+    });
+  });
+
+  describe('Path & Input Validation', () => {
+    it('errors on path traversal attempt', () => {
+      expect(() => {
+        execFileSync('node', [CLI_PATH, '../../../etc/passwd.html'], {
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        });
+      }).toThrow();
+    });
+
+    it('errors on invalid timeout value', () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      expect(() => {
+        execFileSync('node', [CLI_PATH, inputPath, '--timeout', 'abc'], {
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        });
+      }).toThrow();
+    });
+
+    it('errors on negative timeout', () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      expect(() => {
+        execFileSync('node', [CLI_PATH, inputPath, '--timeout', '-5000'], {
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        });
+      }).toThrow();
+    });
+
+    it('errors on zero timeout', () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      expect(() => {
+        execFileSync('node', [CLI_PATH, inputPath, '--timeout', '0'], {
+          encoding: 'utf-8',
+          stdio: 'pipe',
+        });
+      }).toThrow();
     });
   });
 
@@ -149,7 +192,7 @@ describe('CLI', () => {
       try {
         const output = execFileSync(
           'node',
-          [CLI_PATH, inputPath, '-o', outputBase, '--pdf-only'],
+          [CLI_PATH, inputPath, '-o', outputBase, '--pdf-only', '--force'],
           {
             encoding: 'utf-8',
             timeout: 60000,
@@ -170,5 +213,53 @@ describe('CLI', () => {
         throw error;
       }
     }, 60000);
+  });
+
+  describe('Overwrite Protection', () => {
+    it('errors when output file exists without --force', async () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      const outputBase = path.join(OUTPUT_DIR, 'overwrite-test');
+      const outputPdf = outputBase + '.pdf';
+
+      // Create the output file first
+      await fs.writeFile(outputPdf, 'existing content');
+
+      expect(() => {
+        execFileSync(
+          'node',
+          [CLI_PATH, inputPath, '-o', outputBase, '--pdf-only'],
+          { encoding: 'utf-8', stdio: 'pipe' }
+        );
+      }).toThrow();
+    });
+
+    it('overwrites existing file with --force', async () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      const outputBase = path.join(OUTPUT_DIR, 'force-test');
+      const outputPdf = outputBase + '.pdf';
+
+      // Create the output file first
+      await fs.writeFile(outputPdf, 'existing content');
+
+      const output = execFileSync(
+        'node',
+        [CLI_PATH, inputPath, '-o', outputBase, '--pdf-only', '--force'],
+        { encoding: 'utf-8', timeout: 60000 }
+      );
+
+      expect(output).toContain('Done');
+
+      // Verify it was actually overwritten (real PDF is larger than our stub)
+      const stats = await fs.stat(outputPdf);
+      expect(stats.size).toBeGreaterThan(100);
+    }, 60000);
+
+    it('shows --force flag in help', () => {
+      const output = execFileSync('node', [CLI_PATH, '--help'], {
+        encoding: 'utf-8',
+      });
+
+      expect(output).toContain('--force');
+    });
   });
 });
