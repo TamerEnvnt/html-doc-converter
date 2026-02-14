@@ -39,9 +39,14 @@ describe('E2E Conversion', () => {
 
       expect(result.buffer).toBeDefined();
       expect(result.buffer.length).toBeGreaterThan(0);
+      expect(result.buffer.subarray(0, 5).toString('ascii')).toBe('%PDF-');
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
+
+      // Verify PDF magic bytes on disk
+      const header = await fs.readFile(outputPath);
+      expect(header.subarray(0, 5).toString('ascii')).toBe('%PDF-');
     }, 60000);
 
     it('converts document with chapters to PDF', async () => {
@@ -52,9 +57,14 @@ describe('E2E Conversion', () => {
 
       expect(result.buffer).toBeDefined();
       expect(result.buffer.length).toBeGreaterThan(0);
+      expect(result.buffer.subarray(0, 5).toString('ascii')).toBe('%PDF-');
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
+
+      // Verify PDF magic bytes on disk
+      const header = await fs.readFile(outputPath);
+      expect(header.subarray(0, 5).toString('ascii')).toBe('%PDF-');
     }, 60000);
 
     it('converts document with tables to PDF', async () => {
@@ -64,9 +74,14 @@ describe('E2E Conversion', () => {
       const result = await convertToPDF(inputPath, outputPath);
 
       expect(result.buffer).toBeDefined();
+      expect(result.buffer.subarray(0, 5).toString('ascii')).toBe('%PDF-');
 
       const stats = await fs.stat(outputPath);
       expect(stats.size).toBeGreaterThan(1000);
+
+      // Verify PDF magic bytes on disk
+      const header = await fs.readFile(outputPath);
+      expect(header.subarray(0, 5).toString('ascii')).toBe('%PDF-');
     }, 60000);
 
     it.skipIf(!hasSrsFile)('converts SRS document to PDF', async () => {
