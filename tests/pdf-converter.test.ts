@@ -40,9 +40,21 @@ vi.mock('puppeteer', () => {
   };
 });
 
+// Mock html-parser at module level for convertHTMLFileToPDF tests
+vi.mock('../src/parsers/html-parser.js', () => ({
+  parseDocument: vi.fn().mockResolvedValue({
+    title: 'Mock Title',
+    chapters: [],
+    metadata: { customFields: {} },
+    rawHTML: '<html><body>mock</body></html>',
+  }),
+}));
+
 // Import after mock setup
 import puppeteer from 'puppeteer';
-import { getBrowser, closeBrowser } from '../src/converters/pdf-converter.js';
+import { getBrowser, closeBrowser, convertToPDF, convertHTMLFileToPDF, convertHTMLStringToPDF } from '../src/converters/pdf-converter.js';
+import { ConversionError, ErrorCodes } from '../src/utils/errors.js';
+import { parseDocument } from '../src/parsers/html-parser.js';
 
 describe('browser management', () => {
   let mockBrowser: ReturnType<typeof createMockBrowser>;
@@ -145,5 +157,106 @@ describe('browser management', () => {
     expect(browser2).not.toBe(browser1);
     expect(browser2).toBe(newMockBrowser);
     expect(puppeteer.launch).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('convertToPDF', () => {
+  let mockBrowser: ReturnType<typeof createMockBrowser>;
+  let mockPage: ReturnType<typeof createMockPage>;
+
+  beforeEach(async () => {
+    disconnectHandlers = [];
+    await closeBrowser();
+    vi.clearAllMocks();
+
+    mockPage = createMockPage();
+    mockBrowser = createMockBrowser();
+    mockBrowser.newPage.mockResolvedValue(mockPage);
+    vi.mocked(puppeteer.launch).mockResolvedValue(mockBrowser as unknown as Browser);
+  });
+
+  it('returns a buffer on success', async () => {
+    const fakeBuffer = Buffer.from('%PDF-fake-content');
+    mockPage.pdf.mockResolvedValue(fakeBuffer);
+
+    const result = await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+
+    expect(result).toHaveProperty('buffer');
+    expect(Buffer.isBuffer(result.buffer)).toBe(true);
+    expect(mockPage.goto).toHaveBeenCalledWith(
+      expect.stringContaining('file://'),
+      expect.any(Object)
+    );
+  });
+
+  it('passes custom options to page.pdf', async () => {
+    mockPage.pdf.mockResolvedValue(Buffer.from('pdf'));
+
+    await convertToPDF('/tmp/test.html', '/tmp/test.pdf', {
+      format: 'Letter',
+      landscape: true,
+      margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+      scale: 0.8,
+    });
+
+    expect(mockPage.pdf).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: 'Letter',
+        landscape: true,
+        margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+        scale: 0.8,
+      })
+    );
+  });
+
+  it('applies default options when none provided', async () => {
+    mockPage.pdf.mockResolvedValue(Buffer.from('pdf'));
+
+    await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+
+    expect(mockPage.pdf).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: 'A4',
+        printBackground: true,
+        preferCSSPageSize: true,
+        landscape: false,
+        margin: { top: '0', right: '0', bottom: '0', left: '0' },
+      })
+    );
+  });
+
+  it('throws ConversionError with TIMEOUT code on navigation timeout', async () => {
+    expect.assertions(2);
+    const timeoutError = new Error('Navigation timeout');
+    timeoutError.name = 'TimeoutError';
+    mockPage.goto.mockRejectedValue(timeoutError);
+
+    try {
+      await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.TIMEOUT);
+    }
+  });
+
+  it('throws ConversionError with TIMEOUT code on PDF generation timeout', async () => {
+    expect.assertions(2);
+    const timeoutError = new Error('PDF generation timeout');
+    timeoutError.name = 'TimeoutError';
+    mockPage.pdf.mockRejectedValue(timeoutError);
+
+    try {
+      await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.TIMEOUT);
+    }
+  });
+
+  it('always closes the page even when PDF generation throws', async () => {
+    mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
+
+    await expect(convertToPDF('/tmp/test.html', '/tmp/test.pdf')).rejects.toThrow();
+    expect(mockPage.close).toHaveBeenCalled();
   });
 });
