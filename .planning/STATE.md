@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 Milestone: 3 (v1.2 Robustness & API Quality)
 Phase: 22 of 23 (Test Coverage Expansion)
-Plan: 22-01 and 22-02 complete, 22-03 remaining
-Status: In progress — 22-02 complete, ready for 22-03
-Last activity: 2026-02-15 — Plan 22-02 executed (2 tasks, 9 new mocked DOCX tests)
+Plan: All 3 plans complete
+Status: Phase 22 complete
+Last activity: 2026-02-15 — Plan 22-03 executed (3 tasks, 19 new CLI helper tests)
 
-Progress (Milestone 3): ███████░░░ 82%
+Progress (Milestone 3): █████████░ 90%
 
 ## Milestone 3 Overview
 
@@ -26,7 +26,7 @@ Progress (Milestone 3): ███████░░░ 82%
 | 19 | `phases/19-architecture-packaging` | P2 | Complete |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Complete |
 | 21 | `phases/21-test-defect-fixes` | P1 | Complete |
-| 22 | `phases/22-test-coverage-expansion` | P1 | In progress (2/3 plans) |
+| 22 | `phases/22-test-coverage-expansion` | P1 | Complete |
 | 23 | `phases/23-resilience-final-polish` | P2 | Not started |
 
 ## Review Findings Source
@@ -110,6 +110,8 @@ tests/
 - expect.assertions guard on try/catch tests with silent pass-through risk [Phase 21]
 - Behavioral tests over source-scanning: test API contracts, not import strings [Phase 21]
 - Magic byte validation: verify file format headers in E2E tests, not just file size [Phase 21]
+- Extract-to-test: move inline CLI logic to importable helpers for vitest instrumentation [Phase 22]
+- Separate mocked test files when vi.mock conflicts with existing integration tests [Phase 22]
 
 ### Roadmap Evolution
 
@@ -120,4 +122,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-15
-Status: Phase 22 in progress. Plans 22-01 and 22-02 complete (12 PDF + 9 DOCX mocked tests). Ready for 22-03.
+Status: Phase 22 complete (3/3 plans, 40 new tests total). Ready for Phase 23: Resilience & Final Polish.
