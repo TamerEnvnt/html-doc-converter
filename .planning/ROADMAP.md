@@ -143,7 +143,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 - ✅ **v1.0 MVP** - Phases 1-10 (shipped 2026-02-04)
 - ✅ **v1.1 Security & Quality** - Phases 11-15 (shipped 2026-02-08)
-- 🚧 **v1.2 Robustness & API Quality** - Phases 16-23 (in progress)
+- ✅ **v1.2 Robustness & API Quality** - Phases 16-23 (shipped 2026-02-15)
 
 ---
 
@@ -164,7 +164,7 @@ Final state: 134 tests, 74.5% statements, 97.9% utils coverage.
 
 ---
 
-### 🚧 v1.2 Robustness & API Quality (In Progress)
+### ✅ v1.2 Robustness & API Quality (Shipped 2026-02-15)
 
 **Milestone Goal:** Address all findings from comprehensive 5-agent code review. Fix critical concurrency bugs, unify error handling, clean up type design, improve test coverage for public APIs, and prepare package for production consumers.
 
@@ -300,14 +300,14 @@ Plans:
 **Research:** Unlikely (Node.js signal handling)
 **Priority:** P2
 **Files:** `src/cli.ts`, `src/utils/errors.ts`
-**Plans:** TBD
+**Plans:** 1/1 complete
 
 Findings addressed:
 - P2: No SIGINT handler (orphaned files, zombie Chromium)
 - P2: createError switch has no compile-time exhaustiveness check
 
 Plans:
-- [ ] 23-01: TBD
+- [x] 23-01: Signal handlers, exhaustive switch, final verification (3 tasks, completed 2026-02-15)
 
 ### Milestone 3 Progress
 
@@ -320,4 +320,4 @@ Plans:
 | 20. Silent Failure Fixes | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 21. Test Defect Fixes | v1.2 | 1/1 | Complete | 2026-02-14 |
 | 22. Test Coverage Expansion | v1.2 | 3/3 | Complete | 2026-02-15 |
-| 23. Resilience & Final Polish | v1.2 | 0/? | Not started | - |
+| 23. Resilience & Final Polish | v1.2 | 1/1 | Complete | 2026-02-15 |
