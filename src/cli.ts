@@ -270,7 +270,7 @@ const handleSignal = async (signal: string): Promise<void> => {
   process.exit(128 + (signal === 'SIGINT' ? 2 : 15));
 };
 
-process.on('SIGINT', () => { handleSignal('SIGINT'); });
-process.on('SIGTERM', () => { handleSignal('SIGTERM'); });
+process.on('SIGINT', () => { handleSignal('SIGINT').catch(() => process.exit(130)); });
+process.on('SIGTERM', () => { handleSignal('SIGTERM').catch(() => process.exit(143)); });
 
 program.parse();
