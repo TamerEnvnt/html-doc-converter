@@ -260,3 +260,121 @@ describe('convertToPDF', () => {
     expect(mockPage.close).toHaveBeenCalled();
   });
 });
+
+describe('convertHTMLFileToPDF', () => {
+  let mockBrowser: ReturnType<typeof createMockBrowser>;
+  let mockPage: ReturnType<typeof createMockPage>;
+
+  beforeEach(async () => {
+    disconnectHandlers = [];
+    await closeBrowser();
+    vi.clearAllMocks();
+
+    mockPage = createMockPage();
+    mockBrowser = createMockBrowser();
+    mockBrowser.newPage.mockResolvedValue(mockPage);
+    vi.mocked(puppeteer.launch).mockResolvedValue(mockBrowser as unknown as Browser);
+  });
+
+  it('returns document and pdf result on success', async () => {
+    const fakeBuffer = Buffer.from('%PDF-fake');
+    mockPage.pdf.mockResolvedValue(fakeBuffer);
+
+    const result = await convertHTMLFileToPDF('/tmp/test.html', '/tmp/test.pdf');
+
+    expect(result).toHaveProperty('document');
+    expect(result).toHaveProperty('pdf');
+    expect(result.document).toHaveProperty('title', 'Mock Title');
+    expect(result.document).toHaveProperty('chapters');
+    expect(result.document).toHaveProperty('metadata');
+    expect(result.document).toHaveProperty('rawHTML');
+    expect(Buffer.isBuffer(result.pdf.buffer)).toBe(true);
+    expect(parseDocument).toHaveBeenCalledWith('/tmp/test.html');
+  });
+
+  it('propagates parse errors from parseDocument', async () => {
+    expect.assertions(1);
+    vi.mocked(parseDocument).mockRejectedValueOnce(new Error('File not found'));
+
+    try {
+      await convertHTMLFileToPDF('/tmp/missing.html', '/tmp/test.pdf');
+    } catch (error) {
+      expect((error as Error).message).toBe('File not found');
+    }
+  });
+});
+
+describe('convertHTMLStringToPDF', () => {
+  let mockBrowser: ReturnType<typeof createMockBrowser>;
+  let mockPage: ReturnType<typeof createMockPage>;
+
+  beforeEach(async () => {
+    disconnectHandlers = [];
+    await closeBrowser();
+    vi.clearAllMocks();
+
+    mockPage = createMockPage();
+    mockBrowser = createMockBrowser();
+    mockBrowser.newPage.mockResolvedValue(mockPage);
+    vi.mocked(puppeteer.launch).mockResolvedValue(mockBrowser as unknown as Browser);
+  });
+
+  it('returns a buffer on success', async () => {
+    const fakeBuffer = Buffer.from('%PDF-string-content');
+    mockPage.pdf.mockResolvedValue(fakeBuffer);
+
+    const result = await convertHTMLStringToPDF('<html><body>Hello</body></html>', '/tmp/test.pdf');
+
+    expect(result).toHaveProperty('buffer');
+    expect(Buffer.isBuffer(result.buffer)).toBe(true);
+    expect(mockPage.setContent).toHaveBeenCalledWith(
+      '<html><body>Hello</body></html>',
+      expect.objectContaining({ waitUntil: 'networkidle0' })
+    );
+  });
+
+  it('passes timeout and format options correctly', async () => {
+    mockPage.pdf.mockResolvedValue(Buffer.from('pdf'));
+
+    await convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf', {
+      timeout: 30000,
+      format: 'Letter',
+      margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' },
+    });
+
+    expect(mockPage.setContent).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ timeout: 30000 })
+    );
+    expect(mockPage.pdf).toHaveBeenCalledWith(
+      expect.objectContaining({
+        format: 'Letter',
+        margin: { top: '5mm', right: '5mm', bottom: '5mm', left: '5mm' },
+        timeout: 30000,
+      })
+    );
+  });
+
+  it('throws ConversionError with TIMEOUT code on content loading timeout', async () => {
+    expect.assertions(2);
+    const timeoutError = new Error('Content loading timeout');
+    timeoutError.name = 'TimeoutError';
+    mockPage.setContent.mockRejectedValue(timeoutError);
+
+    try {
+      await convertHTMLStringToPDF('<html><body>Slow</body></html>', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.TIMEOUT);
+    }
+  });
+
+  it('always closes the page even when PDF generation throws', async () => {
+    mockPage.pdf.mockRejectedValue(new Error('PDF generation failed'));
+
+    await expect(
+      convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf')
+    ).rejects.toThrow();
+    expect(mockPage.close).toHaveBeenCalled();
+  });
+});
