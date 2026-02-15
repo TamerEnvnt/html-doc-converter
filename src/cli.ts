@@ -263,4 +263,14 @@ program
     process.exit(result.allFound ? 0 : 1);
   });
 
+// Graceful cleanup on termination signals
+const handleSignal = async (signal: string): Promise<void> => {
+  verbose(`Received ${signal}, cleaning up...`);
+  await closeBrowser();
+  process.exit(128 + (signal === 'SIGINT' ? 2 : 15));
+};
+
+process.on('SIGINT', () => { handleSignal('SIGINT'); });
+process.on('SIGTERM', () => { handleSignal('SIGTERM'); });
+
 program.parse();

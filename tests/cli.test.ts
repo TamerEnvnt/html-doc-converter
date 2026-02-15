@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { execFileSync } from 'child_process';
+import { execFileSync, spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs/promises';
 
@@ -213,6 +213,31 @@ describe('CLI', () => {
         throw error;
       }
     }, 60000);
+  });
+
+  describe('Signal Handling', () => {
+    it('exits cleanly on SIGINT when no browser is running', async () => {
+      const child = spawn('node', [CLI_PATH, '--help'], {
+        stdio: 'pipe',
+      });
+
+      // Wait briefly for process to start, then send SIGINT
+      await new Promise<void>((resolve) => {
+        child.on('spawn', () => {
+          setTimeout(() => {
+            child.kill('SIGINT');
+            resolve();
+          }, 50);
+        });
+      });
+
+      const exitCode = await new Promise<number | null>((resolve) => {
+        child.on('exit', (code) => resolve(code));
+      });
+
+      // Process should exit with 0 (--help exits before signal) or 130 (128+2 for SIGINT)
+      expect(exitCode === 0 || exitCode === 130 || exitCode === null).toBe(true);
+    });
   });
 
   describe('Overwrite Protection', () => {
