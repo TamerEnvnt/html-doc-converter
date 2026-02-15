@@ -56,6 +56,16 @@ describe('determineFormats', () => {
     const result = determineFormats({ pdfOnly: true, format: 'both' });
     expect(result).toEqual({ generatePDF: true, generateDOCX: false });
   });
+
+  it('throws INVALID_FORMAT for invalid format value', () => {
+    expect.assertions(2);
+    try {
+      determineFormats({ format: 'xyz' });
+    } catch (err) {
+      expect(err).toBeInstanceOf(ConversionError);
+      expect((err as ConversionError).code).toBe(ErrorCodes.INVALID_FORMAT);
+    }
+  });
 });
 
 // ============================================================================

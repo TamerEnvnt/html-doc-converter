@@ -28,6 +28,10 @@ export function determineFormats(options: {
     generateDOCX = options.format === 'docx' || options.format === 'both';
   }
 
+  if (!generatePDF && !generateDOCX) {
+    throw createError(ErrorCodes.INVALID_FORMAT, `invalid format '${options.format}', expected: pdf, docx, or both`);
+  }
+
   return { generatePDF, generateDOCX };
 }
 
