@@ -29,6 +29,7 @@ import {
   formatDependencyReport,
 } from './utils/dependencies.js';
 import { setVerbose, verbose } from './utils/logger.js';
+import { determineFormats, parseTimeout, validateInputFile } from './cli-helpers.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
@@ -83,36 +84,8 @@ Examples:
       validatePath(inputPath);
       verbose('Resolved input path:', inputPath);
 
-      // 1. Check input file exists
-      try {
-        await fs.access(inputPath);
-      } catch {
-        throw createError(ErrorCodes.INPUT_NOT_FOUND, inputPath);
-      }
-
-      // 2. Check it's an HTML file
-      const ext = path.extname(inputPath).toLowerCase();
-      if (ext !== '.html' && ext !== '.htm') {
-        throw createError(ErrorCodes.INVALID_FORMAT, `expected .html or .htm, got ${ext}`);
-      }
-
-      // 3. Check file size and content
-      const stats = await fs.stat(inputPath);
-      const fileSize = stats.size;
-      const LARGE_FILE_THRESHOLD = 1_000_000; // 1MB
-
-      if (fileSize === 0) {
-        throw createError(ErrorCodes.EMPTY_INPUT);
-      }
-
-      // Read and verify content is not just whitespace
-      const content = await fs.readFile(inputPath, 'utf-8');
-      if (!content.trim()) {
-        throw createError(ErrorCodes.EMPTY_INPUT);
-      }
-
-      // Large file warning
-      const isLargeFile = fileSize > LARGE_FILE_THRESHOLD;
+      // Validate input file (exists, HTML extension, non-empty)
+      const { fileSize, content, isLargeFile } = await validateInputFile(inputPath);
       verbose('File size:', fileSize, 'bytes', isLargeFile ? '(large)' : '');
 
       // Resolve output paths using output handler
@@ -132,17 +105,7 @@ Examples:
       verbose('Output paths:', outputPaths);
 
       // Determine formats (before overwrite check so we know which files to check)
-      let generatePDF = true;
-      let generateDOCX = true;
-
-      if (options.pdfOnly) {
-        generateDOCX = false;
-      } else if (options.docxOnly) {
-        generatePDF = false;
-      } else if (options.format) {
-        generatePDF = options.format === 'pdf' || options.format === 'both';
-        generateDOCX = options.format === 'docx' || options.format === 'both';
-      }
+      const { generatePDF, generateDOCX } = determineFormats(options);
 
       // Check for existing output files (unless --force)
       // Note: Still check-then-act (inherent TOCTOU), but async fs.access reduces
@@ -183,11 +146,7 @@ Examples:
       }
 
       // Parse and validate timeout option
-      const timeoutRaw = parseInt(options.timeout || '60000', 10);
-      if (isNaN(timeoutRaw) || timeoutRaw <= 0) {
-        throw createError(ErrorCodes.INVALID_TIMEOUT, options.timeout || 'undefined');
-      }
-      const timeout = timeoutRaw;
+      const timeout = parseTimeout(options.timeout);
       verbose('Timeout set to:', timeout, 'ms');
 
       // Progress: Start
