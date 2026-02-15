@@ -35,6 +35,9 @@ export const ErrorCodes = {
   PDF_FAILED: 'PDF_FAILED',
   DOCX_FAILED: 'DOCX_FAILED',
   TIMEOUT: 'TIMEOUT',
+  PATH_TRAVERSAL: 'PATH_TRAVERSAL',
+  INVALID_TIMEOUT: 'INVALID_TIMEOUT',
+  FILE_EXISTS: 'FILE_EXISTS',
   UNKNOWN: 'UNKNOWN',
 } as const;
 
@@ -141,11 +144,43 @@ export function createError(
         'Try with a smaller file or increase the timeout with --timeout option.'
       );
 
-    default:
+    case ErrorCodes.PATH_TRAVERSAL:
+      return new ConversionError(
+        `Path outside allowed directory: ${detail || 'unknown'}`,
+        code,
+        'Use paths within the current working directory or specify an allowed output directory with -o.'
+      );
+
+    case ErrorCodes.INVALID_TIMEOUT:
+      return new ConversionError(
+        `Invalid timeout value: ${detail || 'unknown'}`,
+        code,
+        'Provide a positive integer in milliseconds (e.g., --timeout 60000).'
+      );
+
+    case ErrorCodes.FILE_EXISTS:
+      return new ConversionError(
+        `Output file already exists: ${detail || 'unknown'}`,
+        code,
+        'Use --force to overwrite existing files, or specify a different output path with -o.'
+      );
+
+    case ErrorCodes.UNKNOWN:
       return new ConversionError(
         detail || 'An unknown error occurred.',
+        code,
+        'Please report this issue with details.'
+      );
+
+    default: {
+      // Compile-time exhaustiveness check: if a new ErrorCode is added
+      // without a case here, TypeScript will error on this line
+      const _exhaustive: never = code;
+      return new ConversionError(
+        detail || 'An unexpected error occurred.',
         ErrorCodes.UNKNOWN,
         'Please report this issue with details.'
       );
+    }
   }
 }
