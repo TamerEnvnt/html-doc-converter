@@ -195,7 +195,7 @@ Findings addressed:
 - P1: Invalid --format value silently produces no output with exit code 0
 
 Plans:
-- [ ] 24-01: TBD
+- [ ] 24-01: Fix signal handler async, page.close masking, invalid format no-op (3 tasks)
 
 #### Phase 25: Error Handling Gaps
 **Goal:** Add missing error handling: check command try/catch, DOCX mkdir error code, addStyleTag wrapping, platform fallback warning, validateInputFile simplification
@@ -276,7 +276,7 @@ Plans:
 
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
-| 24. Critical Bug Fixes | v1.3 | 0/? | Not started | - |
+| 24. Critical Bug Fixes | v1.3 | 0/1 | Planned | - |
 | 25. Error Handling Gaps | v1.3 | 0/? | Not started | - |
 | 26. Code Deduplication & Cleanup | v1.3 | 0/? | Not started | - |
 | 27. Type Design & Safety | v1.3 | 0/? | Not started | - |
