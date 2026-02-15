@@ -224,7 +224,11 @@ export async function convertToPDF(
       buffer: Buffer.from(pdfBuffer),
     };
   } finally {
-    await page.close(); // Always close page, keep browser
+    try {
+      await page.close();
+    } catch {
+      // Silently discard close errors - cleanup must not mask conversion errors
+    }
   }
 }
 
@@ -336,6 +340,10 @@ export async function convertHTMLStringToPDF(
       buffer: Buffer.from(pdfBuffer),
     };
   } finally {
-    await page.close();
+    try {
+      await page.close();
+    } catch {
+      // Silently discard close errors - cleanup must not mask conversion errors
+    }
   }
 }

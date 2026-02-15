@@ -259,6 +259,16 @@ describe('convertToPDF', () => {
     await expect(convertToPDF('/tmp/test.html', '/tmp/test.pdf')).rejects.toThrow();
     expect(mockPage.close).toHaveBeenCalled();
   });
+
+  it('propagates original error when page.close() also throws', async () => {
+    const originalError = new Error('PDF generation failed');
+    const closeError = new Error('page.close() crashed');
+    mockPage.pdf.mockRejectedValue(originalError);
+    mockPage.close.mockRejectedValue(closeError);
+
+    await expect(convertToPDF('/tmp/test.html', '/tmp/test.pdf')).rejects.toThrow('PDF generation failed');
+    expect(mockPage.close).toHaveBeenCalled();
+  });
 });
 
 describe('convertHTMLFileToPDF', () => {
@@ -375,6 +385,18 @@ describe('convertHTMLStringToPDF', () => {
     await expect(
       convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf')
     ).rejects.toThrow();
+    expect(mockPage.close).toHaveBeenCalled();
+  });
+
+  it('propagates original error when page.close() also throws', async () => {
+    const originalError = new Error('PDF generation failed');
+    const closeError = new Error('page.close() crashed');
+    mockPage.pdf.mockRejectedValue(originalError);
+    mockPage.close.mockRejectedValue(closeError);
+
+    await expect(
+      convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf')
+    ).rejects.toThrow('PDF generation failed');
     expect(mockPage.close).toHaveBeenCalled();
   });
 });
