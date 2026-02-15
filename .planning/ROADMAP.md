@@ -291,8 +291,8 @@ Findings addressed:
 
 Plans:
 - [x] 22-01: PDF converter API tests - convertToPDF, convertHTMLFileToPDF, convertHTMLStringToPDF (2 tasks, completed 2026-02-15)
-- [ ] 22-02: TBD
-- [ ] 22-03: TBD
+- [x] 22-02: DOCX converter mocked tests - convertToDOCX, convertHTMLFileToDOCX (2 tasks, completed 2026-02-15)
+- [ ] 22-03: CLI validation logic extraction and tests
 
 #### Phase 23: Resilience & Final Polish
 **Goal:** Add SIGINT/SIGTERM handler for graceful cleanup, add exhaustiveness check in createError switch, final verification
@@ -319,5 +319,5 @@ Plans:
 | 19. Architecture & Packaging | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 20. Silent Failure Fixes | v1.2 | 1/1 | Complete | 2026-02-10 |
 | 21. Test Defect Fixes | v1.2 | 1/1 | Complete | 2026-02-14 |
-| 22. Test Coverage Expansion | v1.2 | 1/3 | In progress | - |
+| 22. Test Coverage Expansion | v1.2 | 2/3 | In progress | - |
 | 23. Resilience & Final Polish | v1.2 | 0/? | Not started | - |

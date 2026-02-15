@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 
 Milestone: 3 (v1.2 Robustness & API Quality)
 Phase: 22 of 23 (Test Coverage Expansion)
-Plan: 22-01 complete, 22-02 and 22-03 remaining
-Status: In progress — 22-01 complete, ready for 22-02
-Last activity: 2026-02-15 — Plan 22-01 executed (2 tasks, 12 new tests)
+Plan: 22-01 and 22-02 complete, 22-03 remaining
+Status: In progress — 22-02 complete, ready for 22-03
+Last activity: 2026-02-15 — Plan 22-02 executed (2 tasks, 9 new mocked DOCX tests)
 
-Progress (Milestone 3): ██████░░░░ 78%
+Progress (Milestone 3): ███████░░░ 82%
 
 ## Milestone 3 Overview
 
@@ -26,7 +26,7 @@ Progress (Milestone 3): ██████░░░░ 78%
 | 19 | `phases/19-architecture-packaging` | P2 | Complete |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Complete |
 | 21 | `phases/21-test-defect-fixes` | P1 | Complete |
-| 22 | `phases/22-test-coverage-expansion` | P1 | In progress (1/3 plans) |
+| 22 | `phases/22-test-coverage-expansion` | P1 | In progress (2/3 plans) |
 | 23 | `phases/23-resilience-final-polish` | P2 | Not started |
 
 ## Review Findings Source
@@ -120,4 +120,4 @@ tests/
 ## Session Continuity
 
 Last session: 2026-02-15
-Status: Phase 22 in progress. Plan 22-01 complete (12 new PDF converter API tests). Ready for 22-02.
+Status: Phase 22 in progress. Plans 22-01 and 22-02 complete (12 PDF + 9 DOCX mocked tests). Ready for 22-03.
