@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-02-02)
 ## Current Position
 
 Milestone: 3 (v1.2 Robustness & API Quality)
-Phase: 21 of 23 (Test Defect Fixes) - COMPLETE
-Plan: 1/1 complete
-Status: Phase 21 complete, ready for Phase 22
-Last activity: 2026-02-14 -- Phase 21 complete (test guards, behavioral tests, PDF magic bytes)
+Phase: 22 of 23 (Test Coverage Expansion)
+Plan: 3 plans created (22-01 to 22-03), 7 tasks total
+Status: Planned — ready to execute
+Last activity: 2026-02-15 — Phase 22 planned (3 plans, 7 tasks)
 
 Progress (Milestone 3): ██████░░░░ 75%
 
@@ -26,7 +26,7 @@ Progress (Milestone 3): ██████░░░░ 75%
 | 19 | `phases/19-architecture-packaging` | P2 | Complete |
 | 20 | `phases/20-silent-failure-fixes` | P1/P2 | Complete |
 | 21 | `phases/21-test-defect-fixes` | P1 | Complete |
-| 22 | `phases/22-test-coverage-expansion` | P1 | Not started |
+| 22 | `phases/22-test-coverage-expansion` | P1 | Planned (3 plans) |
 | 23 | `phases/23-resilience-final-polish` | P2 | Not started |
 
 ## Review Findings Source
@@ -119,5 +119,5 @@ tests/
 
 ## Session Continuity
 
-Last session: 2026-02-14
-Status: Phase 21 complete (1/1 plan). Ready for Phase 22: Test Coverage Expansion.
+Last session: 2026-02-15
+Status: Phase 22 planned (3 plans, 7 tasks). Ready to execute 22-01.
