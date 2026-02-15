@@ -144,6 +144,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 - ✅ **v1.0 MVP** - Phases 1-10 (shipped 2026-02-04)
 - ✅ **v1.1 Security & Quality** - Phases 11-15 (shipped 2026-02-08)
 - ✅ **v1.2 Robustness & API Quality** - Phases 16-23 (shipped 2026-02-15)
+- 🚧 **v1.3 Polish & Cleanup** - Phases 24-28 (in progress)
 
 ---
 
@@ -171,3 +172,112 @@ Final state: 134 tests, 74.5% statements, 97.9% utils coverage.
 Full details: [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
 
 </details>
+
+---
+
+### 🚧 v1.3 Polish & Cleanup (In Progress)
+
+**Milestone Goal:** Fix remaining P1 bugs from post-v1.2 review, eliminate code duplication, remove dead code, improve type safety, and fill test coverage gaps.
+
+**Source:** Full 5-agent codebase review (2026-02-15) post-v1.2. 24 unique findings (8 P1 code, 3 P1 test, 13 P2).
+
+#### Phase 24: Critical Bug Fixes
+**Goal:** Fix 3 P1 bugs: signal handler async issue, page.close() error masking, invalid format silent no-op
+**Depends on:** Milestone 3 complete
+**Research:** Unlikely (internal fixes)
+**Priority:** P1
+**Files:** `src/cli.ts`, `src/converters/pdf-converter.ts`, `src/cli-helpers.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: Signal handler async not awaited (closeBrowser may not complete before process.exit)
+- P1: page.close() in finally blocks masks original conversion errors (2 locations)
+- P1: Invalid --format value silently produces no output with exit code 0
+
+Plans:
+- [ ] 24-01: TBD
+
+#### Phase 25: Error Handling Gaps
+**Goal:** Add missing error handling: check command try/catch, DOCX mkdir error code, addStyleTag wrapping, platform fallback warning, validateInputFile simplification
+**Depends on:** Phase 24
+**Research:** Unlikely (internal patterns)
+**Priority:** P1/P2
+**Files:** `src/cli.ts`, `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/utils/platform.ts`, `src/cli-helpers.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: check command has no try/catch (unhandled rejections)
+- P1: DOCX mkdir failure throws DOCX_FAILED instead of OUTPUT_DIR_FAILED
+- P2: addStyleTag() failure unhandled (raw Puppeteer error)
+- P2: Platform silent fallback to linux without warning
+- P2: validateInputFile TOCTOU between fs.access and fs.stat/readFile
+
+Plans:
+- [ ] 25-01: TBD
+
+#### Phase 26: Code Deduplication & Cleanup
+**Goal:** Extract shared helpers in pdf-converter.ts (~80 lines duplicated), remove 13 unused exported functions, consolidate promisify, optimize validateInputFile
+**Depends on:** Phase 25 (error handling changes affect refactoring)
+**Research:** Unlikely (internal refactoring)
+**Priority:** P1/P2
+**Files:** `src/converters/pdf-converter.ts`, `src/cli.ts`, `src/utils/platform.ts`, `src/utils/logger.ts`, `src/utils/output-handler.ts`, `src/cli-helpers.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: pdf-converter.ts CSS injection, PDF options, timeout detection duplicated across 2 functions
+- P2: CLI PDF/DOCX conversion blocks identical pattern (~50 lines)
+- P2: 13 unused exported functions across platform.ts, logger.ts, output-handler.ts
+- P2: promisify(execFile) repeated in 3 files
+- P2: validateInputFile reads entire file unnecessarily, returns unused content
+
+Plans:
+- [ ] 26-01: TBD
+
+#### Phase 27: Type Design & Safety
+**Goal:** DependencyStatus discriminated union, PDFOptions library validation, CLI format type narrowing, readonly fields, HeadingLevel safe cast
+**Depends on:** Phase 26 (dead code removal affects type surface)
+**Research:** Unlikely (TypeScript patterns)
+**Priority:** P1/P2
+**Files:** `src/utils/dependencies.ts`, `src/converters/pdf-converter.ts`, `src/cli-helpers.ts`, `src/parsers/html-parser.ts`, `src/utils/output-handler.ts`
+**Plans:** TBD
+
+Findings addressed:
+- P1: DependencyStatus allows invalid states (boolean+optional anti-pattern)
+- P1: PDFOptions no library-level validation of scale/timeout
+- P2: Mutable data types (Chapter, ParsedDocument, OutputPaths, etc.)
+- P2: HeadingLevel unsafe as cast
+- P2: Chapter.id can be empty string
+- P2: colors utility in errors.ts (module cohesion)
+- P2: Inline CLI options type should be named
+
+Plans:
+- [ ] 27-01: TBD
+
+#### Phase 28: Test Coverage & Verification
+**Goal:** Fill P1 test gaps (soffice EACCES, string-to-pdf timeout, non-Error throws), add P2 tests, final verification
+**Depends on:** Phase 27 (type changes affect test expectations)
+**Research:** Unlikely (vitest patterns)
+**Priority:** P1/P2
+**Files:** `tests/` (multiple test files)
+**Plans:** TBD
+
+Findings addressed:
+- P1: soffice.ts EACCES path + which fallback untested (28.57% branch coverage)
+- P1: convertHTMLStringToPDF PDF generation timeout path untested
+- P1: Non-Error throw handling in convertToDOCX untested
+- P2: Platform fallback to linux untested
+- P2: loadHTML non-ENOENT error path untested
+- P2: parseTimeout('') edge case untested
+
+Plans:
+- [ ] 28-01: TBD
+
+### Milestone 4 Progress
+
+| Phase | Milestone | Plans | Status | Completed |
+|-------|-----------|-------|--------|-----------|
+| 24. Critical Bug Fixes | v1.3 | 0/? | Not started | - |
+| 25. Error Handling Gaps | v1.3 | 0/? | Not started | - |
+| 26. Code Deduplication & Cleanup | v1.3 | 0/? | Not started | - |
+| 27. Type Design & Safety | v1.3 | 0/? | Not started | - |
+| 28. Test Coverage & Verification | v1.3 | 0/? | Not started | - |
