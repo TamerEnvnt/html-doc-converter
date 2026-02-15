@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: 4 (v1.3 Polish & Cleanup)
-Phase: 24 of 28 (Critical Bug Fixes)
-Plan: 24-01 planned (3 tasks)
-Status: Ready to execute
-Last activity: 2026-02-15 -- Phase 24 planned
+Phase: 25 of 28 (Error Handling Gaps)
+Plan: 25-01 not started
+Status: Ready to plan
+Last activity: 2026-02-15 -- Phase 24 complete (3 P1 bugs fixed)
 
-Progress (Milestone 4): ░░░░░░░░░░ 0%
+Progress (Milestone 4): ##░░░░░░░░ 20%
 
 ## Milestone 4 Overview
 
 | Phase | Directory | Priority | Status |
 |-------|-----------|----------|--------|
-| 24 | `phases/24-critical-bug-fixes` | P1 | Planned (1 plan, 3 tasks) |
+| 24 | `phases/24-critical-bug-fixes` | P1 | Complete (1 plan, 3 tasks) |
 | 25 | `phases/25-error-handling-gaps` | P1/P2 | Not started |
 | 26 | `phases/26-code-deduplication-cleanup` | P1/P2 | Not started |
 | 27 | `phases/27-type-design-safety` | P1/P2 | Not started |
@@ -60,8 +60,8 @@ src/
 ```
 
 ### Test suite
-- 12 test files, 185 tests (183 passed, 2 skipped)
-- Coverage: 82.36% statements, 80.69% branches, 96.42% functions, 82.36% lines
+- 12 test files, 188 tests (186 passed, 2 skipped)
+- Coverage: 82.48% statements, 81.13% branches, 96.42% functions, 82.48% lines
 
 ## Accumulated Decisions
 
@@ -86,6 +86,9 @@ src/
 - Separate mocked test files when vi.mock conflicts [Phase 22]
 - Signal handlers before program.parse() [Phase 23]
 - TypeScript never type for exhaustive switch enforcement [Phase 23]
+- Async signal handlers: chain .catch() to prevent unhandled rejections [Phase 24]
+- Finally-block cleanup: wrap close/cleanup in try/catch to avoid masking errors [Phase 24]
+- Invalid format validation: throw INVALID_FORMAT instead of silent no-op [Phase 24]
 
 ### Roadmap Evolution
 
@@ -97,4 +100,4 @@ src/
 ## Session Continuity
 
 Last session: 2026-02-15
-Status: Phase 24 planned. Ready for `/gsd:execute-plan`.
+Status: Phase 24 complete. Phase 25 ready for planning.
