@@ -5,14 +5,12 @@
  * and provides platform-specific installation guidance.
  */
 
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import puppeteer from 'puppeteer';
 import { findSoffice } from './soffice.js';
 import { getPlatform, getPlatformName, Platform } from './platform.js';
 import { colors } from './errors.js';
+import { execFileAsync } from './exec.js';
 
-const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // Types

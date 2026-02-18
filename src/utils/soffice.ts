@@ -5,13 +5,11 @@
  * utils/dependencies.ts needs findSoffice, which was previously in converters/docx-converter.ts.
  */
 
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import { getPlatform } from './platform.js';
 import type { Platform } from './platform.js';
+import { execFileAsync } from './exec.js';
 
-const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // LibreOffice Detection

@@ -5,15 +5,13 @@
  * Produces real document structure (headings, tables, paragraphs) that can be edited in Word.
  */
 
-import { execFile } from 'child_process';
-import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
 import { ConversionError, createError, ErrorCodes } from '../utils/errors.js';
 import { findSoffice } from '../utils/soffice.js';
+import { execFileAsync } from '../utils/exec.js';
 
-const execFileAsync = promisify(execFile);
 
 // ============================================================================
 // Types
