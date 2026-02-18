@@ -213,7 +213,7 @@ Findings addressed:
 - P2: validateInputFile TOCTOU between fs.access and fs.stat/readFile
 
 Plans:
-- [ ] 25-01: Check command try/catch, DOCX mkdir error code, addStyleTag wrapping (3 tasks)
+- [x] 25-01: Check command try/catch, DOCX mkdir error code, addStyleTag wrapping (3 tasks)
 - [ ] 25-02: Platform fallback warning, validateInputFile TOCTOU elimination (2 tasks)
 
 #### Phase 26: Code Deduplication & Cleanup
@@ -278,7 +278,7 @@ Plans:
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
 | 24. Critical Bug Fixes | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 25. Error Handling Gaps | v1.3 | 0/2 | Planned | - |
+| 25. Error Handling Gaps | v1.3 | 1/2 | In progress | - |
 | 26. Code Deduplication & Cleanup | v1.3 | 0/? | Not started | - |
 | 27. Type Design & Safety | v1.3 | 0/? | Not started | - |
 | 28. Test Coverage & Verification | v1.3 | 0/? | Not started | - |
