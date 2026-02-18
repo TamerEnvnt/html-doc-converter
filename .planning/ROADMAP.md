@@ -232,7 +232,7 @@ Findings addressed:
 - P2: validateInputFile reads entire file unnecessarily, returns unused content
 
 Plans:
-- [ ] 26-01: PDF converter deduplication + promisify consolidation (2 tasks)
+- [x] 26-01: PDF converter deduplication + promisify consolidation (2 tasks)
 - [ ] 26-02: Dead code removal across utilities (2 tasks)
 
 #### Phase 27: Type Design & Safety
@@ -280,6 +280,6 @@ Plans:
 |-------|-----------|-------|--------|-----------|
 | 24. Critical Bug Fixes | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
-| 26. Code Deduplication & Cleanup | v1.3 | 0/2 | Planned | - |
+| 26. Code Deduplication & Cleanup | v1.3 | 1/2 | In progress | - |
 | 27. Type Design & Safety | v1.3 | 0/? | Not started | - |
 | 28. Test Coverage & Verification | v1.3 | 0/? | Not started | - |
