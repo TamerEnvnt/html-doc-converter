@@ -143,51 +143,57 @@ export async function convertToPDF(
     }
 
     // Inject CSS for print optimization
-    await page.addStyleTag({
-      content: `
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
+    try {
+      await page.addStyleTag({
+        content: `
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
 
-        /* Tables: force fit within page width */
-        table {
-          table-layout: fixed !important;
-          width: 100% !important;
-          max-width: 100% !important;
-        }
+          /* Tables: force fit within page width */
+          table {
+            table-layout: fixed !important;
+            width: 100% !important;
+            max-width: 100% !important;
+          }
 
-        td, th {
-          word-wrap: break-word !important;
-          overflow-wrap: break-word !important;
-          word-break: break-word !important;
-          hyphens: auto !important;
-        }
+          td, th {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+            hyphens: auto !important;
+          }
 
-        /* ASCII diagrams: preserve monospace alignment, use smaller font to fit */
-        .diagram, pre {
-          overflow: visible !important;
-          white-space: pre !important;
-          font-size: 7pt !important;
-          line-height: 1.15 !important;
-        }
+          /* ASCII diagrams: preserve monospace alignment, use smaller font to fit */
+          .diagram, pre {
+            overflow: visible !important;
+            white-space: pre !important;
+            font-size: 7pt !important;
+            line-height: 1.15 !important;
+          }
 
-        /* Hide scrollbars */
-        ::-webkit-scrollbar {
-          display: none !important;
-        }
+          /* Hide scrollbars */
+          ::-webkit-scrollbar {
+            display: none !important;
+          }
 
-        /* Prevent hidden/auto overflow from clipping */
-        [style*="overflow-x"], .overflow-x-auto {
-          overflow-x: visible !important;
-        }
+          /* Prevent hidden/auto overflow from clipping */
+          [style*="overflow-x"], .overflow-x-auto {
+            overflow-x: visible !important;
+          }
 
-        /* Ensure containers don't clip */
-        div, section, article {
-          overflow: visible !important;
-        }
-      `,
-    });
+          /* Ensure containers don't clip */
+          div, section, article {
+            overflow: visible !important;
+          }
+        `,
+      });
+    } catch (error) {
+      throw createError(ErrorCodes.PDF_FAILED,
+        `Failed to inject print CSS: ${error instanceof Error ? error.message : 'unknown error'}`
+      );
+    }
 
     // Generate PDF with merged options
     const pdfTimeout = options.timeout || 60000;
@@ -278,32 +284,38 @@ export async function convertHTMLStringToPDF(
     }
 
     // Inject CSS for print optimization
-    await page.addStyleTag({
-      content: `
-        * {
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
+    try {
+      await page.addStyleTag({
+        content: `
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
 
-        /* Force tables to fit within page width */
-        table {
-          max-width: 100% !important;
-          width: 100% !important;
-          table-layout: fixed !important;
-          word-wrap: break-word !important;
-        }
+          /* Force tables to fit within page width */
+          table {
+            max-width: 100% !important;
+            width: 100% !important;
+            table-layout: fixed !important;
+            word-wrap: break-word !important;
+          }
 
-        td, th {
-          word-wrap: break-word !important;
-          overflow-wrap: break-word !important;
-        }
+          td, th {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+          }
 
-        body, html, div {
-          max-width: 100% !important;
-          overflow-x: hidden !important;
-        }
-      `,
-    });
+          body, html, div {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+          }
+        `,
+      });
+    } catch (error) {
+      throw createError(ErrorCodes.PDF_FAILED,
+        `Failed to inject print CSS: ${error instanceof Error ? error.message : 'unknown error'}`
+      );
+    }
 
     // Generate PDF with merged options
     const pdfTimeout = options.timeout || 60000;

@@ -269,6 +269,19 @@ describe('convertToPDF', () => {
     await expect(convertToPDF('/tmp/test.html', '/tmp/test.pdf')).rejects.toThrow('PDF generation failed');
     expect(mockPage.close).toHaveBeenCalled();
   });
+
+  it('throws ConversionError with PDF_FAILED when addStyleTag fails', async () => {
+    expect.assertions(3);
+    mockPage.addStyleTag.mockRejectedValue(new Error('Execution context was destroyed'));
+
+    try {
+      await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.PDF_FAILED);
+      expect((error as ConversionError).message).toContain('Failed to inject print CSS');
+    }
+  });
 });
 
 describe('convertHTMLFileToPDF', () => {
@@ -398,5 +411,18 @@ describe('convertHTMLStringToPDF', () => {
       convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf')
     ).rejects.toThrow('PDF generation failed');
     expect(mockPage.close).toHaveBeenCalled();
+  });
+
+  it('throws ConversionError with PDF_FAILED when addStyleTag fails', async () => {
+    expect.assertions(3);
+    mockPage.addStyleTag.mockRejectedValue(new Error('Execution context was destroyed'));
+
+    try {
+      await convertHTMLStringToPDF('<html><body>Test</body></html>', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.PDF_FAILED);
+      expect((error as ConversionError).message).toContain('Failed to inject print CSS');
+    }
   });
 });
