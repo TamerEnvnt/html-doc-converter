@@ -105,6 +105,55 @@ export async function closeBrowser(): Promise<void> {
   }
 }
 
+
+// ============================================================================
+// Internal Helpers (shared between convertToPDF and convertHTMLStringToPDF)
+// ============================================================================
+
+/** Check if an error is a Puppeteer timeout error */
+function isTimeoutError(error: unknown): boolean {
+  return error instanceof Error &&
+    (error.name === 'TimeoutError' || error.message.includes('timeout'));
+}
+
+/** Build merged PDF options from user options + defaults */
+function buildPdfOptions(outputPath: string, options: PDFOptions, timeout: number) {
+  return {
+    path: outputPath,
+    format: options.format || 'A4',
+    printBackground: options.printBackground ?? true,
+    preferCSSPageSize: options.preferCSSPageSize ?? true,
+    landscape: options.landscape ?? false,
+    margin: options.margin || {
+      top: '0',
+      right: '0',
+      bottom: '0',
+      left: '0',
+    },
+    displayHeaderFooter: options.displayHeaderFooter ?? false,
+    headerTemplate: options.headerTemplate || '',
+    footerTemplate: options.footerTemplate || '',
+    scale: options.scale || 1,
+    timeout,
+  };
+}
+
+/** Generate PDF with timeout detection. Returns raw Buffer. */
+async function generatePdf(
+  page: import('puppeteer').Page,
+  pdfOptions: ReturnType<typeof buildPdfOptions>,
+): Promise<Buffer> {
+  try {
+    const pdfBuffer = await page.pdf(pdfOptions);
+    return Buffer.from(pdfBuffer);
+  } catch (error) {
+    if (isTimeoutError(error)) {
+      throw createError(ErrorCodes.TIMEOUT, `PDF generation timed out after ${pdfOptions.timeout}ms`);
+    }
+    throw error;
+  }
+}
+
 // ============================================================================
 // PDF Generation
 // ============================================================================
@@ -136,7 +185,7 @@ export async function convertToPDF(
         timeout: navigationTimeout,
       });
     } catch (error) {
-      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+      if (isTimeoutError(error)) {
         throw createError(ErrorCodes.TIMEOUT, `PDF navigation timed out after ${navigationTimeout}ms`);
       }
       throw error;
@@ -197,38 +246,10 @@ export async function convertToPDF(
 
     // Generate PDF with merged options
     const pdfTimeout = options.timeout || 60000;
-    const pdfOptions = {
-      path: outputPath,
-      format: options.format || 'A4',
-      printBackground: options.printBackground ?? true, // Default TRUE for gradients
-      preferCSSPageSize: options.preferCSSPageSize ?? true, // Respect @page CSS
-      landscape: options.landscape ?? false,
-      margin: options.margin || {
-        top: '0',
-        right: '0',
-        bottom: '0',
-        left: '0',
-      },
-      displayHeaderFooter: options.displayHeaderFooter ?? false,
-      headerTemplate: options.headerTemplate || '',
-      footerTemplate: options.footerTemplate || '',
-      scale: options.scale || 1,
-      timeout: pdfTimeout,
-    };
+    const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
+    const buffer = await generatePdf(page, pdfOptions);
 
-    let pdfBuffer;
-    try {
-      pdfBuffer = await page.pdf(pdfOptions);
-    } catch (error) {
-      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
-        throw createError(ErrorCodes.TIMEOUT, `PDF generation timed out after ${pdfTimeout}ms`);
-      }
-      throw error;
-    }
-
-    return {
-      buffer: Buffer.from(pdfBuffer),
-    };
+    return { buffer };
   } finally {
     try {
       await page.close();
@@ -277,7 +298,7 @@ export async function convertHTMLStringToPDF(
     try {
       await page.setContent(html, { waitUntil: 'networkidle0', timeout: contentTimeout });
     } catch (error) {
-      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
+      if (isTimeoutError(error)) {
         throw createError(ErrorCodes.TIMEOUT, `PDF content loading timed out after ${contentTimeout}ms`);
       }
       throw error;
@@ -319,38 +340,10 @@ export async function convertHTMLStringToPDF(
 
     // Generate PDF with merged options
     const pdfTimeout = options.timeout || 60000;
-    const pdfOptions = {
-      path: outputPath,
-      format: options.format || 'A4',
-      printBackground: options.printBackground ?? true,
-      preferCSSPageSize: options.preferCSSPageSize ?? true,
-      landscape: options.landscape ?? false,
-      margin: options.margin || {
-        top: '0',
-        right: '0',
-        bottom: '0',
-        left: '0',
-      },
-      displayHeaderFooter: options.displayHeaderFooter ?? false,
-      headerTemplate: options.headerTemplate || '',
-      footerTemplate: options.footerTemplate || '',
-      scale: options.scale || 1,
-      timeout: pdfTimeout,
-    };
+    const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
+    const buffer = await generatePdf(page, pdfOptions);
 
-    let pdfBuffer;
-    try {
-      pdfBuffer = await page.pdf(pdfOptions);
-    } catch (error) {
-      if (error instanceof Error && (error.name === 'TimeoutError' || error.message.includes('timeout'))) {
-        throw createError(ErrorCodes.TIMEOUT, `PDF generation timed out after ${pdfTimeout}ms`);
-      }
-      throw error;
-    }
-
-    return {
-      buffer: Buffer.from(pdfBuffer),
-    };
+    return { buffer };
   } finally {
     try {
       await page.close();
