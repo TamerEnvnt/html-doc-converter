@@ -9,8 +9,6 @@ import { ConversionError, ErrorCodes } from '../src/utils/errors.js';
 
 // Mock fs/promises before importing the module under test
 vi.mock('fs/promises', () => ({
-  access: vi.fn(),
-  stat: vi.fn(),
   readFile: vi.fn(),
 }));
 
@@ -121,22 +119,19 @@ describe('parseTimeout', () => {
 // ============================================================================
 
 describe('validateInputFile', () => {
-  const mockedAccess = vi.mocked(fs.access);
-  const mockedStat = vi.mocked(fs.stat);
   const mockedReadFile = vi.mocked(fs.readFile);
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    // Happy-path defaults
-    mockedAccess.mockResolvedValue(undefined);
-    mockedStat.mockResolvedValue({ size: 1000 } as import('fs').Stats);
+    // Happy-path default
     mockedReadFile.mockResolvedValue('<html><body>Hello</body></html>');
   });
 
   it('throws INPUT_NOT_FOUND when file does not exist', async () => {
     expect.assertions(2);
-    mockedAccess.mockRejectedValue(new Error('ENOENT'));
+    const err = Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    mockedReadFile.mockRejectedValue(err);
 
     try {
       await validateInputFile('/path/to/missing.html');
@@ -157,9 +152,9 @@ describe('validateInputFile', () => {
     }
   });
 
-  it('throws EMPTY_INPUT for zero-byte file', async () => {
+  it('throws EMPTY_INPUT for empty content', async () => {
     expect.assertions(2);
-    mockedStat.mockResolvedValue({ size: 0 } as import('fs').Stats);
+    mockedReadFile.mockResolvedValue('');
 
     try {
       await validateInputFile('/path/to/empty.html');
@@ -171,7 +166,6 @@ describe('validateInputFile', () => {
 
   it('throws EMPTY_INPUT for whitespace-only content', async () => {
     expect.assertions(2);
-    mockedStat.mockResolvedValue({ size: 5 } as import('fs').Stats);
     mockedReadFile.mockResolvedValue('   \n  ');
 
     try {
@@ -183,20 +177,37 @@ describe('validateInputFile', () => {
   });
 
   it('returns file info for valid HTML file', async () => {
+    const content = '<html><body>Hello</body></html>';
+    mockedReadFile.mockResolvedValue(content);
+
     const result = await validateInputFile('/path/to/valid.html');
     expect(result).toEqual({
-      fileSize: 1000,
-      content: '<html><body>Hello</body></html>',
+      fileSize: Buffer.byteLength(content, 'utf-8'),
+      content,
       isLargeFile: false,
     });
   });
 
   it('flags large files (>1MB) with isLargeFile: true', async () => {
-    mockedStat.mockResolvedValue({ size: 2_000_000 } as import('fs').Stats);
-    mockedReadFile.mockResolvedValue('<html>large content</html>');
+    const largeContent = 'x'.repeat(1_100_000);
+    mockedReadFile.mockResolvedValue(largeContent);
 
     const result = await validateInputFile('/path/to/large.html');
     expect(result.isLargeFile).toBe(true);
-    expect(result.fileSize).toBe(2_000_000);
+    expect(result.fileSize).toBe(Buffer.byteLength(largeContent, 'utf-8'));
+  });
+
+  it('propagates non-ENOENT errors (e.g., EACCES) without wrapping', async () => {
+    const permError = Object.assign(new Error('Permission denied'), { code: 'EACCES' });
+    mockedReadFile.mockRejectedValue(permError);
+
+    await expect(validateInputFile('/path/to/noperm.html')).rejects.toThrow('Permission denied');
+    // Ensure it's NOT wrapped as a ConversionError
+    try {
+      await validateInputFile('/path/to/noperm.html');
+    } catch (err) {
+      expect(err).not.toBeInstanceOf(ConversionError);
+      expect((err as NodeJS.ErrnoException).code).toBe('EACCES');
+    }
   });
 });

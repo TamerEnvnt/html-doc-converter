@@ -59,34 +59,30 @@ export async function validateInputFile(inputPath: string): Promise<{
 }> {
   const LARGE_FILE_THRESHOLD = 1_000_000; // 1MB
 
-  // 1. Check input file exists
-  try {
-    await fs.access(inputPath);
-  } catch {
-    throw createError(ErrorCodes.INPUT_NOT_FOUND, inputPath);
-  }
-
-  // 2. Check it's an HTML file
+  // 1. Check it's an HTML file (pure validation, no I/O)
   const ext = path.extname(inputPath).toLowerCase();
   if (ext !== '.html' && ext !== '.htm') {
     throw createError(ErrorCodes.INVALID_FORMAT, `expected .html or .htm, got ${ext}`);
   }
 
-  // 3. Check file size and content
-  const stats = await fs.stat(inputPath);
-  const fileSize = stats.size;
+  // 2. Read file (single I/O operation - no TOCTOU)
+  let content: string;
+  try {
+    content = await fs.readFile(inputPath, 'utf-8');
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw createError(ErrorCodes.INPUT_NOT_FOUND, inputPath);
+    }
+    throw err; // Permission errors, etc. propagate as-is
+  }
 
-  if (fileSize === 0) {
+  // 3. Validate content
+  if (!content || !content.trim()) {
     throw createError(ErrorCodes.EMPTY_INPUT);
   }
 
-  // Read and verify content is not just whitespace
-  const content = await fs.readFile(inputPath, 'utf-8');
-  if (!content.trim()) {
-    throw createError(ErrorCodes.EMPTY_INPUT);
-  }
-
-  // Large file check
+  // 4. Derive size from content
+  const fileSize = Buffer.byteLength(content, 'utf-8');
   const isLargeFile = fileSize > LARGE_FILE_THRESHOLD;
 
   return { fileSize, content, isLargeFile };
