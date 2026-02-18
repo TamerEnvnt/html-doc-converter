@@ -58,7 +58,14 @@ export async function convertToDOCX(
   const expectedOutputName = path.basename(htmlPath, path.extname(htmlPath)) + '.docx';
 
   // Ensure output directory exists
-  await fs.mkdir(outputDir, { recursive: true });
+  try {
+    await fs.mkdir(outputDir, { recursive: true });
+  } catch (err) {
+    throw createError(
+      ErrorCodes.OUTPUT_DIR_FAILED,
+      `${outputDir}: ${err instanceof Error ? err.message : 'unknown error'}`,
+    );
+  }
 
   // Build command arguments as array (execFile - no shell interpretation)
   const args = [
