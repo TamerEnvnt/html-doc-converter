@@ -68,6 +68,45 @@ describe('CLI', () => {
       expect(output).toContain('LibreOffice');
       expect(output).toContain('Chromium');
     });
+
+    it('handles errors in check command and exits with code 1', async () => {
+      // Create a custom ESM loader that replaces checkDependencies with a throwing mock
+      const projectRoot = path.join(__dirname, '..');
+
+      const loaderScript = [
+        `const TARGET = 'dependencies.js';`,
+        `export async function load(url, context, nextLoad) {`,
+        `  if (url.endsWith(TARGET)) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function checkDependencies() { throw new Error("mock dependency check failure"); }',`,
+        `        'export function formatDependencyReport() { return ""; }',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  return nextLoad(url, context);`,
+        `}`,
+      ].join('\n');
+
+      const loaderPath = path.join(OUTPUT_DIR, 'check-error-loader.mjs');
+      await fs.writeFile(loaderPath, loaderScript);
+
+      try {
+        execFileSync('node', ['--loader', loaderPath, CLI_PATH, 'check'], {
+          encoding: 'utf-8',
+          stdio: 'pipe',
+          cwd: projectRoot,
+          env: { ...process.env, NODE_NO_WARNINGS: '1' },
+        });
+        expect.unreachable('Expected process to exit with non-zero code');
+      } catch (error: unknown) {
+        const execError = error as { status?: number; stderr?: string };
+        expect(execError.status).toBe(1);
+        expect(execError.stderr).toContain('mock dependency check failure');
+      }
+    });
   });
 
   describe('Error Handling', () => {

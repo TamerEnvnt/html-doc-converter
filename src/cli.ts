@@ -252,15 +252,24 @@ program
   .command('check')
   .description('Check system dependencies (LibreOffice, Chromium)')
   .action(async () => {
-    console.log('');
-    console.log('Checking dependencies...');
-    console.log('');
-
-    const result = await checkDependencies();
-    console.log(formatDependencyReport(result));
-    console.log('');
-
-    process.exit(result.allFound ? 0 : 1);
+    try {
+      console.log('');
+      console.log('Checking dependencies...');
+      console.log('');
+      const result = await checkDependencies();
+      console.log(formatDependencyReport(result));
+      console.log('');
+      process.exit(result.allFound ? 0 : 1);
+    } catch (error) {
+      console.error('');
+      if (error instanceof ConversionError) {
+        console.error(formatError(error));
+      } else {
+        console.error('Error checking dependencies:', error instanceof Error ? error.message : error);
+      }
+      console.error('');
+      process.exit(1);
+    }
   });
 
 // Graceful cleanup on termination signals
