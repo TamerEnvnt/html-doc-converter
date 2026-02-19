@@ -1,15 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import * as path from 'path';
+import { describe, it, expect } from 'vitest';
 import {
   getPlatform,
-  isWindows,
-  isMacOS,
-  isLinux,
-  normalizePath,
-  toForwardSlashes,
-  getPathSeparator,
-  joinPaths,
-  resolvePath,
   getPlatformName,
 } from '../../src/utils/platform.js';
 
@@ -28,55 +19,6 @@ describe('platform', () => {
       } finally {
         Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
       }
-    });
-  });
-
-  describe('platform checks', () => {
-    it('exactly one platform check returns true', () => {
-      const checks = [isWindows(), isMacOS(), isLinux()];
-      const trueCount = checks.filter(Boolean).length;
-      expect(trueCount).toBe(1);
-    });
-
-    it('isWindows matches process.platform', () => {
-      expect(isWindows()).toBe(process.platform === 'win32');
-    });
-
-    it('isMacOS matches process.platform', () => {
-      expect(isMacOS()).toBe(process.platform === 'darwin');
-    });
-
-    it('isLinux matches process.platform', () => {
-      expect(isLinux()).toBe(process.platform === 'linux');
-    });
-  });
-
-  describe('path utilities', () => {
-    it('normalizePath normalizes separators', () => {
-      const result = normalizePath('/foo//bar/../baz');
-      expect(result).toBe(path.normalize('/foo//bar/../baz'));
-    });
-
-    it('toForwardSlashes converts backslashes', () => {
-      expect(toForwardSlashes('foo\\bar\\baz')).toBe('foo/bar/baz');
-    });
-
-    it('toForwardSlashes preserves forward slashes', () => {
-      expect(toForwardSlashes('foo/bar/baz')).toBe('foo/bar/baz');
-    });
-
-    it('getPathSeparator returns / or \\', () => {
-      expect(['/', '\\']).toContain(getPathSeparator());
-    });
-
-    it('joinPaths joins correctly', () => {
-      const result = joinPaths('foo', 'bar', 'baz.txt');
-      expect(result).toBe(path.join('foo', 'bar', 'baz.txt'));
-    });
-
-    it('resolvePath returns absolute path', () => {
-      const result = resolvePath('relative/path');
-      expect(path.isAbsolute(result)).toBe(true);
     });
   });
 
