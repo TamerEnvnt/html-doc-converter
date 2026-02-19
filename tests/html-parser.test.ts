@@ -2,7 +2,7 @@
  * HTML Parser Unit Tests
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   loadHTMLFromString,
   extractChapters,
@@ -283,6 +283,34 @@ describe('HTML Parser', () => {
 
     it('throws error for non-existent file', async () => {
       await expect(parseDocument('/nonexistent/file.html')).rejects.toThrow('HTML file not found');
+    });
+  });
+
+  describe('loadHTML - non-ENOENT errors', () => {
+    it('throws "Failed to load HTML file" for non-ENOENT errors (e.g., EACCES)', async () => {
+      const eaccesError = new Error('EACCES: permission denied') as NodeJS.ErrnoException;
+      eaccesError.code = 'EACCES';
+
+      // Reset module registry so dynamic import gets fresh module with mock
+      vi.resetModules();
+
+      vi.doMock('fs/promises', () => ({
+        readFile: vi.fn().mockRejectedValue(eaccesError),
+      }));
+
+      // Dynamic import to get a fresh module using the mocked fs/promises
+      const { loadHTML } = await import('../src/parsers/html-parser.js');
+
+      await expect(loadHTML('/tmp/unreadable.html')).rejects.toThrow('Failed to load HTML file');
+
+      // Verify error cause chain
+      try {
+        await loadHTML('/tmp/unreadable.html');
+      } catch (error) {
+        expect((error as Error).cause).toBe(eaccesError);
+      }
+
+      vi.doUnmock('fs/promises');
     });
   });
 });

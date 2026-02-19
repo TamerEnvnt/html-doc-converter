@@ -163,6 +163,27 @@ describe('convertToDOCX - mocked', () => {
       expect((err as ConversionError).code).toBe(ErrorCodes.DOCX_FAILED);
     }
   });
+
+  it('throws DOCX_FAILED with String(error) message for non-Error throws', async () => {
+    expect.assertions(3);
+    // Simulate execFile rejecting with a non-Error value (string)
+    mockedExecFile.mockImplementation(
+      (cmd: any, args: any, opts: any, cb: any) => {
+        if (typeof cb === 'function') {
+          cb('string-error-from-process' as any, '', '');
+        }
+        return undefined as any;
+      }
+    );
+
+    try {
+      await convertToDOCX('/tmp/test.html', '/tmp/test.docx');
+    } catch (err) {
+      expect(err).toBeInstanceOf(ConversionError);
+      expect((err as ConversionError).code).toBe(ErrorCodes.DOCX_FAILED);
+      expect((err as ConversionError).message).toContain('string-error-from-process');
+    }
+  });
 });
 
 // ============================================================================
