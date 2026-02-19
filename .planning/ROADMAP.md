@@ -159,10 +159,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 **Goal**: Fix 3 P1 bugs: signal handler hang on Ctrl+C, browser launch no timeout, DOCX timeout || vs ??
 **Depends on**: Milestone v1.3 complete
 **Research**: Unlikely (internal patterns)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 29-01: Fix signal handler hang, browser launch timeout, DOCX ?? operator (3 tasks)
+- [x] 29-01: Fix signal handler hang, browser launch timeout, DOCX ?? operator (3 tasks)
 
 Findings addressed:
 - P1: Signal handlers can hang forever (no force-exit timeout, no re-entrance guard)
