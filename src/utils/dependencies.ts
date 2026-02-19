@@ -16,14 +16,23 @@ import { execFileAsync } from './exec.js';
 // Types
 // ============================================================================
 
-export interface DependencyStatus {
-  name: string;
-  required: boolean;
-  found: boolean;
-  path?: string;
-  version?: string;
-  installHint?: string;
+interface DependencyBase {
+  readonly name: string;
+  readonly required: boolean;
 }
+
+export interface FoundDependency extends DependencyBase {
+  readonly found: true;
+  readonly path: string;
+  readonly version?: string;
+}
+
+export interface MissingDependency extends DependencyBase {
+  readonly found: false;
+  readonly installHint: string;
+}
+
+export type DependencyStatus = FoundDependency | MissingDependency;
 
 export interface DependencyCheckResult {
   allFound: boolean;
@@ -89,66 +98,49 @@ export function getInstallInstructions(dep: string): string {
  * Check if Chromium/Chrome is available via Puppeteer
  */
 async function checkChromium(): Promise<DependencyStatus> {
-  const status: DependencyStatus = {
-    name: 'Chromium (Puppeteer)',
-    required: true,
-    found: false,
-    installHint: getInstallInstructions('chromium'),
-  };
-
   try {
-    // Get Puppeteer's bundled browser path
     const browserPath = puppeteer.executablePath();
 
     if (browserPath) {
-      status.found = true;
-      status.path = browserPath;
-
-      // Try to get version
+      let version: string | undefined;
       try {
         const { stdout } = await execFileAsync(browserPath, ['--version']);
-        status.version = stdout.trim().replace(/^(Chromium|Google Chrome)\s+/i, '');
+        version = stdout.trim().replace(/^(Chromium|Google Chrome)\s+/i, '');
       } catch {
         // Version detection failed, but browser exists
       }
+
+      return { name: 'Chromium (Puppeteer)', required: true, found: true, path: browserPath, version };
     }
   } catch {
-    status.found = false;
+    // Browser detection failed
   }
 
-  return status;
+  return { name: 'Chromium (Puppeteer)', required: true, found: false, installHint: getInstallInstructions('chromium') };
 }
 
 /**
  * Check if LibreOffice is installed
  */
 async function checkLibreOffice(): Promise<DependencyStatus> {
-  const status: DependencyStatus = {
-    name: 'LibreOffice',
-    required: true,
-    found: false,
-    installHint: getInstallInstructions('libreoffice'),
-  };
-
   const sofficePath = await findSoffice();
 
   if (sofficePath) {
-    status.found = true;
-    status.path = sofficePath;
-
-    // Try to get version
+    let version: string | undefined;
     try {
       const { stdout } = await execFileAsync(sofficePath, ['--version']);
       const match = stdout.match(/LibreOffice\s+(\d+\.\d+\.\d+)/);
       if (match) {
-        status.version = match[1];
+        version = match[1];
       }
     } catch {
       // Version detection failed, but soffice exists
     }
+
+    return { name: 'LibreOffice', required: true, found: true, path: sofficePath, version };
   }
 
-  return status;
+  return { name: 'LibreOffice', required: true, found: false, installHint: getInstallInstructions('libreoffice') };
 }
 
 // ============================================================================
@@ -195,14 +187,11 @@ export function formatDependencyReport(result: DependencyCheckResult): string {
       if (dep.version) {
         lines.push(`       ${colors.dim('Version:')} ${dep.version}`);
       }
-      if (dep.path) {
-        lines.push(`       ${colors.dim('Path:')} ${dep.path}`);
-      }
+      lines.push(`       ${colors.dim('Path:')} ${dep.path}`);
     } else {
       lines.push('');
       // Indent install hint
-      const hint = dep.installHint || 'No installation instructions available.';
-      const indentedHint = hint
+      const indentedHint = dep.installHint
         .split('\n')
         .map((line) => `       ${line}`)
         .join('\n');
