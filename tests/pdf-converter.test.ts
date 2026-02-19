@@ -426,3 +426,71 @@ describe('convertHTMLStringToPDF', () => {
     }
   });
 });
+
+describe('PDFOptions validation', () => {
+  let mockBrowser: ReturnType<typeof createMockBrowser>;
+  let mockPage: ReturnType<typeof createMockPage>;
+
+  beforeEach(async () => {
+    disconnectHandlers = [];
+    await closeBrowser();
+    vi.clearAllMocks();
+
+    mockPage = createMockPage();
+    mockBrowser = createMockBrowser();
+    mockBrowser.newPage.mockResolvedValue(mockPage);
+    vi.mocked(puppeteer.launch).mockResolvedValue(mockBrowser as unknown as Browser);
+  });
+
+  it('throws INVALID_FORMAT when scale is below minimum (0.05)', async () => {
+    expect.assertions(2);
+    try {
+      await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { scale: 0.05 });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.INVALID_FORMAT);
+    }
+  });
+
+  it('throws INVALID_FORMAT when scale is above maximum (3.0)', async () => {
+    expect.assertions(2);
+    try {
+      await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { scale: 3.0 });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.INVALID_FORMAT);
+    }
+  });
+
+  it('does not throw when scale is at lower boundary (0.1)', async () => {
+    mockPage.pdf.mockResolvedValue(Buffer.from('pdf'));
+    const result = await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { scale: 0.1 });
+    expect(result).toHaveProperty('buffer');
+  });
+
+  it('does not throw when scale is at upper boundary (2.0)', async () => {
+    mockPage.pdf.mockResolvedValue(Buffer.from('pdf'));
+    const result = await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { scale: 2.0 });
+    expect(result).toHaveProperty('buffer');
+  });
+
+  it('throws INVALID_TIMEOUT when timeout is 0', async () => {
+    expect.assertions(2);
+    try {
+      await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { timeout: 0 });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.INVALID_TIMEOUT);
+    }
+  });
+
+  it('throws INVALID_TIMEOUT when timeout is negative', async () => {
+    expect.assertions(2);
+    try {
+      await convertHTMLStringToPDF('<html><body>test</body></html>', '/tmp/test.pdf', { timeout: -5000 });
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConversionError);
+      expect((error as ConversionError).code).toBe(ErrorCodes.INVALID_TIMEOUT);
+    }
+  });
+});

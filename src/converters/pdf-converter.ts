@@ -118,6 +118,15 @@ function isTimeoutError(error: unknown): boolean {
 
 /** Build merged PDF options from user options + defaults */
 function buildPdfOptions(outputPath: string, options: PDFOptions, timeout: number) {
+  // Library-level validation: catch invalid values at the boundary
+  if (options.scale !== undefined && (options.scale < 0.1 || options.scale > 2)) {
+    throw createError(ErrorCodes.INVALID_FORMAT,
+      `PDF scale must be between 0.1 and 2, got ${options.scale}`);
+  }
+  if (timeout <= 0) {
+    throw createError(ErrorCodes.INVALID_TIMEOUT, String(timeout));
+  }
+
   return {
     path: outputPath,
     format: options.format || 'A4',
@@ -178,7 +187,7 @@ export async function convertToPDF(
 
     // Load HTML file with file:// protocol
     const absolutePath = path.resolve(htmlPath);
-    const navigationTimeout = options.timeout || 60000;
+    const navigationTimeout = options.timeout ?? 60000;
     try {
       await page.goto(`file://${absolutePath}`, {
         waitUntil: 'networkidle0', // Wait for all resources
@@ -245,7 +254,7 @@ export async function convertToPDF(
     }
 
     // Generate PDF with merged options
-    const pdfTimeout = options.timeout || 60000;
+    const pdfTimeout = options.timeout ?? 60000;
     const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
     const buffer = await generatePdf(page, pdfOptions);
 
@@ -294,7 +303,7 @@ export async function convertHTMLStringToPDF(
   const page = await browser.newPage();
 
   try {
-    const contentTimeout = options.timeout || 60000;
+    const contentTimeout = options.timeout ?? 60000;
     try {
       await page.setContent(html, { waitUntil: 'networkidle0', timeout: contentTimeout });
     } catch (error) {
@@ -339,7 +348,7 @@ export async function convertHTMLStringToPDF(
     }
 
     // Generate PDF with merged options
-    const pdfTimeout = options.timeout || 60000;
+    const pdfTimeout = options.timeout ?? 60000;
     const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
     const buffer = await generatePdf(page, pdfOptions);
 
