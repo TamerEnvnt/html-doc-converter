@@ -145,6 +145,127 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 - ✅ **v1.1 Security & Quality** - Phases 11-15 (shipped 2026-02-08)
 - ✅ **v1.2 Robustness & API Quality** - Phases 16-23 (shipped 2026-02-15)
 - ✅ **v1.3 Polish & Cleanup** - Phases 24-28 (shipped 2026-02-19)
+- 🚧 **v1.4 Review Findings** - Phases 29-36 (in progress)
+
+---
+
+### 🚧 v1.4 Review Findings (In Progress)
+
+**Milestone Goal:** Address 28 findings from comprehensive 5-agent codebase review -- fix critical bugs, eliminate silent failures, improve error messages, harden process lifecycle, clean up API surface, strengthen types, and expand test coverage.
+
+**Source:** Full 5-agent review (2026-02-19): Code Review, Silent Failure Hunter, Architecture & Performance, Type Design, Test Coverage.
+
+#### Phase 29: Critical Fixes
+**Goal**: Fix 3 P1 bugs: signal handler hang on Ctrl+C, browser launch no timeout, DOCX timeout || vs ??
+**Depends on**: Milestone v1.3 complete
+**Research**: Unlikely (internal patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 29-01: TBD (run /gsd:plan-phase 29 to break down)
+
+Findings addressed:
+- P1: Signal handlers can hang forever (no force-exit timeout, no re-entrance guard)
+- P1: Browser launch has no timeout (puppeteer.launch() hangs indefinitely)
+- P1: DOCX timeout uses || instead of ?? (timeout:0 silently becomes 60000)
+
+#### Phase 30: Error Message Quality
+**Goal**: Wrap browser launch errors with specific messages, use ConversionError in html-parser, add verbose logging to silent catch blocks
+**Depends on**: Phase 29
+**Research**: Unlikely (internal patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 30-01: TBD
+
+Findings addressed:
+- P1: Browser launch errors give misleading "PDF generation failed" message
+- P1: html-parser throws plain Error instead of ConversionError
+- P2: closeBrowser() and page.close() silently discard all errors without verbose logging
+
+#### Phase 31: Process Lifecycle Hardening
+**Goal**: Refactor process.exit() placement for reliable cleanup, add unhandledRejection handler
+**Depends on**: Phase 30
+**Research**: Unlikely (Node.js patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 31-01: TBD
+
+Findings addressed:
+- P2: process.exit() inside try block relies on fragile cleanup ordering
+- P2: No unhandledRejection handler (raw stack traces on uncaught rejections)
+
+#### Phase 32: Silent Failure Elimination
+**Goal**: Distinguish expected from unexpected errors in 5 catch blocks across soffice, dependencies, CLI, and platform
+**Depends on**: Phase 31
+**Research**: Unlikely (internal patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 32-01: TBD
+
+Findings addressed:
+- P1: which/where fallback catches ALL errors as "not found" (EPERM, EMFILE, ENOMEM)
+- P1: Chromium detection catches ALL errors as "not installed" (corrupted Puppeteer)
+- P2: fs.access catch blocks treat EACCES/EIO as "file doesn't exist"
+- P2: Platform fallback to linux only logged at verbose level
+- P2: LibreOffice version regex too strict for 4-part versions
+
+#### Phase 33: API & Performance Cleanup
+**Goal**: Remove getBrowser() from public API, extract timeout constants, fix O(n^2) string concatenation, add scale NaN validation
+**Depends on**: Phase 32
+**Research**: Unlikely (internal patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 33-01: TBD
+
+Findings addressed:
+- P2: getBrowser() exposed in public API (implementation detail)
+- P2: Hardcoded timeout magic numbers (60000 in 5+ locations)
+- P2: String concatenation O(n^2) in chapter content extraction
+- P3: Scale NaN validation gap
+
+#### Phase 34: Type Safety
+**Goal**: Add readonly to html-parser types, name anonymous return types, narrow CLIOptions.format
+**Depends on**: Phase 33
+**Research**: Unlikely (TypeScript patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 34-01: TBD
+
+Findings addressed:
+- P2: Chapter, DocumentMetadata, ParsedDocument missing readonly (0/13 fields)
+- P2: DependencyCheckResult.allFound is derived/redundant field
+- P2: validateInputFile return type is anonymous
+- P2: CLIOptions.format typed as unconstrained string
+
+#### Phase 35: Test Coverage
+**Goal**: Fill test gaps: CLI docx-only path, partial failure exit code, version extraction mocks, isHeadingLevel direct tests
+**Depends on**: Phase 34
+**Research**: Unlikely (vitest patterns)
+**Plans**: TBD
+
+Plans:
+- [ ] 35-01: TBD
+
+Findings addressed:
+- P2: No CLI test for --docx-only path
+- P2: No test for partial failure exit code (exit 2)
+- P2: No mocked tests for checkChromium/checkLibreOffice version extraction
+- P2: isHeadingLevel type guard not directly tested
+- P3: DOCX outputDir success path not tested
+
+#### Phase 36: Verification
+**Goal**: Full test suite run, coverage verification, confirm all 28 findings addressed
+**Depends on**: Phase 35
+**Research**: Unlikely
+**Plans**: TBD
+
+Plans:
+- [ ] 36-01: TBD
 
 ---
 

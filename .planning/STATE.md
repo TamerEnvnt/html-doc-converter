@@ -5,15 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-02-19)
 
 **Core value:** Both outputs must be high quality: PDF with visual fidelity, DOCX with real document structure for genuine editing.
-**Current focus:** All milestones complete. Project production-ready.
+**Current focus:** Address 28 findings from comprehensive 5-agent review.
 
 ## Current Position
 
-Milestone: v1.3 (Polish & Cleanup) -- SHIPPED 2026-02-19
-Status: All 4 milestones shipped (v1.0, v1.1, v1.2, v1.3)
-Last activity: 2026-02-19 -- v1.3 milestone archived
+Milestone: v1.4 (Review Findings) -- Phases 29-36
+Phase: 29 of 36 (Critical Fixes)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-02-19 -- Milestone v1.4 created
 
-Progress (All milestones): ########## 100%
+Progress (v1.4): ░░░░░░░░░░ 0%
 
 ## Shipped Milestones
 
@@ -23,6 +25,15 @@ Progress (All milestones): ########## 100%
 | v1.1 Security | 11-15 | 5 | 134 | 74.5% stmts | 2026-02-08 |
 | v1.2 Robustness | 16-23 | 11 | 185 | 82.36% stmts | 2026-02-15 |
 | v1.3 Polish | 24-28 | 9 | 194 | 82.2% stmts | 2026-02-19 |
+
+## v1.4 Review Source
+
+28 findings from 5-agent parallel review (2026-02-19):
+- Code Review: 2 P1, 4 P2, 3 P3
+- Silent Failure Hunter: 14 findings (5 HIGH, 7 MEDIUM, 2 LOW)
+- Architecture & Performance: clean architecture, performance items
+- Type Design: 3.9/5 average, 4 types need readonly
+- Test Coverage: CLI 0% (child process gap), 5 test gaps
 
 ## Current Codebase
 
@@ -55,4 +66,4 @@ src/
 ## Session Continuity
 
 Last session: 2026-02-19
-Status: v1.3 milestone archived. No active work.
+Status: Milestone v1.4 created. Ready to plan Phase 29.
