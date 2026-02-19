@@ -275,13 +275,26 @@ program
   });
 
 // Graceful cleanup on termination signals
+let shuttingDown = false;
+
 const handleSignal = async (signal: string): Promise<void> => {
+  const exitCode = 128 + (signal === 'SIGINT' ? 2 : 15);
+
+  if (shuttingDown) {
+    process.exit(exitCode);
+  }
+  shuttingDown = true;
+
   verbose(`Received ${signal}, cleaning up...`);
+
+  // Force-exit if cleanup hangs
+  setTimeout(() => process.exit(exitCode), 3000).unref();
+
   await closeBrowser();
-  process.exit(128 + (signal === 'SIGINT' ? 2 : 15));
+  process.exit(exitCode);
 };
 
-process.on('SIGINT', () => { handleSignal('SIGINT').catch(() => process.exit(130)); });
-process.on('SIGTERM', () => { handleSignal('SIGTERM').catch(() => process.exit(143)); });
+process.on('SIGINT', () => { handleSignal('SIGINT').catch((err) => { verbose('Signal cleanup error:', err); process.exit(130); }); });
+process.on('SIGTERM', () => { handleSignal('SIGTERM').catch((err) => { verbose('Signal cleanup error:', err); process.exit(143); }); });
 
 program.parse();
