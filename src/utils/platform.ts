@@ -4,8 +4,6 @@
  * Cross-platform utilities for detecting OS.
  */
 
-import { verbose } from './logger.js';
-
 // ============================================================================
 // Types
 // ============================================================================
@@ -24,7 +22,7 @@ export function getPlatform(): Platform {
   if (p === 'darwin' || p === 'linux' || p === 'win32') {
     return p;
   }
-  verbose('Unknown platform:', p, '- falling back to linux');
+  console.warn(`Warning: Unknown platform '${p}', falling back to Linux paths`);
   return 'linux';
 }
 

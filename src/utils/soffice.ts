@@ -9,6 +9,7 @@ import * as fs from 'fs/promises';
 import { getPlatform } from './platform.js';
 import type { Platform } from './platform.js';
 import { execFileAsync } from './exec.js';
+import { verbose } from './logger.js';
 
 
 // ============================================================================
@@ -44,10 +45,13 @@ export async function findSoffice(): Promise<string | null> {
       await fs.access(p, fs.constants.X_OK);
       return p;
     } catch (err) {
-      if ((err as NodeJS.ErrnoException).code === 'EACCES') {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === 'EACCES') {
         throw new Error(`LibreOffice found at ${p} but lacks execute permission`);
       }
-      // ENOENT or other: try next path
+      if (code !== 'ENOENT') {
+        verbose(`Unexpected error checking ${p}:`, code || (err instanceof Error ? err.message : String(err)));
+      }
       continue;
     }
   }
@@ -57,7 +61,14 @@ export async function findSoffice(): Promise<string | null> {
     const binary = platform === 'win32' ? 'where' : 'which';
     const { stdout } = await execFileAsync(binary, ['soffice']);
     return stdout.trim().split('\n')[0];
-  } catch {
+  } catch (err) {
+    // Exit code 1 = not found (expected), other errors are unexpected
+    const isNotFound = err instanceof Error && 'code' in err &&
+      ((err as NodeJS.ErrnoException).code === 'ENOENT' ||
+       (err as { code?: string | number }).code === 1);
+    if (!isNotFound) {
+      verbose('Unexpected error in soffice PATH lookup:', err instanceof Error ? err.message : String(err));
+    }
     return null;
   }
 }
