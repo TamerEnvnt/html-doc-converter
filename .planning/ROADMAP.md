@@ -276,7 +276,7 @@ Findings addressed:
 - Resolved: parseTimeout('') unreachable branch
 
 Plans:
-- [ ] 28-01: P1 test coverage (soffice EACCES/fallback, pdf non-timeout rethrow, docx non-Error throw, html-parser non-ENOENT) (3 tasks)
+- [x] 28-01: P1 test coverage (soffice EACCES/fallback, pdf non-timeout rethrow, docx non-Error throw, html-parser non-ENOENT) (3 tasks)
 - [ ] 28-02: P2 test coverage + final verification (platform getPlatformName, dependencies optional dep, coverage check) (2 tasks)
 
 ### Milestone 4 Progress
@@ -287,4 +287,4 @@ Plans:
 | 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
 | 26. Code Deduplication & Cleanup | v1.3 | 2/2 | Complete | 2026-02-19 |
 | 27. Type Design & Safety | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 28. Test Coverage & Verification | v1.3 | 0/2 | Planned | - |
+| 28. Test Coverage & Verification | v1.3 | 1/2 | In Progress | - |
