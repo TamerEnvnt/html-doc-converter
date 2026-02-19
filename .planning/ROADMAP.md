@@ -144,7 +144,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 - ✅ **v1.0 MVP** - Phases 1-10 (shipped 2026-02-04)
 - ✅ **v1.1 Security & Quality** - Phases 11-15 (shipped 2026-02-08)
 - ✅ **v1.2 Robustness & API Quality** - Phases 16-23 (shipped 2026-02-15)
-- 🚧 **v1.3 Polish & Cleanup** - Phases 24-28 (in progress)
+- ✅ **v1.3 Polish & Cleanup** - Phases 24-28 (shipped 2026-02-19)
 
 ---
 
@@ -175,7 +175,7 @@ Full details: [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
 
 ---
 
-### 🚧 v1.3 Polish & Cleanup (In Progress)
+### v1.3 Polish & Cleanup (SHIPPED 2026-02-19)
 
 **Milestone Goal:** Fix remaining P1 bugs from post-v1.2 review, eliminate code duplication, remove dead code, improve type safety, and fill test coverage gaps.
 
@@ -277,7 +277,7 @@ Findings addressed:
 
 Plans:
 - [x] 28-01: P1 test coverage (soffice EACCES/fallback, pdf non-timeout rethrow, docx non-Error throw, html-parser non-ENOENT) (3 tasks)
-- [ ] 28-02: P2 test coverage + final verification (platform getPlatformName, dependencies optional dep, coverage check) (2 tasks)
+- [x] 28-02: P2 test coverage + final verification (platform getPlatformName, dependencies optional dep, coverage check) (2 tasks)
 
 ### Milestone 4 Progress
 
@@ -287,4 +287,4 @@ Plans:
 | 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
 | 26. Code Deduplication & Cleanup | v1.3 | 2/2 | Complete | 2026-02-19 |
 | 27. Type Design & Safety | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 28. Test Coverage & Verification | v1.3 | 1/2 | In Progress | - |
+| 28. Test Coverage & Verification | v1.3 | 2/2 | Complete | 2026-02-19 |
