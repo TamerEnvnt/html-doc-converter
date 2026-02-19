@@ -79,6 +79,7 @@ Examples:
     let successCount = 0;
     let errorCount = 0;
     const createdFiles: string[] = [];
+    let exitCode = 0;
 
     try {
       // Resolve and validate input path
@@ -228,11 +229,11 @@ Examples:
       }
       console.log('');
 
-      // Exit with appropriate code
+      // Set exit code for failures (actual exit deferred to finally block)
       if (errorCount > 0 && successCount === 0) {
-        process.exit(1);  // Complete failure
+        exitCode = 1;  // Complete failure
       } else if (errorCount > 0) {
-        process.exit(2);  // Partial failure (some succeeded, some failed)
+        exitCode = 2;  // Partial failure (some succeeded, some failed)
       }
 
     } catch (error) {
@@ -243,9 +244,12 @@ Examples:
         console.error('Error:', error instanceof Error ? error.message : error);
       }
       console.error('');
-      process.exit(1);
+      exitCode = 1;
     } finally {
       await closeBrowser();
+      if (exitCode !== 0) {
+        process.exit(exitCode);
+      }
     }
   });
 
@@ -254,6 +258,7 @@ program
   .command('check')
   .description('Check system dependencies (LibreOffice, Chromium)')
   .action(async () => {
+    let exitCode = 0;
     try {
       console.log('');
       console.log('Checking dependencies...');
@@ -261,7 +266,7 @@ program
       const result = await checkDependencies();
       console.log(formatDependencyReport(result));
       console.log('');
-      process.exit(result.allFound ? 0 : 1);
+      exitCode = result.allFound ? 0 : 1;
     } catch (error) {
       console.error('');
       if (error instanceof ConversionError) {
@@ -270,7 +275,11 @@ program
         console.error('Error checking dependencies:', error instanceof Error ? error.message : error);
       }
       console.error('');
-      process.exit(1);
+      exitCode = 1;
+    } finally {
+      if (exitCode !== 0) {
+        process.exit(exitCode);
+      }
     }
   });
 
