@@ -306,4 +306,15 @@ const handleSignal = async (signal: string): Promise<void> => {
 process.on('SIGINT', () => { handleSignal('SIGINT').catch((err) => { verbose('Signal cleanup error:', err); process.exit(130); }); });
 process.on('SIGTERM', () => { handleSignal('SIGTERM').catch((err) => { verbose('Signal cleanup error:', err); process.exit(143); }); });
 
+process.on('unhandledRejection', (reason: unknown) => {
+  console.error('');
+  if (reason instanceof ConversionError) {
+    console.error(formatError(reason));
+  } else {
+    console.error('Unexpected error:', reason instanceof Error ? reason.message : String(reason));
+  }
+  console.error('');
+  process.exit(1);
+});
+
 program.parse();
