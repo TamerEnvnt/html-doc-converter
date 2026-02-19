@@ -8,6 +8,7 @@ import * as cheerio from 'cheerio';
 import type { CheerioAPI } from 'cheerio';
 import type { Element } from 'domhandler';
 import { readFile } from 'fs/promises';
+import { createError, ErrorCodes } from '../utils/errors.js';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -48,9 +49,9 @@ export async function loadHTML(filePath: string): Promise<CheerioAPI> {
     return cheerio.load(html);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      throw new Error(`HTML file not found: ${filePath}`, { cause: error });
+      throw createError(ErrorCodes.INPUT_NOT_FOUND, filePath);
     }
-    throw new Error(`Failed to load HTML file: ${(error as Error).message}`, { cause: error });
+    throw createError(ErrorCodes.UNKNOWN, `Failed to load HTML file: ${(error as Error).message}`);
   }
 }
 

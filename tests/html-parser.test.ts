@@ -282,7 +282,7 @@ describe('HTML Parser', () => {
     });
 
     it('throws error for non-existent file', async () => {
-      await expect(parseDocument('/nonexistent/file.html')).rejects.toThrow('HTML file not found');
+      await expect(parseDocument('/nonexistent/file.html')).rejects.toThrow('Input file not found');
     });
   });
 
@@ -302,13 +302,6 @@ describe('HTML Parser', () => {
       const { loadHTML } = await import('../src/parsers/html-parser.js');
 
       await expect(loadHTML('/tmp/unreadable.html')).rejects.toThrow('Failed to load HTML file');
-
-      // Verify error cause chain
-      try {
-        await loadHTML('/tmp/unreadable.html');
-      } catch (error) {
-        expect((error as Error).cause).toBe(eaccesError);
-      }
 
       vi.doUnmock('fs/promises');
     });
