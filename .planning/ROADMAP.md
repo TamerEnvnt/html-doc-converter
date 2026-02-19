@@ -254,7 +254,7 @@ Findings addressed:
 
 Plans:
 - [x] 27-01: DependencyStatus discriminated union + PDFOptions library-level validation (2 tasks)
-- [ ] 27-02: HeadingLevel type guard + readonly result types + colors extraction + CLI options naming (2 tasks)
+- [x] 27-02: HeadingLevel type guard + readonly result types + colors extraction + CLI options naming (2 tasks)
 
 #### Phase 28: Test Coverage & Verification
 **Goal:** Fill P1 test gaps (soffice EACCES, string-to-pdf timeout, non-Error throws), add P2 tests, final verification
@@ -282,5 +282,5 @@ Plans:
 | 24. Critical Bug Fixes | v1.3 | 1/1 | Complete | 2026-02-15 |
 | 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
 | 26. Code Deduplication & Cleanup | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 27. Type Design & Safety | v1.3 | 1/2 | In Progress | - |
+| 27. Type Design & Safety | v1.3 | 2/2 | Complete | 2026-02-19 |
 | 28. Test Coverage & Verification | v1.3 | 0/? | Not started | - |

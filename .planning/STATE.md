@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 ## Current Position
 
 Milestone: 4 (v1.3 Polish & Cleanup)
-Phase: 27 of 28 (Type Design & Safety)
-Plan: 27-01 complete, 27-02 ready for execution
-Status: Phase 27 in progress (1/2 plans)
-Last activity: 2026-02-19 -- Plan 27-01 executed (type safety: discriminated union + PDFOptions validation)
+Phase: 27 of 28 (Type Design & Safety) -- COMPLETE
+Plan: 27-02 complete (2/2 plans)
+Status: Phase 27 complete. Ready for Phase 28.
+Last activity: 2026-02-19 -- Plan 27-02 executed (HeadingLevel type guard, readonly result types, colors extraction, CLI options naming)
 
-Progress (Milestone 4): ######░░░░ 60%
+Progress (Milestone 4): ########░░ 80%
 
 ## Milestone 4 Overview
 
@@ -24,7 +24,7 @@ Progress (Milestone 4): ######░░░░ 60%
 | 24 | `phases/24-critical-bug-fixes` | P1 | Complete (1 plan, 3 tasks) |
 | 25 | `phases/25-error-handling-gaps` | P1/P2 | Complete (2 plans, 5 tasks) |
 | 26 | `phases/26-code-deduplication-cleanup` | P1/P2 | Complete (2 plans, 4 tasks) |
-| 27 | `phases/27-type-design-safety` | P1/P2 | Planned (2 plans, 4 tasks) |
+| 27 | `phases/27-type-design-safety` | P1/P2 | Complete (2 plans, 4 tasks) |
 | 28 | `phases/28-test-coverage-verification` | P1/P2 | Not started |
 
 ## Review Findings Source
@@ -39,7 +39,7 @@ Full 5-agent codebase review (2026-02-15) post-v1.2:
 
 ## Current Codebase
 
-### Source files (12 files, ~2,279 lines)
+### Source files (13 files, ~2,300 lines)
 ```
 src/
   cli.ts                   - CLI entry point (Commander, signal handlers, path validation)
@@ -51,6 +51,7 @@ src/
   parsers/
     html-parser.ts         - Cheerio HTML parsing (public library API)
   utils/
+    colors.ts              - ANSI terminal colors (respects NO_COLOR)
     dependencies.ts        - Dep checking (execFile, no shell)
     errors.ts              - Error types (12 codes, exhaustive switch)
     exec.ts                - Shared promisify execFile utility
@@ -107,4 +108,4 @@ src/
 ## Session Continuity
 
 Last session: 2026-02-19
-Status: Plan 27-01 complete. Ready for Plan 27-02 execution.
+Status: Phase 27 complete (2/2 plans). Ready for Phase 28 planning.
