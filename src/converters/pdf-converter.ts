@@ -8,6 +8,7 @@ import puppeteer, { Browser } from 'puppeteer';
 import path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
 import { createError, ErrorCodes } from '../utils/errors.js';
+import { verbose } from '../utils/logger.js';
 
 // ============================================================================
 // Types
@@ -103,9 +104,8 @@ export async function closeBrowser(): Promise<void> {
   if (instance) {
     try {
       await instance.close();
-    } catch {
-      // Silently discard close errors - this is cleanup code
-      // and must be safe for use in finally blocks
+    } catch (error) {
+      verbose('Browser close error (non-fatal):', error instanceof Error ? error.message : String(error));
     }
   }
 }
@@ -267,8 +267,8 @@ export async function convertToPDF(
   } finally {
     try {
       await page.close();
-    } catch {
-      // Silently discard close errors - cleanup must not mask conversion errors
+    } catch (error) {
+      verbose('Page close error (non-fatal):', error instanceof Error ? error.message : String(error));
     }
   }
 }
@@ -361,8 +361,8 @@ export async function convertHTMLStringToPDF(
   } finally {
     try {
       await page.close();
-    } catch {
-      // Silently discard close errors - cleanup must not mask conversion errors
+    } catch (error) {
+      verbose('Page close error (non-fatal):', error instanceof Error ? error.message : String(error));
     }
   }
 }
