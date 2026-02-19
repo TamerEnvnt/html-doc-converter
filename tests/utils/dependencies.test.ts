@@ -82,6 +82,20 @@ describe('dependencies', () => {
       expect(report).toContain('BasicDep');
       expect(report).toContain('/usr/bin/basic');
     });
+
+    it('shows optional label for non-required dependency', () => {
+      const result: DependencyCheckResult = {
+        allFound: true,
+        dependencies: [
+          { name: 'OptionalDep', required: false, found: true as const, path: '/usr/bin/optional' },
+        ],
+      };
+
+      const report = formatDependencyReport(result);
+      expect(report).toContain('OptionalDep');
+      expect(report).toContain('optional');
+      expect(report).toContain('/usr/bin/optional');
+    });
   });
 
   describe('checkDependencies', () => {

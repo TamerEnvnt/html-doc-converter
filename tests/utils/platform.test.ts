@@ -38,5 +38,45 @@ describe('platform', () => {
       };
       expect(name).toBe(expected[platform]);
     });
+
+    it('returns macOS for darwin platform', () => {
+      const originalPlatform = process.platform;
+      Object.defineProperty(process, 'platform', { value: 'darwin', configurable: true });
+      try {
+        expect(getPlatformName()).toBe('macOS');
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
+
+    it('returns Windows for win32 platform', () => {
+      const originalPlatform = process.platform;
+      Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+      try {
+        expect(getPlatformName()).toBe('Windows');
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
+
+    it('returns Linux for linux platform', () => {
+      const originalPlatform = process.platform;
+      Object.defineProperty(process, 'platform', { value: 'linux', configurable: true });
+      try {
+        expect(getPlatformName()).toBe('Linux');
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
+
+    it('returns raw platform string for unknown platform', () => {
+      const originalPlatform = process.platform;
+      Object.defineProperty(process, 'platform', { value: 'aix', configurable: true });
+      try {
+        expect(getPlatformName()).toBe('aix');
+      } finally {
+        Object.defineProperty(process, 'platform', { value: originalPlatform, configurable: true });
+      }
+    });
   });
 });
