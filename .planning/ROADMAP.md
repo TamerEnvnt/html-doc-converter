@@ -190,7 +190,7 @@ Findings addressed:
 **Plans**: TBD
 
 Plans:
-- [ ] 31-01: TBD
+- [ ] 31-01: Move process.exit() after cleanup + unhandledRejection handler (2 tasks)
 
 Findings addressed:
 - P2: process.exit() inside try block relies on fragile cleanup ordering
