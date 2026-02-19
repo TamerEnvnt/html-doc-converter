@@ -64,6 +64,7 @@ export async function getBrowser(): Promise<Browser> {
   browserLaunchPromise = puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    timeout: 30000,
   });
 
   try {
@@ -79,7 +80,11 @@ export async function getBrowser(): Promise<Browser> {
     return browser;
   } catch (error) {
     // Clear promise so next call retries instead of caching a rejected promise
-    throw error;
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes('timeout')) {
+      throw createError(ErrorCodes.TIMEOUT, 'Browser launch timed out after 30000ms');
+    }
+    throw createError(ErrorCodes.PDF_FAILED, 'Failed to launch browser: ' + message);
   } finally {
     browserLaunchPromise = null;
   }
