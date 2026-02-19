@@ -162,7 +162,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 **Plans**: TBD
 
 Plans:
-- [ ] 29-01: TBD (run /gsd:plan-phase 29 to break down)
+- [ ] 29-01: Fix signal handler hang, browser launch timeout, DOCX ?? operator (3 tasks)
 
 Findings addressed:
 - P1: Signal handlers can hang forever (no force-exit timeout, no re-entrance guard)

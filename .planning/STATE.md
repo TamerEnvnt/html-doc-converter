@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 
 Milestone: v1.4 (Review Findings) -- Phases 29-36
 Phase: 29 of 36 (Critical Fixes)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-19 -- Milestone v1.4 created
+Plan: 29-01 planned (3 tasks: signal handlers, browser launch timeout, DOCX ?? fix)
+Status: Ready to execute
+Last activity: 2026-02-19 -- Phase 29 planned
 
 Progress (v1.4): ░░░░░░░░░░ 0%
 
