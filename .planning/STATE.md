@@ -11,11 +11,11 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 
 Milestone: 4 (v1.3 Polish & Cleanup)
 Phase: 26 of 28 (Code Deduplication & Cleanup)
-Plan: 26-01 complete, 26-02 ready
-Status: Plan 26-01 executed
-Last activity: 2026-02-18 -- Plan 26-01 executed
+Plan: 26-02 complete (phase complete)
+Status: Phase 26 complete
+Last activity: 2026-02-19 -- Phase 26 complete
 
-Progress (Milestone 4): #####░░░░░ 50%
+Progress (Milestone 4): ######░░░░ 60%
 
 ## Milestone 4 Overview
 
@@ -23,7 +23,7 @@ Progress (Milestone 4): #####░░░░░ 50%
 |-------|-----------|----------|--------|
 | 24 | `phases/24-critical-bug-fixes` | P1 | Complete (1 plan, 3 tasks) |
 | 25 | `phases/25-error-handling-gaps` | P1/P2 | Complete (2 plans, 5 tasks) |
-| 26 | `phases/26-code-deduplication-cleanup` | P1/P2 | In progress (1/2 plans) |
+| 26 | `phases/26-code-deduplication-cleanup` | P1/P2 | Complete (2 plans, 4 tasks) |
 | 27 | `phases/27-type-design-safety` | P1/P2 | Not started |
 | 28 | `phases/28-test-coverage-verification` | P1/P2 | Not started |
 
@@ -53,15 +53,16 @@ src/
   utils/
     dependencies.ts        - Dep checking (execFile, no shell)
     errors.ts              - Error types (12 codes, exhaustive switch)
-    logger.ts              - Verbose logging
+    exec.ts                - Shared promisify execFile utility
+    logger.ts              - Verbose logging (setVerbose + verbose)
     output-handler.ts      - Path resolution + validatePath()
-    platform.ts            - Platform detection
+    platform.ts            - Platform detection (getPlatform + getPlatformName)
     soffice.ts             - LibreOffice path detection
 ```
 
 ### Test suite
-- 12 test files, 192 tests (190 passed, 2 skipped)
-- Coverage: 82.35% statements, 82.01% branches, 96.42% functions, 82.35% lines
+- 12 test files, 171 tests (169 passed, 2 skipped)
+- Coverage: 81.21% statements, 80.99% branches, 95.34% functions, 81.21% lines
 
 ## Accumulated Decisions
 
@@ -92,6 +93,9 @@ src/
 - Single I/O pattern: one fs.readFile with ENOENT check replaces access+stat+readFile chain [Phase 25]
 - Extension validation before I/O: check file type before reading [Phase 25]
 - Error code discrimination: check ErrnoException.code for specific fs error handling [Phase 25]
+- Internal helper extraction for module-level deduplication [Phase 26]
+- Shared utility pattern for cross-module operations (exec.ts) [Phase 26]
+- Dead code removal: verify unused via grep before removing [Phase 26]
 
 ### Roadmap Evolution
 
@@ -102,5 +106,5 @@ src/
 
 ## Session Continuity
 
-Last session: 2026-02-18
-Status: Plan 26-01 executed (PDF dedup + promisify consolidation). Ready for 26-02.
+Last session: 2026-02-19
+Status: Phase 26 complete. Ready for /gsd:plan-phase 27.
