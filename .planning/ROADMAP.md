@@ -200,10 +200,10 @@ Findings addressed:
 **Goal**: Distinguish expected from unexpected errors in 5 catch blocks across soffice, dependencies, CLI, and platform
 **Depends on**: Phase 31
 **Research**: Unlikely (internal patterns)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 32-01: TBD
+- [x] 32-01: Tighten 5 catch blocks across soffice, dependencies, platform, docx-converter (2 tasks)
 
 Findings addressed:
 - P1: which/where fallback catches ALL errors as "not found" (EPERM, EMFILE, ENOMEM)
