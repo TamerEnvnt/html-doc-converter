@@ -187,10 +187,10 @@ Findings addressed:
 **Goal**: Refactor process.exit() placement for reliable cleanup, add unhandledRejection handler
 **Depends on**: Phase 30
 **Research**: Unlikely (Node.js patterns)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 31-01: Move process.exit() after cleanup + unhandledRejection handler (2 tasks)
+- [x] 31-01: Move process.exit() after cleanup + unhandledRejection handler (2 tasks)
 
 Findings addressed:
 - P2: process.exit() inside try block relies on fragile cleanup ordering
