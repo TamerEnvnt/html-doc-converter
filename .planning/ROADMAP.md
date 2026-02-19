@@ -176,7 +176,7 @@ Findings addressed:
 **Plans**: TBD
 
 Plans:
-- [ ] 30-01: TBD
+- [ ] 30-01: html-parser ConversionError + verbose logging in cleanup catch blocks (2 tasks)
 
 Findings addressed:
 - P1: Browser launch errors give misleading "PDF generation failed" message
