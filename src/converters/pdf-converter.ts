@@ -32,7 +32,7 @@ export interface PDFOptions {
 }
 
 export interface PDFResult {
-  buffer: Buffer;
+  readonly buffer: Buffer;
 }
 
 // ============================================================================

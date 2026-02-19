@@ -27,10 +27,10 @@ export function validatePath(resolvedPath: string, allowedRoot?: string): void {
 }
 
 export interface OutputPaths {
-  pdf: string;
-  docx: string;
-  baseName: string;
-  outputDir: string;
+  readonly pdf: string;
+  readonly docx: string;
+  readonly baseName: string;
+  readonly outputDir: string;
 }
 
 /**

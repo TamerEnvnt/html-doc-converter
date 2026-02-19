@@ -23,7 +23,7 @@ export interface DOCXOptions {
 }
 
 export interface DOCXResult {
-  outputPath: string;
+  readonly outputPath: string;
 }
 
 // ============================================================================

@@ -28,6 +28,7 @@ export {
   extractChapters,
   extractMetadata,
   parseDocument,
+  isHeadingLevel,
 } from './parsers/html-parser.js';
 export type {
   HeadingLevel,

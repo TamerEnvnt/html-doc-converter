@@ -11,6 +11,11 @@ import { readFile } from 'fs/promises';
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+/** Type guard for HeadingLevel — validates that a number is an integer 1-6 */
+export function isHeadingLevel(n: number): n is HeadingLevel {
+  return Number.isInteger(n) && n >= 1 && n <= 6;
+}
+
 export interface Chapter {
   id: string;
   title: string;
@@ -76,12 +81,13 @@ export function extractChapters(doc: CheerioAPI): Chapter[] {
   const headings: { level: HeadingLevel; id: string; title: string; element: Element }[] = [];
 
   // Find all headings h1-h6
-  doc('h1, h2, h3, h4, h5, h6').each((_, el) => {
+  doc('h1, h2, h3, h4, h5, h6').each((i, el) => {
     const $el = doc(el);
     const tagName = el.tagName.toLowerCase();
-    const level = parseInt(tagName.charAt(1), 10) as HeadingLevel;
+    const parsed = parseInt(tagName.charAt(1), 10);
+    const level: HeadingLevel = isHeadingLevel(parsed) ? parsed : 1;
     const title = $el.text().trim();
-    const id = $el.attr('id') || generateId(title);
+    const id = $el.attr('id') || generateId(title) || `heading-${i}`;
 
     headings.push({ level, id, title, element: el });
   });

@@ -35,8 +35,8 @@ export interface MissingDependency extends DependencyBase {
 export type DependencyStatus = FoundDependency | MissingDependency;
 
 export interface DependencyCheckResult {
-  allFound: boolean;
-  dependencies: DependencyStatus[];
+  readonly allFound: boolean;
+  readonly dependencies: readonly DependencyStatus[];
 }
 
 // ============================================================================
