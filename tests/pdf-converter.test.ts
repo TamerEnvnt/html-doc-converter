@@ -282,6 +282,22 @@ describe('convertToPDF', () => {
       expect((error as ConversionError).message).toContain('Failed to inject print CSS');
     }
   });
+
+  it('re-throws non-timeout goto errors as-is (not ConversionError)', async () => {
+    const rawError = new Error('net::ERR_FILE_NOT_FOUND');
+    mockPage.goto.mockRejectedValue(rawError);
+
+    await expect(convertToPDF('/tmp/test.html', '/tmp/test.pdf'))
+      .rejects.toThrow('net::ERR_FILE_NOT_FOUND');
+
+    // Verify it is NOT wrapped in ConversionError
+    try {
+      await convertToPDF('/tmp/test.html', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).not.toBeInstanceOf(ConversionError);
+      expect(error).toBe(rawError);
+    }
+  });
 });
 
 describe('convertHTMLFileToPDF', () => {
@@ -423,6 +439,23 @@ describe('convertHTMLStringToPDF', () => {
       expect(error).toBeInstanceOf(ConversionError);
       expect((error as ConversionError).code).toBe(ErrorCodes.PDF_FAILED);
       expect((error as ConversionError).message).toContain('Failed to inject print CSS');
+    }
+  });
+
+  it('re-throws non-timeout setContent errors as-is (not ConversionError)', async () => {
+    const rawError = new Error('Invalid HTML content');
+    mockPage.setContent.mockRejectedValue(rawError);
+
+    await expect(
+      convertHTMLStringToPDF('<html><body>Bad</body></html>', '/tmp/test.pdf')
+    ).rejects.toThrow('Invalid HTML content');
+
+    // Verify it is NOT wrapped in ConversionError
+    try {
+      await convertHTMLStringToPDF('<html><body>Bad</body></html>', '/tmp/test.pdf');
+    } catch (error) {
+      expect(error).not.toBeInstanceOf(ConversionError);
+      expect(error).toBe(rawError);
     }
   });
 });
