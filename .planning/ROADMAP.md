@@ -173,13 +173,13 @@ Findings addressed:
 **Goal**: Wrap browser launch errors with specific messages, use ConversionError in html-parser, add verbose logging to silent catch blocks
 **Depends on**: Phase 29
 **Research**: Unlikely (internal patterns)
-**Plans**: TBD
+**Plans**: 1/1 complete
 
 Plans:
-- [ ] 30-01: html-parser ConversionError + verbose logging in cleanup catch blocks (2 tasks)
+- [x] 30-01: html-parser ConversionError + verbose logging in cleanup catch blocks (2 tasks)
 
 Findings addressed:
-- P1: Browser launch errors give misleading "PDF generation failed" message
+- P1: Browser launch errors give misleading "PDF generation failed" message (fixed in Phase 29)
 - P1: html-parser throws plain Error instead of ConversionError
 - P2: closeBrowser() and page.close() silently discard all errors without verbose logging
 

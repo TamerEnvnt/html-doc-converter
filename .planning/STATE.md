@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Milestone: v1.4 (Review Findings) -- Phases 29-36
-Phase: 29 of 36 (Critical Fixes)
-Plan: 30-01 planned (2 tasks: html-parser ConversionError, verbose cleanup logging)
-Status: Ready to execute
-Last activity: 2026-02-19 -- Phase 30 planned
+Phase: 30 of 36 (Error Message Quality)
+Plan: 30-01 complete (2/2 tasks)
+Status: Phase 30 complete
+Last activity: 2026-02-19 -- Completed 30-01-PLAN.md
 
-Progress (v1.4): █░░░░░░░░░ 12%
+Progress (v1.4): ██░░░░░░░░ 25%
 
 ## Shipped Milestones
 
@@ -66,4 +66,4 @@ src/
 ## Session Continuity
 
 Last session: 2026-02-19
-Status: Phase 29 complete. Ready to plan Phase 30.
+Status: Phase 30 complete. Ready to plan Phase 31.
