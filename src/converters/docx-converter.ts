@@ -84,7 +84,11 @@ export async function convertToDOCX(
     // Verify output file was created
     try {
       await fs.access(generatedPath);
-    } catch {
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code === 'EACCES' || code === 'EPERM') {
+        throw createError(ErrorCodes.DOCX_FAILED, 'Output file created but not accessible (permission denied): ' + generatedPath);
+      }
       throw createError(ErrorCodes.DOCX_FAILED, 'LibreOffice completed but output file not found: ' + generatedPath);
     }
 

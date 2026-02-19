@@ -10,6 +10,7 @@ import { findSoffice } from './soffice.js';
 import { getPlatform, getPlatformName, Platform } from './platform.js';
 import { colors } from './colors.js';
 import { execFileAsync } from './exec.js';
+import { verbose } from './logger.js';
 
 
 // ============================================================================
@@ -106,14 +107,14 @@ async function checkChromium(): Promise<DependencyStatus> {
       try {
         const { stdout } = await execFileAsync(browserPath, ['--version']);
         version = stdout.trim().replace(/^(Chromium|Google Chrome)\s+/i, '');
-      } catch {
-        // Version detection failed, but browser exists
+      } catch (err) {
+        verbose('Chromium version detection failed:', err instanceof Error ? err.message : String(err));
       }
 
       return { name: 'Chromium (Puppeteer)', required: true, found: true, path: browserPath, version };
     }
-  } catch {
-    // Browser detection failed
+  } catch (err) {
+    verbose('Chromium detection error:', err instanceof Error ? err.message : String(err));
   }
 
   return { name: 'Chromium (Puppeteer)', required: true, found: false, installHint: getInstallInstructions('chromium') };
@@ -129,12 +130,12 @@ async function checkLibreOffice(): Promise<DependencyStatus> {
     let version: string | undefined;
     try {
       const { stdout } = await execFileAsync(sofficePath, ['--version']);
-      const match = stdout.match(/LibreOffice\s+(\d+\.\d+\.\d+)/);
+      const match = stdout.match(/LibreOffice\s+(\d+\.\d+\.\d+(?:\.\d+)?)/);
       if (match) {
         version = match[1];
       }
-    } catch {
-      // Version detection failed, but soffice exists
+    } catch (err) {
+      verbose('LibreOffice version detection failed:', err instanceof Error ? err.message : String(err));
     }
 
     return { name: 'LibreOffice', required: true, found: true, path: sofficePath, version };
