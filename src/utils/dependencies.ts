@@ -8,7 +8,7 @@
 import puppeteer from 'puppeteer';
 import { findSoffice } from './soffice.js';
 import { getPlatform, getPlatformName, Platform } from './platform.js';
-import { colors } from './errors.js';
+import { colors } from './colors.js';
 import { execFileAsync } from './exec.js';
 
 

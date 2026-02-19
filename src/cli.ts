@@ -22,8 +22,8 @@ import {
   ErrorCodes,
   formatError,
   createError,
-  colors,
 } from './utils/errors.js';
+import { colors } from './utils/colors.js';
 import {
   checkDependencies,
   formatDependencyReport,
@@ -33,6 +33,17 @@ import { determineFormats, parseTimeout, validateInputFile } from './cli-helpers
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
+
+interface CLIOptions {
+  output?: string;
+  format?: string;
+  pdfOnly?: boolean;
+  docxOnly?: boolean;
+  timeout?: string;
+  landscape?: boolean;
+  force?: boolean;
+  verbose?: boolean;
+}
 
 const program = new Command();
 
@@ -59,16 +70,7 @@ Examples:
   $ html-doc-converter document.html --timeout 120000
   $ html-doc-converter document.html --verbose
 `)
-  .action(async (input: string, options: {
-    output?: string;
-    format?: string;
-    pdfOnly?: boolean;
-    docxOnly?: boolean;
-    timeout?: string;
-    landscape?: boolean;
-    force?: boolean;
-    verbose?: boolean;
-  }) => {
+  .action(async (input: string, options: CLIOptions) => {
     // Enable verbose logging if requested
     if (options.verbose) {
       setVerbose(true);

@@ -4,7 +4,7 @@
  * Provides verbose logging support for debugging and progress tracking.
  */
 
-import { colors } from './errors.js';
+import { colors } from './colors.js';
 
 // ============================================================================
 // State
