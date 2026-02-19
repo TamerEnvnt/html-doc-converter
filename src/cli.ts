@@ -85,7 +85,7 @@ Examples:
       verbose('Resolved input path:', inputPath);
 
       // Validate input file (exists, HTML extension, non-empty)
-      const { fileSize, content, isLargeFile } = await validateInputFile(inputPath);
+      const { fileSize, isLargeFile } = await validateInputFile(inputPath);
       verbose('File size:', fileSize, 'bytes', isLargeFile ? '(large)' : '');
 
       // Resolve output paths using output handler

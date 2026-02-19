@@ -6,7 +6,6 @@
 
 import * as path from 'path';
 import * as fs from 'fs/promises';
-import { existsSync } from 'fs';
 import { createError, ErrorCodes } from './errors.js';
 
 /**
@@ -89,39 +88,3 @@ export async function ensureOutputDirectory(dirPath: string): Promise<void> {
   await fs.mkdir(dirPath, { recursive: true });
 }
 
-/**
- * Generate a unique filename by adding -1, -2, etc. if file exists.
- *
- * @param basePath - Base path without extension
- * @param ext - Extension including dot (e.g., '.pdf')
- * @returns Unique file path that doesn't exist
- */
-export function generateUniqueFilename(basePath: string, ext: string): string {
-  let candidate = `${basePath}${ext}`;
-
-  if (!existsSync(candidate)) {
-    return candidate;
-  }
-
-  let counter = 1;
-  const maxAttempts = 1000; // Prevent infinite loop
-
-  while (counter < maxAttempts) {
-    candidate = `${basePath}-${counter}${ext}`;
-    if (!existsSync(candidate)) {
-      return candidate;
-    }
-    counter++;
-  }
-
-  // Fallback: use timestamp if counter exhausted
-  const timestamp = Date.now();
-  return `${basePath}-${timestamp}${ext}`;
-}
-
-/**
- * Check if a file exists.
- */
-export function fileExists(filePath: string): boolean {
-  return existsSync(filePath);
-}
