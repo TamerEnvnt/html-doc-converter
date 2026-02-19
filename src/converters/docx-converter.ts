@@ -75,7 +75,7 @@ export async function convertToDOCX(
 
   try {
     // Apply timeout (default 60 seconds)
-    const execTimeout = options.timeout || 60000;
+    const execTimeout = options.timeout ?? 60000;
     await execFileAsync(sofficePath, args, { timeout: execTimeout });
 
     // LibreOffice outputs to: outputDir/originalName.docx
