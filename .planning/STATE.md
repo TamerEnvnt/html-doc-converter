@@ -11,9 +11,9 @@ See: .planning/PROJECT.md (updated 2026-02-15)
 
 Milestone: 4 (v1.3 Polish & Cleanup)
 Phase: 27 of 28 (Type Design & Safety)
-Plan: 27-01 and 27-02 planned (ready for execution)
-Status: Phase 27 planned
-Last activity: 2026-02-19 -- Phase 27 planning complete
+Plan: 27-01 complete, 27-02 ready for execution
+Status: Phase 27 in progress (1/2 plans)
+Last activity: 2026-02-19 -- Plan 27-01 executed (type safety: discriminated union + PDFOptions validation)
 
 Progress (Milestone 4): ######░░░░ 60%
 
@@ -61,7 +61,7 @@ src/
 ```
 
 ### Test suite
-- 12 test files, 171 tests (169 passed, 2 skipped)
+- 12 test files, 177 tests (175 passed, 2 skipped)
 - Coverage: 81.21% statements, 80.99% branches, 95.34% functions, 81.21% lines
 
 ## Accumulated Decisions
@@ -107,4 +107,4 @@ src/
 ## Session Continuity
 
 Last session: 2026-02-19
-Status: Phase 27 planned (2 plans). Ready for /gsd:execute-plan.
+Status: Plan 27-01 complete. Ready for Plan 27-02 execution.
