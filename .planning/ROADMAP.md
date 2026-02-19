@@ -262,18 +262,22 @@ Plans:
 **Research:** Unlikely (vitest patterns)
 **Priority:** P1/P2
 **Files:** `tests/` (multiple test files)
-**Plans:** TBD
+**Plans:** 2
 
 Findings addressed:
 - P1: soffice.ts EACCES path + which fallback untested (28.57% branch coverage)
-- P1: convertHTMLStringToPDF PDF generation timeout path untested
+- P1: pdf-converter non-timeout error rethrow untested (goto + setContent)
 - P1: Non-Error throw handling in convertToDOCX untested
-- P2: Platform fallback to linux untested
 - P2: loadHTML non-ENOENT error path untested
-- P2: parseTimeout('') edge case untested
+- P2: platform.ts getPlatformName non-current platform branches untested
+- P2: dependencies.ts optional dep formatting untested
+- Resolved: convertHTMLStringToPDF timeout already tested
+- Resolved: Platform fallback to linux already tested
+- Resolved: parseTimeout('') unreachable branch
 
 Plans:
-- [ ] 28-01: TBD
+- [ ] 28-01: P1 test coverage (soffice EACCES/fallback, pdf non-timeout rethrow, docx non-Error throw, html-parser non-ENOENT) (3 tasks)
+- [ ] 28-02: P2 test coverage + final verification (platform getPlatformName, dependencies optional dep, coverage check) (2 tasks)
 
 ### Milestone 4 Progress
 
@@ -283,4 +287,4 @@ Plans:
 | 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
 | 26. Code Deduplication & Cleanup | v1.3 | 2/2 | Complete | 2026-02-19 |
 | 27. Type Design & Safety | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 28. Test Coverage & Verification | v1.3 | 0/? | Not started | - |
+| 28. Test Coverage & Verification | v1.3 | 0/2 | Planned | - |
