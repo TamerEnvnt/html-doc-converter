@@ -1,5 +1,33 @@
 # Project Milestones: HTML Document Converter
 
+## v1.3 Polish & Cleanup (Shipped: 2026-02-19)
+
+**Delivered:** Addressed all 24 remaining findings from 5-agent codebase review -- fixed P1 bugs, eliminated code duplication, removed 16 dead functions, improved type safety with discriminated unions and type guards, and filled all test coverage gaps to reach 194 tests with 82.2% statement coverage.
+
+**Phases completed:** 24-28 (9 plans total)
+
+**Key accomplishments:**
+
+- Fixed 3 P1 bugs: signal handler unhandled rejection, page.close() error masking, invalid format silent no-op
+- Eliminated TOCTOU race in validateInputFile, added missing error handling in 5 locations
+- Extracted shared PDF helpers (~46 lines dedup), consolidated promisify into shared exec.ts
+- Removed 16 unused exported functions, cleaned dead code across 4 utility modules
+- Converted DependencyStatus to discriminated union, added PDFOptions validation, HeadingLevel type guard
+- Filled all P1/P2 test gaps: soffice.ts 28.57%->92.3% branches, platform.ts to 100%
+
+**Stats:**
+
+- 44 files created/modified (+3,489/-453 lines)
+- 1,774 lines source TypeScript, 2,625 lines test TypeScript
+- 5 phases, 9 plans, ~21 tasks
+- 5 days (2026-02-15 to 2026-02-19)
+
+**Git range:** `fix(24-01)` -> `docs(28-02)`
+
+**What's next:** Project complete -- all review findings addressed, all coverage thresholds exceeded.
+
+---
+
 ## v1.2 Robustness & API Quality (Shipped: 2026-02-15)
 
 **Delivered:** Addressed all 29 findings from comprehensive 5-agent code review — fixed critical concurrency bugs, unified error handling, cleaned up types, expanded test coverage, and hardened the package for production consumers.

@@ -57,6 +57,9 @@ html-doc-converter document.html
 -f, --format <fmt>    Output format: pdf, docx, or both (default: both)
 --pdf-only            Generate PDF only
 --docx-only           Generate DOCX only
+--force               Overwrite existing output files
+--timeout <ms>        Conversion timeout in milliseconds (default: 30000)
+-v, --verbose         Enable verbose logging
 -h, --help            Show help
 -V, --version         Show version
 ```
@@ -222,11 +225,22 @@ sudo apt install -y libgbm1 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
 - Check that LibreOffice isn't already running (it can lock the profile)
 - Try closing other LibreOffice instances
 
+## Security
+
+This tool processes user-provided file paths and invokes external programs (Chromium, LibreOffice). The following protections are in place:
+
+- **No shell injection**: All external processes use `execFile` (array-based argv), never shell string interpolation
+- **Path traversal protection**: Input and output paths are validated against the working directory
+- **Overwrite protection**: Existing files are not overwritten unless `--force` is passed
+- **Input validation**: Timeout values and format options are validated before use
+
+If you discover a security issue, please report it via [GitHub Issues](https://github.com/TamerEnvnt/html-doc-converter/issues).
+
 ## Development
 
 ```bash
 # Clone repository
-git clone https://github.com/your-repo/html-doc-converter.git
+git clone https://github.com/TamerEnvnt/html-doc-converter.git
 cd html-doc-converter
 
 # Install dependencies
@@ -237,6 +251,12 @@ npm run build
 
 # Run tests
 npm test
+
+# Type-check (source only)
+npm run typecheck
+
+# Type-check (source + tests)
+npm run typecheck:tests
 
 # Run in development
 npm run dev document.html

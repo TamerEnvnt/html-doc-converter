@@ -26,6 +26,10 @@ Both outputs must be high quality: PDF with visual fidelity to the HTML source, 
 - Clean public API with proper exports field -- v1.2
 - Graceful signal handling (SIGINT/SIGTERM cleanup) -- v1.2
 - 82%+ statement coverage, 185 tests -- v1.2
+- All P1 bugs fixed (signal handlers, error masking, silent no-op) -- v1.3
+- Code deduplication and dead code removal (16 unused functions removed) -- v1.3
+- Type safety improvements (discriminated unions, type guards, readonly) -- v1.3
+- 194 tests with 82.2% statements, 86.46% branches -- v1.3
 
 ### Active
 
@@ -41,11 +45,11 @@ Both outputs must be high quality: PDF with visual fidelity to the HTML source, 
 
 ## Context
 
-**Current state (post v1.2):**
-- 12 source files, ~2,279 lines TypeScript
-- 12 test files, 185 tests (183 passed, 2 skipped)
-- Coverage: 82.36% statements, 80.69% branches, 96.42% functions
-- All 29 code review findings addressed
+**Current state (post v1.3):**
+- 13 source files, ~1,774 lines TypeScript (reduced via dead code removal)
+- 13 test files, 194 tests (192 passed, 2 skipped)
+- Coverage: 82.2% statements, 86.46% branches, 95.45% functions
+- All 24 remaining review findings addressed (24 from v1.3 + 29 from v1.2 = 53 total)
 
 **Source document reference:** `/Users/tamer/Work/AI/Claude/InfraSizingCalculator/docs/srs/SRS_InfraSizingCalculator.html`
 
@@ -84,6 +88,10 @@ The SRS document uses:
 | Named exports in index.ts | Explicit API surface control, no leaky internals | Good |
 | Extract-to-test pattern | Enables vitest instrumentation without refactoring CLI tests | Good |
 | TypeScript never exhaustiveness | Compile-time enforcement when adding new ErrorCodes | Good |
+| Discriminated unions over boolean+optional | Eliminates invalid state combinations at type level | Good |
+| Type guard functions over unsafe casts | Runtime validation with TypeScript type narrowing | Good |
+| Shared exec utility (exec.ts) | Single promisify(execFile) source, DRY across 3 consumers | Good |
+| Dead code removal via grep verification | Verify unused before removing, prevents accidental API breakage | Good |
 
 ---
-*Last updated: 2026-02-15 after v1.2 milestone*
+*Last updated: 2026-02-19 after v1.3 milestone*

@@ -163,128 +163,18 @@ Final state: 134 tests, 74.5% statements, 97.9% utils coverage.
 
 </details>
 
----
-
 <details>
-<summary>v1.2 Robustness & API Quality (Phases 16-23) - SHIPPED 2026-02-15</summary>
+<summary>✅ v1.2 Robustness & API Quality (Phases 16-23) - SHIPPED 2026-02-15</summary>
 
 8 phases, 11 plans. 29 code review findings addressed. 185 tests, 82.36% coverage.
 Full details: [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
 
 </details>
 
----
+<details>
+<summary>✅ v1.3 Polish & Cleanup (Phases 24-28) - SHIPPED 2026-02-19</summary>
 
-### v1.3 Polish & Cleanup (SHIPPED 2026-02-19)
+5 phases, 9 plans. 24 remaining review findings addressed. 194 tests, 82.2% statements, 86.46% branches.
+Full details: [milestones/v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md)
 
-**Milestone Goal:** Fix remaining P1 bugs from post-v1.2 review, eliminate code duplication, remove dead code, improve type safety, and fill test coverage gaps.
-
-**Source:** Full 5-agent codebase review (2026-02-15) post-v1.2. 24 unique findings (8 P1 code, 3 P1 test, 13 P2).
-
-#### Phase 24: Critical Bug Fixes
-**Goal:** Fix 3 P1 bugs: signal handler async issue, page.close() error masking, invalid format silent no-op
-**Depends on:** Milestone 3 complete
-**Research:** Unlikely (internal fixes)
-**Priority:** P1
-**Files:** `src/cli.ts`, `src/converters/pdf-converter.ts`, `src/cli-helpers.ts`
-**Plans:** TBD
-
-Findings addressed:
-- P1: Signal handler async not awaited (closeBrowser may not complete before process.exit)
-- P1: page.close() in finally blocks masks original conversion errors (2 locations)
-- P1: Invalid --format value silently produces no output with exit code 0
-
-Plans:
-- [x] 24-01: Fix signal handler async, page.close masking, invalid format no-op (3 tasks)
-
-#### Phase 25: Error Handling Gaps
-**Goal:** Add missing error handling: check command try/catch, DOCX mkdir error code, addStyleTag wrapping, platform fallback warning, validateInputFile simplification
-**Depends on:** Phase 24
-**Research:** Unlikely (internal patterns)
-**Priority:** P1/P2
-**Files:** `src/cli.ts`, `src/converters/docx-converter.ts`, `src/converters/pdf-converter.ts`, `src/utils/platform.ts`, `src/cli-helpers.ts`
-**Plans:** TBD
-
-Findings addressed:
-- P1: check command has no try/catch (unhandled rejections)
-- P1: DOCX mkdir failure throws DOCX_FAILED instead of OUTPUT_DIR_FAILED
-- P2: addStyleTag() failure unhandled (raw Puppeteer error)
-- P2: Platform silent fallback to linux without warning
-- P2: validateInputFile TOCTOU between fs.access and fs.stat/readFile
-
-Plans:
-- [x] 25-01: Check command try/catch, DOCX mkdir error code, addStyleTag wrapping (3 tasks)
-- [x] 25-02: Platform fallback warning, validateInputFile TOCTOU elimination (2 tasks)
-
-#### Phase 26: Code Deduplication & Cleanup
-**Goal:** Extract shared helpers in pdf-converter.ts (~80 lines duplicated), remove 13 unused exported functions, consolidate promisify, optimize validateInputFile
-**Depends on:** Phase 25 (error handling changes affect refactoring)
-**Research:** Unlikely (internal refactoring)
-**Priority:** P1/P2
-**Files:** `src/converters/pdf-converter.ts`, `src/cli.ts`, `src/utils/platform.ts`, `src/utils/logger.ts`, `src/utils/output-handler.ts`, `src/cli-helpers.ts`
-**Plans:** TBD
-
-Findings addressed:
-- P1: pdf-converter.ts CSS injection, PDF options, timeout detection duplicated across 2 functions
-- P2: CLI PDF/DOCX conversion blocks identical pattern (~50 lines)
-- P2: 13 unused exported functions across platform.ts, logger.ts, output-handler.ts
-- P2: promisify(execFile) repeated in 3 files
-- P2: validateInputFile reads entire file unnecessarily, returns unused content
-
-Plans:
-- [x] 26-01: PDF converter deduplication + promisify consolidation (2 tasks)
-- [x] 26-02: Dead code removal across utilities (2 tasks)
-
-#### Phase 27: Type Design & Safety
-**Goal:** DependencyStatus discriminated union, PDFOptions library validation, CLI format type narrowing, readonly fields, HeadingLevel safe cast
-**Depends on:** Phase 26 (dead code removal affects type surface)
-**Research:** Unlikely (TypeScript patterns)
-**Priority:** P1/P2
-**Files:** `src/utils/dependencies.ts`, `src/converters/pdf-converter.ts`, `src/cli-helpers.ts`, `src/parsers/html-parser.ts`, `src/utils/output-handler.ts`
-**Plans:** TBD
-
-Findings addressed:
-- P1: DependencyStatus allows invalid states (boolean+optional anti-pattern)
-- P1: PDFOptions no library-level validation of scale/timeout
-- P2: Mutable data types (Chapter, ParsedDocument, OutputPaths, etc.)
-- P2: HeadingLevel unsafe as cast
-- P2: Chapter.id can be empty string
-- P2: colors utility in errors.ts (module cohesion)
-- P2: Inline CLI options type should be named
-
-Plans:
-- [x] 27-01: DependencyStatus discriminated union + PDFOptions library-level validation (2 tasks)
-- [x] 27-02: HeadingLevel type guard + readonly result types + colors extraction + CLI options naming (2 tasks)
-
-#### Phase 28: Test Coverage & Verification
-**Goal:** Fill P1 test gaps (soffice EACCES, string-to-pdf timeout, non-Error throws), add P2 tests, final verification
-**Depends on:** Phase 27 (type changes affect test expectations)
-**Research:** Unlikely (vitest patterns)
-**Priority:** P1/P2
-**Files:** `tests/` (multiple test files)
-**Plans:** 2
-
-Findings addressed:
-- P1: soffice.ts EACCES path + which fallback untested (28.57% branch coverage)
-- P1: pdf-converter non-timeout error rethrow untested (goto + setContent)
-- P1: Non-Error throw handling in convertToDOCX untested
-- P2: loadHTML non-ENOENT error path untested
-- P2: platform.ts getPlatformName non-current platform branches untested
-- P2: dependencies.ts optional dep formatting untested
-- Resolved: convertHTMLStringToPDF timeout already tested
-- Resolved: Platform fallback to linux already tested
-- Resolved: parseTimeout('') unreachable branch
-
-Plans:
-- [x] 28-01: P1 test coverage (soffice EACCES/fallback, pdf non-timeout rethrow, docx non-Error throw, html-parser non-ENOENT) (3 tasks)
-- [x] 28-02: P2 test coverage + final verification (platform getPlatformName, dependencies optional dep, coverage check) (2 tasks)
-
-### Milestone 4 Progress
-
-| Phase | Milestone | Plans | Status | Completed |
-|-------|-----------|-------|--------|-----------|
-| 24. Critical Bug Fixes | v1.3 | 1/1 | Complete | 2026-02-15 |
-| 25. Error Handling Gaps | v1.3 | 2/2 | Complete | 2026-02-18 |
-| 26. Code Deduplication & Cleanup | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 27. Type Design & Safety | v1.3 | 2/2 | Complete | 2026-02-19 |
-| 28. Test Coverage & Verification | v1.3 | 2/2 | Complete | 2026-02-19 |
+</details>
