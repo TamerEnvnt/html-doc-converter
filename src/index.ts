@@ -39,3 +39,6 @@ export type {
 // Error types (public API - consumers need these to catch ConversionError)
 export { ConversionError, ErrorCodes, createError } from './utils/errors.js';
 export type { ErrorCode } from './utils/errors.js';
+
+// CLI helpers (public API)
+export type { ValidatedInput } from './cli-helpers.js';

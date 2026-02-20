@@ -49,15 +49,17 @@ export function parseTimeout(timeoutStr: string | undefined): number {
   return timeoutRaw;
 }
 
+export interface ValidatedInput {
+  readonly fileSize: number;
+  readonly content: string;
+  readonly isLargeFile: boolean;
+}
+
 /**
  * Validate that the input file exists, is HTML, and has content.
  * Returns file metadata for downstream use.
  */
-export async function validateInputFile(inputPath: string): Promise<{
-  fileSize: number;
-  content: string;
-  isLargeFile: boolean;
-}> {
+export async function validateInputFile(inputPath: string): Promise<ValidatedInput> {
   const LARGE_FILE_THRESHOLD = 1_000_000; // 1MB
 
   // 1. Check it's an HTML file (pure validation, no I/O)

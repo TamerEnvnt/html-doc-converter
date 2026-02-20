@@ -18,25 +18,25 @@ export function isHeadingLevel(n: number): n is HeadingLevel {
 }
 
 export interface Chapter {
-  id: string;
-  title: string;
-  level: HeadingLevel;
-  content: string;
-  children: Chapter[];
+  readonly id: string;
+  readonly title: string;
+  readonly level: HeadingLevel;
+  readonly content: string;
+  readonly children: Chapter[];
 }
 
 export interface DocumentMetadata {
-  author?: string;
-  version?: string;
-  date?: string;
-  customFields: Record<string, string>;
+  readonly author?: string;
+  readonly version?: string;
+  readonly date?: string;
+  readonly customFields: Record<string, string>;
 }
 
 export interface ParsedDocument {
-  title: string;
-  chapters: Chapter[];
-  metadata: DocumentMetadata;
-  rawHTML: string;
+  readonly title: string;
+  readonly chapters: Chapter[];
+  readonly metadata: DocumentMetadata;
+  readonly rawHTML: string;
 }
 
 /**
