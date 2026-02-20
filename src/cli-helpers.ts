@@ -7,6 +7,7 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { createError, ErrorCodes } from './utils/errors.js';
+import { DEFAULT_TIMEOUT_MS } from './utils/constants.js';
 
 /**
  * Determine which output formats to generate based on CLI options.
@@ -41,7 +42,7 @@ export function determineFormats(options: {
  * Throws ConversionError(INVALID_TIMEOUT) for invalid values.
  */
 export function parseTimeout(timeoutStr: string | undefined): number {
-  const timeoutRaw = parseInt(timeoutStr || '60000', 10);
+  const timeoutRaw = parseInt(timeoutStr || String(DEFAULT_TIMEOUT_MS), 10);
   if (isNaN(timeoutRaw) || timeoutRaw <= 0) {
     throw createError(ErrorCodes.INVALID_TIMEOUT, timeoutStr || 'undefined');
   }

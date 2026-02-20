@@ -9,6 +9,7 @@ import path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
 import { createError, ErrorCodes } from '../utils/errors.js';
 import { verbose } from '../utils/logger.js';
+import { DEFAULT_TIMEOUT_MS, BROWSER_LAUNCH_TIMEOUT_MS } from '../utils/constants.js';
 
 // ============================================================================
 // Types
@@ -65,7 +66,7 @@ export async function getBrowser(): Promise<Browser> {
   browserLaunchPromise = puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    timeout: 30000,
+    timeout: BROWSER_LAUNCH_TIMEOUT_MS,
   });
 
   try {
@@ -83,7 +84,7 @@ export async function getBrowser(): Promise<Browser> {
     // Clear promise so next call retries instead of caching a rejected promise
     const message = error instanceof Error ? error.message : String(error);
     if (message.toLowerCase().includes('timeout')) {
-      throw createError(ErrorCodes.TIMEOUT, 'Browser launch timed out after 30000ms');
+      throw createError(ErrorCodes.TIMEOUT, `Browser launch timed out after ${BROWSER_LAUNCH_TIMEOUT_MS}ms`);
     }
     throw createError(ErrorCodes.PDF_FAILED, 'Failed to launch browser: ' + message);
   } finally {
@@ -192,7 +193,7 @@ export async function convertToPDF(
 
     // Load HTML file with file:// protocol
     const absolutePath = path.resolve(htmlPath);
-    const navigationTimeout = options.timeout ?? 60000;
+    const navigationTimeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     try {
       await page.goto(`file://${absolutePath}`, {
         waitUntil: 'networkidle0', // Wait for all resources
@@ -259,7 +260,7 @@ export async function convertToPDF(
     }
 
     // Generate PDF with merged options
-    const pdfTimeout = options.timeout ?? 60000;
+    const pdfTimeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
     const buffer = await generatePdf(page, pdfOptions);
 
@@ -308,7 +309,7 @@ export async function convertHTMLStringToPDF(
   const page = await browser.newPage();
 
   try {
-    const contentTimeout = options.timeout ?? 60000;
+    const contentTimeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     try {
       await page.setContent(html, { waitUntil: 'networkidle0', timeout: contentTimeout });
     } catch (error) {
@@ -353,7 +354,7 @@ export async function convertHTMLStringToPDF(
     }
 
     // Generate PDF with merged options
-    const pdfTimeout = options.timeout ?? 60000;
+    const pdfTimeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     const pdfOptions = buildPdfOptions(outputPath, options, pdfTimeout);
     const buffer = await generatePdf(page, pdfOptions);
 

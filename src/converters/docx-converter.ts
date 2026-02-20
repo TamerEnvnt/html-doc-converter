@@ -10,6 +10,7 @@ import * as path from 'path';
 import { parseDocument, ParsedDocument } from '../parsers/html-parser.js';
 import { ConversionError, createError, ErrorCodes } from '../utils/errors.js';
 import { findSoffice } from '../utils/soffice.js';
+import { DEFAULT_TIMEOUT_MS } from '../utils/constants.js';
 import { execFileAsync } from '../utils/exec.js';
 
 
@@ -75,7 +76,7 @@ export async function convertToDOCX(
 
   try {
     // Apply timeout (default 60 seconds)
-    const execTimeout = options.timeout ?? 60000;
+    const execTimeout = options.timeout ?? DEFAULT_TIMEOUT_MS;
     await execFileAsync(sofficePath, args, { timeout: execTimeout });
 
     // LibreOffice outputs to: outputDir/originalName.docx

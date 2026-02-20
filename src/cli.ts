@@ -30,6 +30,7 @@ import {
 } from './utils/dependencies.js';
 import { setVerbose, verbose } from './utils/logger.js';
 import { determineFormats, parseTimeout, validateInputFile } from './cli-helpers.js';
+import { DEFAULT_TIMEOUT_MS } from './utils/constants.js';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
@@ -56,7 +57,7 @@ program
   .option('-f, --format <format>', 'Output format: pdf, docx, or both', 'both')
   .option('--pdf-only', 'Generate PDF only')
   .option('--docx-only', 'Generate DOCX only')
-  .option('-t, --timeout <ms>', 'Conversion timeout in milliseconds', '60000')
+  .option('-t, --timeout <ms>', 'Conversion timeout in milliseconds', String(DEFAULT_TIMEOUT_MS))
   .option('-l, --landscape', 'Use landscape orientation for PDF (recommended for wide tables/diagrams)')
   .option('--force', 'Overwrite existing output files without prompting')
   .option('-v, --verbose', 'Show detailed output for debugging')
