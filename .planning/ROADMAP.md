@@ -234,7 +234,7 @@ Findings addressed:
 **Plans**: TBD
 
 Plans:
-- [ ] 34-01: TBD
+- [x] 34-01: Add readonly to types, name return types, narrow CLIOptions.format (2 tasks)
 
 Findings addressed:
 - P2: Chapter, DocumentMetadata, ParsedDocument missing readonly (0/13 fields)
