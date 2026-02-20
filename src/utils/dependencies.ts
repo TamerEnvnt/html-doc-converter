@@ -36,6 +36,7 @@ export interface MissingDependency extends DependencyBase {
 export type DependencyStatus = FoundDependency | MissingDependency;
 
 export interface DependencyCheckResult {
+  /** Derived: true when all required dependencies are found. Convenience field -- equivalent to `dependencies.every(d => d.found || !d.required)`. */
   readonly allFound: boolean;
   readonly dependencies: readonly DependencyStatus[];
 }

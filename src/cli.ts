@@ -35,9 +35,11 @@ import { DEFAULT_TIMEOUT_MS } from './utils/constants.js';
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
 
+type OutputFormat = 'pdf' | 'docx' | 'both';
+
 interface CLIOptions {
   output?: string;
-  format?: string;
+  format?: OutputFormat;
   pdfOnly?: boolean;
   docxOnly?: boolean;
   timeout?: string;
