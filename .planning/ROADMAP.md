@@ -219,7 +219,7 @@ Findings addressed:
 **Plans**: TBD
 
 Plans:
-- [ ] 33-01: TBD
+- [x] 33-01: Remove getBrowser from API, extract timeout constants, fix O(n^2) concat, NaN validation (2 tasks)
 
 Findings addressed:
 - P2: getBrowser() exposed in public API (implementation detail)

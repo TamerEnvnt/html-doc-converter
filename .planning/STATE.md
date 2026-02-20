@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Milestone: v1.4 (Review Findings) -- Phases 29-36
-Phase: 32 of 36 (Silent Failure Elimination) -- COMPLETE
-Plan: 32-01 executed (2 tasks: 5 findings across 4 files)
-Status: Ready to plan Phase 33
-Last activity: 2026-02-19 -- Phase 32 complete
+Phase: 33 of 36 (API & Performance Cleanup) -- COMPLETE
+Plan: 33-01 executed (2 tasks: 4 findings across 7 files)
+Status: Ready to plan Phase 34
+Last activity: 2026-02-20 -- Phase 33 complete
 
-Progress (v1.4): █████░░░░░ 50%
+Progress (v1.4): ██████░░░░ 62%
 
 ## Shipped Milestones
 
@@ -37,7 +37,7 @@ Progress (v1.4): █████░░░░░ 50%
 
 ## Current Codebase
 
-### Source files (13 files, ~1,774 lines)
+### Source files (14 files, ~1,790 lines)
 ```
 src/
   cli.ts                   - CLI entry point (Commander, signal handlers, path validation)
@@ -50,6 +50,7 @@ src/
     html-parser.ts         - Cheerio HTML parsing (public library API)
   utils/
     colors.ts              - ANSI terminal colors (respects NO_COLOR)
+    constants.ts           - Centralized timeout constants (DEFAULT_TIMEOUT_MS, BROWSER_LAUNCH_TIMEOUT_MS)
     dependencies.ts        - Dep checking (execFile, no shell)
     errors.ts              - Error types (12 codes, exhaustive switch)
     exec.ts                - Shared promisify execFile utility
@@ -65,5 +66,5 @@ src/
 
 ## Session Continuity
 
-Last session: 2026-02-19
-Status: Phase 32 complete. Ready to plan Phase 33.
+Last session: 2026-02-20
+Status: Phase 33 complete. Ready to plan Phase 34.
