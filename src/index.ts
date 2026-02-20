@@ -9,7 +9,6 @@ export {
   convertToPDF,
   convertHTMLFileToPDF,
   convertHTMLStringToPDF,
-  getBrowser,
   closeBrowser,
 } from './converters/pdf-converter.js';
 export type { PDFOptions, PDFResult } from './converters/pdf-converter.js';

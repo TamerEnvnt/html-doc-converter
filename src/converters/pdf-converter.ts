@@ -124,7 +124,7 @@ function isTimeoutError(error: unknown): boolean {
 /** Build merged PDF options from user options + defaults */
 function buildPdfOptions(outputPath: string, options: PDFOptions, timeout: number) {
   // Library-level validation: catch invalid values at the boundary
-  if (options.scale !== undefined && (options.scale < 0.1 || options.scale > 2)) {
+  if (options.scale !== undefined && (isNaN(options.scale) || options.scale < 0.1 || options.scale > 2)) {
     throw createError(ErrorCodes.INVALID_FORMAT,
       `PDF scale must be between 0.1 and 2, got ${options.scale}`);
   }

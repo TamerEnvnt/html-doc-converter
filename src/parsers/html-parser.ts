@@ -103,11 +103,14 @@ export function extractChapters(doc: CheerioAPI): Chapter[] {
     const { level, id, title, element } = headings[i];
 
     // Extract content between this heading and the next
-    let content = '';
+    const contentParts: string[] = [];
     const $el = doc(element);
     let $next = $el.next();
     while ($next.length > 0 && !$next.is('h1, h2, h3, h4, h5, h6')) {
-      content += doc.html($next) || '';
+      const html = doc.html($next);
+      if (html) {
+        contentParts.push(html);
+      }
       $next = $next.next();
     }
 
@@ -115,7 +118,7 @@ export function extractChapters(doc: CheerioAPI): Chapter[] {
       id,
       title,
       level,
-      content: content.trim(),
+      content: contentParts.join('').trim(),
       children: [],
     };
 
