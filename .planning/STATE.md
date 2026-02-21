@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Milestone: v1.4 (Review Findings) -- Phases 29-36
-Phase: 34 of 36 (Type Safety) -- COMPLETE
-Plan: 34-01 executed (2 tasks: 4 findings across 5 files)
-Status: Ready to plan Phase 35
-Last activity: 2026-02-20 -- Phase 34 complete
+Phase: 35 of 36 (Test Coverage) -- COMPLETE
+Plan: 35-01 executed (2 tasks: 5 test gaps filled across 4 files)
+Status: Ready to plan Phase 36
+Last activity: 2026-02-21 -- Phase 35 complete
 
-Progress (v1.4): ███████░░░ 75%
+Progress (v1.4): █████████░ 87%
 
 ## Shipped Milestones
 
@@ -61,10 +61,10 @@ src/
 ```
 
 ### Test suite
-- 13 test files, 194 tests (192 passed, 2 skipped)
+- 14 test files, 211 tests (209 passed, 2 skipped)
 - Coverage: 82.2% stmts, 86.46% branches, 95.45% funcs, 82.2% lines
 
 ## Session Continuity
 
-Last session: 2026-02-20
-Status: Phase 34 complete. Ready to plan Phase 35.
+Last session: 2026-02-21
+Status: Phase 35 complete. Ready to plan Phase 36.

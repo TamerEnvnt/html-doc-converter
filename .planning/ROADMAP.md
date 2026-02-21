@@ -249,7 +249,7 @@ Findings addressed:
 **Plans**: TBD
 
 Plans:
-- [ ] 35-01: TBD
+- [x] 35-01: Fill 5 test gaps: isHeadingLevel, DOCX outputDir, mocked dependency versions, CLI --docx-only, partial failure exit code (2 tasks, 17 new tests)
 
 Findings addressed:
 - P2: No CLI test for --docx-only path
