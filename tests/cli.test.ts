@@ -252,6 +252,71 @@ describe('CLI', () => {
         throw error;
       }
     }, 60000);
+
+    it('converts HTML file to DOCX with --docx-only', async () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      const outputBase = path.join(OUTPUT_DIR, 'docx-only-test');
+      const projectRoot = path.join(__dirname, '..');
+
+      // ESM loader: mock pdf-converter (should NOT be called), docx-converter (succeeds), soffice (found)
+      const loaderScript = [
+        `export async function load(url, context, nextLoad) {`,
+        `  if (url.endsWith('pdf-converter.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function convertToPDF() { throw new Error("PDF should not be called"); }',`,
+        `        'export async function convertHTMLFileToPDF() { throw new Error("should not be called"); }',`,
+        `        'export async function convertHTMLStringToPDF() { throw new Error("should not be called"); }',`,
+        `        'export async function closeBrowser() {}',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  if (url.endsWith('docx-converter.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function convertToDOCX(input, output) { return { outputPath: output }; }',`,
+        `        'export async function convertHTMLFileToDOCX() { return {}; }',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  if (url.endsWith('soffice.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function findSoffice() { return "/usr/bin/soffice"; }',`,
+        `        'export async function verifyLibreOffice() { return true; }',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  return nextLoad(url, context);`,
+        `}`,
+      ].join('\n');
+
+      const loaderPath = path.join(OUTPUT_DIR, 'docx-only-loader.mjs');
+      await fs.writeFile(loaderPath, loaderScript);
+
+      const output = execFileSync(
+        'node',
+        ['--loader', loaderPath, CLI_PATH, inputPath, '-o', outputBase, '--docx-only', '--force'],
+        {
+          encoding: 'utf-8',
+          timeout: 30000,
+          cwd: projectRoot,
+          env: { ...process.env, NODE_NO_WARNINGS: '1' },
+        }
+      );
+
+      // DOCX conversion should run
+      expect(output).toContain('[DOCX]');
+      expect(output).toContain('Done');
+      // PDF should NOT run
+      expect(output).not.toContain('[PDF]');
+    }, 30000);
   });
 
   describe('Signal Handling', () => {
@@ -325,5 +390,76 @@ describe('CLI', () => {
 
       expect(output).toContain('--force');
     });
+  });
+
+  describe('Exit Codes', () => {
+    it('exits with code 2 on partial failure (one format succeeds, one fails)', async () => {
+      const inputPath = path.join(FIXTURES_DIR, 'simple.html');
+      const outputBase = path.join(OUTPUT_DIR, 'partial-fail-test');
+      const projectRoot = path.join(__dirname, '..');
+
+      // ESM loader: PDF succeeds, DOCX fails, soffice verified
+      const loaderScript = [
+        `export async function load(url, context, nextLoad) {`,
+        `  if (url.endsWith('pdf-converter.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function convertToPDF(input, output) { return { outputPath: output }; }',`,
+        `        'export async function convertHTMLFileToPDF() { return {}; }',`,
+        `        'export async function convertHTMLStringToPDF() { return {}; }',`,
+        `        'export async function closeBrowser() {}',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  if (url.endsWith('docx-converter.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function convertToDOCX() { throw new Error("mock DOCX failure"); }',`,
+        `        'export async function convertHTMLFileToDOCX() { throw new Error("mock"); }',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  if (url.endsWith('soffice.js')) {`,
+        `    return {`,
+        `      format: 'module',`,
+        `      shortCircuit: true,`,
+        `      source: [`,
+        `        'export async function findSoffice() { return "/usr/bin/soffice"; }',`,
+        `        'export async function verifyLibreOffice() { return true; }',`,
+        `      ].join("\\n"),`,
+        `    };`,
+        `  }`,
+        `  return nextLoad(url, context);`,
+        `}`,
+      ].join('\n');
+
+      const loaderPath = path.join(OUTPUT_DIR, 'partial-fail-loader.mjs');
+      await fs.writeFile(loaderPath, loaderScript);
+
+      try {
+        execFileSync(
+          'node',
+          ['--loader', loaderPath, CLI_PATH, inputPath, '-o', outputBase, '--force'],
+          {
+            encoding: 'utf-8',
+            timeout: 30000,
+            stdio: 'pipe',
+            cwd: projectRoot,
+            env: { ...process.env, NODE_NO_WARNINGS: '1' },
+          }
+        );
+        expect.unreachable('Expected process to exit with non-zero code');
+      } catch (error: unknown) {
+        const execError = error as { status?: number; stdout?: string };
+        expect(execError.status).toBe(2);
+        // PDF succeeded, DOCX failed
+        expect(execError.stdout).toContain('[PDF]');
+        expect(execError.stdout).toContain('[DOCX]');
+      }
+    }, 30000);
   });
 });
