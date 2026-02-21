@@ -1,5 +1,33 @@
 # Project Milestones: HTML Document Converter
 
+## v1.4 Review Findings (Shipped: 2026-02-22)
+
+**Delivered:** Addressed all 26 findings from second 5-agent codebase review -- fixed 3 P1 bugs (signal handler hang, browser launch timeout, DOCX nullish coalescing), eliminated 5 silent failure catch-all blocks, hardened process lifecycle, cleaned API surface, strengthened types with readonly and named returns, and expanded test coverage to 211 tests.
+
+**Phases completed:** 29-36 (8 plans total)
+
+**Key accomplishments:**
+
+- Fixed 3 P1 bugs: signal handler hang (re-entrance guard + force-exit), browser launch timeout (30s), DOCX ?? operator
+- Eliminated 5 catch-all blocks that masked unexpected errors (EPERM, EMFILE, ENOMEM)
+- Hardened process lifecycle: deferred process.exit() after cleanup, added unhandledRejection handler
+- Cleaned API surface: removed getBrowser, extracted timeout constants, fixed O(n^2) string concat
+- Strengthened types: 13 readonly fields, named ValidatedInput, narrowed OutputFormat union
+- Added 17 new tests covering CLI --docx-only, exit code 2, mocked dependency versions, isHeadingLevel
+
+**Stats:**
+
+- 14 code files modified (+513/-71 lines)
+- 1,852 lines source TypeScript, 211 tests
+- 8 phases, 8 plans, ~18 tasks
+- 3 days (2026-02-19 to 2026-02-22)
+
+**Git range:** `docs(29-01)` -> `docs(36-01)`
+
+**What's next:** Project complete -- all review findings addressed across 4 milestones.
+
+---
+
 ## v1.3 Polish & Cleanup (Shipped: 2026-02-19)
 
 **Delivered:** Addressed all 24 remaining findings from 5-agent codebase review -- fixed P1 bugs, eliminated code duplication, removed 16 dead functions, improved type safety with discriminated unions and type guards, and filled all test coverage gaps to reach 194 tests with 82.2% statement coverage.

@@ -30,6 +30,12 @@ Both outputs must be high quality: PDF with visual fidelity to the HTML source, 
 - Code deduplication and dead code removal (16 unused functions removed) -- v1.3
 - Type safety improvements (discriminated unions, type guards, readonly) -- v1.3
 - 194 tests with 82.2% statements, 86.46% branches -- v1.3
+- Critical bug fixes: signal handler hang, browser launch timeout, DOCX nullish coalescing -- v1.4
+- Silent failure elimination: 5 catch-all blocks tightened with error discrimination -- v1.4
+- Process lifecycle hardening: deferred exit, unhandledRejection handler -- v1.4
+- API cleanup: removed getBrowser, centralized timeout constants, O(n^2) fix -- v1.4
+- Type safety: 13 readonly fields, named ValidatedInput, narrowed OutputFormat -- v1.4
+- 211 tests with 81.18% statements, 85.21% branches, 95.45% functions -- v1.4
 
 ### Active
 
@@ -45,11 +51,12 @@ Both outputs must be high quality: PDF with visual fidelity to the HTML source, 
 
 ## Context
 
-**Current state (post v1.3):**
-- 13 source files, ~1,774 lines TypeScript (reduced via dead code removal)
-- 13 test files, 194 tests (192 passed, 2 skipped)
-- Coverage: 82.2% statements, 86.46% branches, 95.45% functions
-- All 24 remaining review findings addressed (24 from v1.3 + 29 from v1.2 = 53 total)
+**Current state (post v1.4):**
+- 14 source files, ~1,852 lines TypeScript
+- 14 test files, 211 tests (209 passed, 2 skipped)
+- Coverage: 81.18% statements, 85.21% branches, 95.45% functions
+- All 26 review findings from second 5-agent review addressed (v1.4)
+- Total findings addressed across all milestones: 79 (v1.2: 29, v1.3: 24, v1.4: 26)
 
 **Source document reference:** `/Users/tamer/Work/AI/Claude/InfraSizingCalculator/docs/srs/SRS_InfraSizingCalculator.html`
 
@@ -92,6 +99,10 @@ The SRS document uses:
 | Type guard functions over unsafe casts | Runtime validation with TypeScript type narrowing | Good |
 | Shared exec utility (exec.ts) | Single promisify(execFile) source, DRY across 3 consumers | Good |
 | Dead code removal via grep verification | Verify unused before removing, prevents accidental API breakage | Good |
+| Nullish coalescing for timeouts | ?? preserves explicit 0 vs \|\| which coerces to default | Good |
+| Centralized timeout constants | utils/constants.ts eliminates magic numbers across 5+ locations | Good |
+| Array-join over string concat | O(n) vs O(n^2) for chapter content extraction | Good |
+| Named return types | ValidatedInput interface over anonymous object type | Good |
 
 ---
-*Last updated: 2026-02-19 after v1.3 milestone*
+*Last updated: 2026-02-22 after v1.4 milestone*

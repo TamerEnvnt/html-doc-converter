@@ -2,18 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-02-19)
+See: .planning/PROJECT.md (updated 2026-02-22)
 
 **Core value:** Both outputs must be high quality: PDF with visual fidelity, DOCX with real document structure for genuine editing.
-**Current focus:** Address 28 findings from comprehensive 5-agent review.
+**Current focus:** All milestones complete. Project shipped.
 
 ## Current Position
 
-Milestone: v1.4 (Review Findings) -- Phases 29-36
+Milestone: v1.4 (Review Findings) -- SHIPPED 2026-02-22
 Phase: 36 of 36 (Verification) -- COMPLETE
-Plan: 36-01 executed (2 tasks: full test suite + 26-finding audit)
-Status: Milestone v1.4 complete, ready for /gsd:complete-milestone
-Last activity: 2026-02-21 -- Phase 36 complete
+Status: All milestones complete
+Last activity: 2026-02-22 -- v1.4 milestone archived
 
 Progress (v1.4): ██████████ 100%
 
@@ -25,19 +24,11 @@ Progress (v1.4): ██████████ 100%
 | v1.1 Security | 11-15 | 5 | 134 | 74.5% stmts | 2026-02-08 |
 | v1.2 Robustness | 16-23 | 11 | 185 | 82.36% stmts | 2026-02-15 |
 | v1.3 Polish | 24-28 | 9 | 194 | 82.2% stmts | 2026-02-19 |
-
-## v1.4 Review Source
-
-28 findings from 5-agent parallel review (2026-02-19):
-- Code Review: 2 P1, 4 P2, 3 P3
-- Silent Failure Hunter: 14 findings (5 HIGH, 7 MEDIUM, 2 LOW)
-- Architecture & Performance: clean architecture, performance items
-- Type Design: 3.9/5 average, 4 types need readonly
-- Test Coverage: CLI 0% (child process gap), 5 test gaps
+| v1.4 Review Findings | 29-36 | 8 | 211 | 81.18% stmts | 2026-02-22 |
 
 ## Current Codebase
 
-### Source files (14 files, ~1,790 lines)
+### Source files (14 files, ~1,852 lines)
 ```
 src/
   cli.ts                   - CLI entry point (Commander, signal handlers, path validation)
@@ -66,5 +57,5 @@ src/
 
 ## Session Continuity
 
-Last session: 2026-02-21
-Status: Phase 35 complete. Ready to plan Phase 36.
+Last session: 2026-02-22
+Status: v1.4 milestone archived and tagged.
