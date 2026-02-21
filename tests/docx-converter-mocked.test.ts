@@ -184,6 +184,19 @@ describe('convertToDOCX - mocked', () => {
       expect((err as ConversionError).message).toContain('string-error-from-process');
     }
   });
+
+  it('uses custom outputDir when provided in options', async () => {
+    const result = await convertToDOCX('/tmp/test.html', '/tmp/test.docx', {
+      outputDir: '/custom/output',
+    });
+
+    expect(result).toEqual({ outputPath: path.resolve('/tmp/test.docx') });
+    // Verify mkdir was called with the custom outputDir
+    expect(mockedMkdir).toHaveBeenCalledWith('/custom/output', { recursive: true });
+    // Verify execFile was called with --outdir pointing to custom dir
+    const execArgs = mockedExecFile.mock.calls[0];
+    expect(execArgs[1]).toContain('/custom/output');
+  });
 });
 
 // ============================================================================

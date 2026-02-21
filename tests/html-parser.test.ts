@@ -8,6 +8,7 @@ import {
   extractChapters,
   extractMetadata,
   parseDocument,
+  isHeadingLevel,
 } from '../src/parsers/html-parser.js';
 import * as path from 'path';
 
@@ -304,6 +305,35 @@ describe('HTML Parser', () => {
       await expect(loadHTML('/tmp/unreadable.html')).rejects.toThrow('Failed to load HTML file');
 
       vi.doUnmock('fs/promises');
+    });
+  });
+
+  describe('isHeadingLevel', () => {
+    it('returns true for valid heading levels 1-6', () => {
+      for (let i = 1; i <= 6; i++) {
+        expect(isHeadingLevel(i)).toBe(true);
+      }
+    });
+
+    it('returns false for 0', () => {
+      expect(isHeadingLevel(0)).toBe(false);
+    });
+
+    it('returns false for 7', () => {
+      expect(isHeadingLevel(7)).toBe(false);
+    });
+
+    it('returns false for negative numbers', () => {
+      expect(isHeadingLevel(-1)).toBe(false);
+    });
+
+    it('returns false for non-integer numbers', () => {
+      expect(isHeadingLevel(1.5)).toBe(false);
+      expect(isHeadingLevel(2.7)).toBe(false);
+    });
+
+    it('returns false for NaN', () => {
+      expect(isHeadingLevel(NaN)).toBe(false);
     });
   });
 });
