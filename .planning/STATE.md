@@ -10,12 +10,12 @@ See: .planning/PROJECT.md (updated 2026-02-19)
 ## Current Position
 
 Milestone: v1.4 (Review Findings) -- Phases 29-36
-Phase: 35 of 36 (Test Coverage) -- COMPLETE
-Plan: 35-01 executed (2 tasks: 5 test gaps filled across 4 files)
-Status: Ready to plan Phase 36
-Last activity: 2026-02-21 -- Phase 35 complete
+Phase: 36 of 36 (Verification) -- COMPLETE
+Plan: 36-01 executed (2 tasks: full test suite + 26-finding audit)
+Status: Milestone v1.4 complete, ready for /gsd:complete-milestone
+Last activity: 2026-02-21 -- Phase 36 complete
 
-Progress (v1.4): █████████░ 87%
+Progress (v1.4): ██████████ 100%
 
 ## Shipped Milestones
 
@@ -62,7 +62,7 @@ src/
 
 ### Test suite
 - 14 test files, 211 tests (209 passed, 2 skipped)
-- Coverage: 82.2% stmts, 86.46% branches, 95.45% funcs, 82.2% lines
+- Coverage: 81.18% stmts, 85.21% branches, 95.45% funcs, 81.18% lines
 
 ## Session Continuity
 
